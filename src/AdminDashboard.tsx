@@ -125,7 +125,7 @@ export const AdminDashboard = () => {
                       <p className="text-xs text-gray-500">Total: ₹{order.total}</p>
                     </div>
                     <button
-                      onClick={() => navigate(`/track-order?id=${order.id}`)}
+                      onClick={() => navigate(`/track?id=${order.id}`)}
                       className="text-[var(--color-terracotta)] hover:text-[var(--color-chocolate)] transition-colors"
                       title="View Order Details"
                     >

@@ -72,7 +72,7 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
                   alt={product.name} 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
-                />
+                /> 
                 {product.isEggless && (
                   <div className="absolute top-3 left-3 bg-green-100 text-green-700 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
                     <div className="w-2 h-2 rounded-full bg-green-500"></div>

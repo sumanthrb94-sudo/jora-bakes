@@ -7,8 +7,8 @@ export interface Product {
   name: string;
   description: string;
   price: number;
-  weight?: string;
-  isEggless?: boolean;
+  weight: string;
+  isEggless: boolean; // Now always true
   isAvailable: boolean;
   bakeTime?: string;
   allergens?: string[];

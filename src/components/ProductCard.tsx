@@ -45,7 +45,7 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
       {product.isEggless && (
         <div className="absolute top-3 left-3 z-10 bg-green-100/90 backdrop-blur-sm text-green-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
           <div className="w-2 h-2 rounded-full bg-green-500"></div>
-          Eggless
+          100% Eggless
         </div>
       )}
 

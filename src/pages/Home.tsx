@@ -65,7 +65,7 @@ export const Home = () => {
         <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/60 to-transparent py-6 px-4 flex justify-center gap-6 text-white text-xs font-medium">
           <div className="flex items-center gap-1.5"><Star size={14} className="text-yellow-400 fill-yellow-400" /> Homemade</div>
           <div className="flex items-center gap-1.5"><Clock size={14} className="text-[var(--color-sage)]" /> Fresh Daily</div>
-          <div className="flex items-center gap-1.5"><Heart size={14} className="text-red-400 fill-red-400" /> Eggless Options</div>
+          <div className="flex items-center gap-1.5"><Heart size={14} className="text-red-400 fill-red-400" /> 100% Eggless</div>
         </div>
       </section>
 

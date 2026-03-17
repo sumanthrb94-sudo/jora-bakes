@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const newProfile: UserProfile = {
               uid: firebaseUser.uid,
               email: firebaseUser.email || '',
-              name: firebaseUser.displayName || 'Guest',
+              name: firebaseUser.displayName || 'JORA BAKES Guest',
               role: firebaseUser.email === 'sumanthrb94@gmail.com' ? 'admin' : 'customer',
               points: 0,
               createdAt: new Date().toISOString(),
@@ -49,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setProfile({
             uid: firebaseUser.uid,
             email: firebaseUser.email || '',
-            name: firebaseUser.displayName || 'Guest',
+            name: firebaseUser.displayName || 'JORA BAKES Guest',
             role: firebaseUser.email === 'sumanthrb94@gmail.com' ? 'admin' : 'customer',
             points: 0,
             createdAt: new Date().toISOString(),
