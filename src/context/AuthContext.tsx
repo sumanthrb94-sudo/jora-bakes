@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
-import { auth, loginWithGoogle, logout as firebaseLogout } from '../firebase';
+import { auth, loginWithGoogle, logout as firebaseLogout, loginWithEmail as firebaseLoginEmail, registerWithEmail as firebaseRegisterEmail } from '../firebase';
 import { getDocument, createDocument, updateDocument } from '../services/firestore';
 import { NotificationService } from '../services/NotificationService';
 import { UserProfile, Address } from '../types';
@@ -11,6 +11,8 @@ interface AuthContextType {
   loading: boolean;
   login: () => Promise<void>;
   logout: () => Promise<void>;
+  loginEmail: (email: string, pass: string) => Promise<void>;
+  registerEmail: (email: string, pass: string) => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
   isAdmin: boolean;
 }
@@ -96,6 +98,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const loginEmail = async (email: string, pass: string) => {
+    await firebaseLoginEmail(email, pass);
+  };
+
+  const registerEmail = async (email: string, pass: string) => {
+    await firebaseRegisterEmail(email, pass);
+  };
+
   const updateProfile = async (data: Partial<UserProfile>) => {
     if (!user) return;
     await updateDocument('users', user.uid, data);
@@ -110,6 +120,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     login,
     logout,
+    loginEmail,
+    registerEmail,
     updateProfile,
     isAdmin
   }), [user, profile, loading, isAdmin]);

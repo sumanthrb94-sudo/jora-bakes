@@ -8,7 +8,7 @@ import { useCart } from '../context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, ShoppingBag } from 'lucide-react';
 
-const CATEGORIES = ['All', 'Cakes', 'Brownies', 'Cookies', 'Bread', 'Loaves', 'Custom'];
+const CATEGORIES = ['All', 'Cakes', 'Brownies'];
 
 export const Shop = () => {
   const { products, loading } = useProducts();
@@ -34,8 +34,8 @@ export const Shop = () => {
 
   const filteredProducts = useMemo(() => {
     if (selectedCategory === 'All') return products;
-    return products.filter(p => p.category === selectedCategory.toLowerCase());
-  }, [selectedCategory]);
+    return products.filter(p => (p?.category || '') === selectedCategory.toLowerCase());
+  }, [selectedCategory, products]);
 
   const handleQuickView = (product: Product) => {
     setSelectedProduct(product);

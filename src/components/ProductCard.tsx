@@ -3,6 +3,7 @@ import { Product } from '../types';
 import { useCart } from '../context/CartContext';
 import { Plus, Minus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 interface ProductCardProps {
   product: Product;
@@ -19,16 +20,24 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
   // Get a reference to the specific cart item to handle exact increment/decrement natively
   const cartItem = itemsInCart.length === 1 ? itemsInCart[0] : null;
 
+  const outOfStock = product.stockQuantity !== undefined ? product.stockQuantity <= 0 : !product.isAvailable;
+
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Instantly add the default (first) variant to make the ADD button fast and frictionless
-    addToCart(product, 1, product.variants[0]);
+    if (outOfStock) return;
+    if (product?.variants && product.variants.length > 0) {
+      addToCart(product, 1, product.variants[0]);
+    }
   };
 
   const handleIncrement = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (product.stockQuantity !== undefined && totalQuantityInCart >= product.stockQuantity) {
+      toast.error(`Only ${product.stockQuantity} available in stock.`);
+      return;
+    }
     if (itemsInCart.length > 1 || !cartItem) {
       onQuickView(product); // Open modal only if they have multiple different variants of this product in cart
     } else {
@@ -69,7 +78,7 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
               <div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
             </div>
           )}
-          {product.variants.length > 1 && (
+          {product?.variants?.length > 1 && (
             <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-1.5 py-0.5 rounded">Customizable</span>
           )}
         </div>
@@ -83,7 +92,14 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
           className="mx-auto"
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
         >
-          {totalQuantityInCart === 0 ? (
+          {outOfStock ? (
+            <button
+              disabled
+              className="bg-gray-100 text-gray-400 border border-gray-200 px-6 py-2 rounded-xl font-black text-xs shadow-sm cursor-not-allowed whitespace-nowrap"
+            >
+              OUT OF STOCK
+            </button>
+          ) : totalQuantityInCart === 0 ? (
             <button
               onClick={handleAdd}
               className="bg-white text-[var(--color-terracotta)] border border-gray-200 px-8 py-2 rounded-xl font-black text-sm hover:border-[var(--color-terracotta)] transition-colors shadow-sm"

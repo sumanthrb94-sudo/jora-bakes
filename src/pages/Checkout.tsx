@@ -4,9 +4,10 @@ import { useCart } from '../context/CartContext';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle2, MapPin, CreditCard, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { increment } from 'firebase/firestore';
 
 import { useAuth } from '../context/AuthContext';
-import { createDocument } from '../services/firestore';
+import { createDocument, updateDocument } from '../services/firestore';
 import { Order, Address } from '../types';
 
 export const Checkout = () => {
@@ -121,6 +122,22 @@ export const Checkout = () => {
             throw new Error('Database returned empty result');
           }
           console.log('Order saved successfully');
+          
+          // Decrease stock quantity for each ordered item
+          try {
+            const stockUpdates = cart.map(item => {
+              // Only update if the product has stock tracking enabled
+              if (item.product.stockQuantity !== undefined) {
+                return updateDocument('products', item.product.id, {
+                  stockQuantity: increment(-item.quantity) as unknown as number
+                });
+              }
+              return Promise.resolve();
+            });
+            await Promise.all(stockUpdates);
+          } catch (stockError) {
+            console.error('Failed to update stock quantities:', stockError);
+          }
         } catch (dbError) {
           console.warn('Database write failed:', dbError);
           // Fallback to mock behavior if write fails

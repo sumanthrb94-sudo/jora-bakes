@@ -128,6 +128,15 @@ export const updateDocument = async <T extends object>(collectionPath: string, d
   }
 };
 
+export const deleteDocument = async (collectionPath: string, docId: string): Promise<void> => {
+  try {
+    await withTimeout(deleteDoc(doc(db, collectionPath, docId)));
+  } catch (error) {
+    console.error(`Error deleting document ${collectionPath}/${docId}:`, error);
+    handleFirestoreError(error, OperationType.DELETE, `${collectionPath}/${docId}`);
+  }
+};
+
 export const subscribeToCollection = <T>(
   collectionPath: string, 
   callback: (data: T[]) => void,

@@ -21,10 +21,10 @@ export const Home = () => {
     <div className="pb-24">
       {/* Hero Section */}
       <section className="relative h-[65vh] w-full bg-[var(--color-beige)] overflow-hidden">
-        <div className="absolute inset-0 bg-black/20 z-10" />
+        <div className="absolute inset-0 bg-black/40 z-10" />
         <img 
-          src="https://images.unsplash.com/photo-1517433367423-c7e5b0f35086?auto=format&fit=crop&q=80&w=1200" 
-          alt="Freshly baked goods" 
+          src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=1200" 
+          alt="Premium artisanal desserts" 
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
         />
@@ -149,12 +149,12 @@ export const Home = () => {
       {/* Footer */}
       <footer className="bg-[var(--color-chocolate)] text-[var(--color-beige)] py-10 px-6 text-center">
         <h2 className="font-script text-4xl mb-4 text-[var(--color-terracotta)]">JORA BAKES </h2>
-        <p className="text-sm opacity-80 mb-6">Homemade with love by our bakers in Bangalore.</p>
+        <p className="text-sm opacity-80 mb-6">Homemade with love by our bakers in Hyderabad</p>
         
         <div className="flex flex-col gap-4 items-center text-sm opacity-90 mb-8">
           <div className="flex items-center gap-2">
             <MapPin size={16} className="text-[var(--color-terracotta)]" />
-            <span>Indiranagar, Bangalore (Pickup available)</span>
+            <span>Jains Carlton Creek , Manikonda (Pickup available)</span>
           </div>
           <div className="flex items-center gap-2">
             <Clock size={16} className="text-[var(--color-terracotta)]" />

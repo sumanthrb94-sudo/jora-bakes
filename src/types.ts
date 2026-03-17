@@ -10,6 +10,7 @@ export interface Product {
   weight: string;
   isEggless: boolean; // Now always true
   isAvailable: boolean;
+  stockQuantity?: number;
   bakeTime?: string;
   allergens?: string[];
   images?: string[];

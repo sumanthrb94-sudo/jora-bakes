@@ -3,6 +3,7 @@ import { Product, Variant } from '../types';
 import { useCart } from '../context/CartContext';
 import { X, Plus, Minus, Info, Share2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 interface QuickViewModalProps {
   product: Product | null;
@@ -36,18 +37,35 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
   );
   const quantityInCart = cartItem?.quantity || 0;
 
+  const outOfStock = product.stockQuantity !== undefined ? product.stockQuantity <= 0 : !product.isAvailable;
+  const maxQuantity = product.stockQuantity !== undefined ? product.stockQuantity : 99;
+  const totalQuantityInCart = cart.filter(item => item.product.id === product.id).reduce((sum, item) => sum + item.quantity, 0);
+
   const handleAddToCart = () => {
+    if (outOfStock) return;
+    if (totalQuantityInCart + quantity > maxQuantity) {
+      toast.error(`Only ${maxQuantity} available in stock.`);
+      return;
+    }
     if (selectedVariant) {
       addToCart(product, quantity, selectedVariant, specialRequests);
     }
   };
 
   const handleIncrement = () => {
+    if (totalQuantityInCart >= maxQuantity) {
+      toast.error(`Only ${maxQuantity} available in stock.`);
+      return;
+    }
     if (cartItem) updateQuantity(cartItem.id, cartItem.quantity + 1);
   };
 
   const handleDecrement = () => {
-    if (cartItem) updateQuantity(cartItem.id, cartItem.quantity - 1);
+    if (cartItem) {
+      const newQuantity = cartItem.quantity - 1;
+      updateQuantity(cartItem.id, newQuantity);
+      if (newQuantity <= 0) onClose();
+    }
   };
 
 
@@ -157,15 +175,19 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
                 />
               </div>
 
-              {quantityInCart === 0 ? (
+              {outOfStock ? (
+                <div className="mt-4 py-4 bg-gray-100 text-gray-500 rounded-2xl font-bold text-lg flex items-center justify-center border border-gray-200">
+                  Currently Out of Stock
+                </div>
+              ) : quantityInCart === 0 ? (
                 // State 1: Item not in cart
                 <div className="flex items-center gap-4 pt-2">
                   <div className="flex items-center bg-gray-100 rounded-2xl px-2 py-2">
-                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-10 flex items-center justify-center text-[var(--color-chocolate)] bg-white rounded-xl shadow-sm">
+                    <button onClick={() => quantity <= 1 ? onClose() : setQuantity(quantity - 1)} className="w-10 h-10 flex items-center justify-center text-[var(--color-chocolate)] bg-white rounded-xl shadow-sm">
                       <Minus size={18} />
                     </button>
                     <span className="w-12 text-center text-lg font-semibold">{quantity}</span>
-                    <button onClick={() => setQuantity(quantity + 1)} className="w-10 h-10 flex items-center justify-center text-[var(--color-chocolate)] bg-white rounded-xl shadow-sm">
+                    <button onClick={() => quantity < maxQuantity ? setQuantity(quantity + 1) : toast.error(`Only ${maxQuantity} available.`)} className="w-10 h-10 flex items-center justify-center text-[var(--color-chocolate)] bg-white rounded-xl shadow-sm">
                       <Plus size={18} />
                     </button>
                   </div>
