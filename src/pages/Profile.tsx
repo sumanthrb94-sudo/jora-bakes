@@ -3,9 +3,9 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { User, MapPin, Package, Settings, LogOut, ChevronRight, Star, Bell } from 'lucide-react';
-
+ 
 export const Profile = () => {
-  const { user, profile, loading, login, logout } = useAuth();
+  const { user, profile, loading, login, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   const menuItems = [

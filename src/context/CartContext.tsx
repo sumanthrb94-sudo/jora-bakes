@@ -45,53 +45,50 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     product: Product, 
     quantity: number, 
     variant: Variant, 
-    specialRequest?: string,
-    isGiftWrap = false,
-    giftMessage?: string,
-    deliveryDate = new Date(),
-    deliverySlot = '10 AM - 1 PM'
+    specialRequest?: string
   ) => {
-    let isNew = true;
+    const isExisting = cart.some(
+      (item) => 
+        item.product.id === product.id && 
+        item.variant.id === variant.id &&
+        (item.specialRequest || '') === (specialRequest || '')
+    );
+
+    if (isExisting) {
+      toast.success(`Updated quantity for ${product.name}!`);
+    } else {
+      toast.success(`${product.name} added to your box!`);
+    }
+
     setCart((prevCart) => {
       const existingItemIndex = prevCart.findIndex(
         (item) => 
           item.product.id === product.id && 
-          item.variant.id === variant.id && 
-          item.specialRequest === specialRequest &&
-          item.isGiftWrap === isGiftWrap &&
-          item.giftMessage === giftMessage &&
-          item.deliveryDate.toDateString() === deliveryDate.toDateString() &&
-          item.deliverySlot === deliverySlot
+          item.variant.id === variant.id &&
+          (item.specialRequest || '') === (specialRequest || '')
       );
 
       if (existingItemIndex >= 0) {
         const newCart = [...prevCart];
         newCart[existingItemIndex].quantity += quantity;
-        isNew = false;
         return newCart;
       }
 
       return [
         ...prevCart,
         {
-          id: Math.random().toString(36).substr(2, 9),
+          id: `${product.id}-${variant.id}-${Date.now()}`, // More robust unique ID
           product,
           variant,
           quantity,
-          specialRequest,
-          isGiftWrap,
-          giftMessage,
-          deliveryDate,
-          deliverySlot,
+          specialRequest: specialRequest || '',
+          isGiftWrap: false,
+          giftMessage: '',
+          deliveryDate: new Date(),
+          deliverySlot: '',
         },
       ];
     });
-
-    if (isNew) {
-      toast.success(`JORA BAKES is packing your ${product.name}!`);
-    } else {
-      toast.success(`Added more ${product.name} to your box!`);
-    }
   };
 
   const removeFromCart = (cartItemId: string) => {

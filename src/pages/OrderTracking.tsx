@@ -51,7 +51,6 @@ export const OrderTracking = () => {
         await updateDoc(doc(db, 'orders', order.id), {
           status: statuses[currentIndex + 1]
         });
-        toast.success(`Status updated to ${statuses[currentIndex + 1]}`);
       } catch (err) {
         console.error("Error updating status:", err);
         toast.error("Failed to update status");
@@ -64,10 +63,9 @@ export const OrderTracking = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (orderIdInput.trim()) {
-      window.history.pushState({}, '', `?id=${orderIdInput.trim()}`);
-      const url = new URL(window.location.href);
-      url.searchParams.set('id', orderIdInput.trim());
-      window.location.href = url.toString();
+      // Use navigate from react-router-dom for a smoother SPA experience
+      // This will update the URL and trigger the useEffect for orderIdParam
+      navigate(`/track?id=${orderIdInput.trim()}`);
     }
   };
 
@@ -135,8 +133,8 @@ export const OrderTracking = () => {
                   <h2 className="text-lg font-bold text-[var(--color-chocolate)]">#{order.id}</h2>
                   <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleString()}</p>
                 </div>
-                <div className="bg-[var(--color-beige)] text-[var(--color-terracotta)] px-3 py-1 rounded-full text-xs font-bold">
-                  ₹{order.total}
+                <div className="bg-[var(--color-beige)] text-[var(--color-terracotta)] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                  {order.paymentMethod || 'PAID'}
                 </div>
               </div>
               
@@ -146,6 +144,52 @@ export const OrderTracking = () => {
                   {new Date(order.deliveryDate).toLocaleDateString()} | {order.deliverySlot}
                 </p>
               </div>
+
+              {/* Customer Details */}
+              {order.customer && (
+                <div className="border-t border-gray-100 pt-4 mt-4">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Delivery Details</h3>
+                  <p className="font-medium text-[var(--color-chocolate)] text-sm">{order.customer.name}</p>
+                  <p className="text-sm text-gray-600">{order.customer.phone}</p>
+                  <p className="text-sm text-gray-600 mt-1">{order.address?.street}</p>
+                  {order.address?.instructions && (
+                    <p className="text-xs text-gray-500 mt-1 italic">Note: {order.address.instructions}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Bill Details */}
+              {order.items && order.items.length > 0 && (
+                <div className="border-t border-gray-100 pt-4 mt-4">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Bill Details</h3>
+                  <div className="space-y-3">
+                    {order.items.map((item: any, index: number) => {
+                      const itemPrice = item.product.price + item.variant.priceModifier;
+                      const itemTotal = (itemPrice + (item.isGiftWrap ? 100 : 0)) * item.quantity;
+                      return (
+                        <div key={index} className="flex justify-between items-start">
+                          <div className="flex-1 pr-4">
+                            <p className="font-medium text-sm text-[var(--color-chocolate)]">
+                              {item.quantity}x {item.product.name}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-0.5">
+                              {item.variant.weight} - {item.variant.flavor}
+                              {item.isGiftWrap && <span className="text-[var(--color-terracotta)] font-medium"> (Gift Wrapped +₹100)</span>}
+                            </p>
+                          </div>
+                          <div className="text-sm font-semibold text-[var(--color-chocolate)] whitespace-nowrap">
+                            ₹{itemTotal}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="border-t border-dashed border-gray-200 mt-4 pt-4 flex justify-between items-center">
+                    <span className="font-bold text-[var(--color-chocolate)]">Total Amount</span>
+                    <span className="font-bold text-[var(--color-terracotta)] text-lg">₹{order.total}</span>
+                  </div>
+                </div>
+              )}
             </motion.div>
 
             {/* Tracking Timeline */}

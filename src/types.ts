@@ -44,12 +44,28 @@ export interface UserProfile {
 export interface Order {
   id: string;
   userId: string;
-  items: any[]; // You might want to define a more specific type for order items
+  items: OrderItem[]; // Changed to use OrderItem interface
   total: number;
   status: 'received' | 'confirmed' | 'baking' | 'quality_check' | 'out_for_delivery' | 'delivered';
   createdAt: string; // ISO string
   deliveryDate: string; // Date string
   deliverySlot: string;
+  customer: { name: string; phone: string; email: string; };
+  address: { street: string; instructions?: string; };
+  paymentMethod: string;
+  giftWrap?: boolean;
+}
+
+export interface OrderItem {
+  id: string;
+  product: Product; // Full product details at the time of order
+  variant: { id: string; flavor: string; priceModifier: number; weight: string; };
+  quantity: number;
+  specialRequest?: string;
+  isGiftWrap?: boolean;
+  giftMessage?: string;
+  deliveryDate?: string; // ISO string
+  deliverySlot?: string;
 }
 
 export interface Notification {

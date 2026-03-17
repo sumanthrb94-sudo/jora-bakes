@@ -1,11 +1,11 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
-import { getFirestore, doc, getDocFromCache, getDocFromServer } from 'firebase/firestore';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth'; // Removed unused imports
+import { getFirestore } from 'firebase/firestore'; // Removed unused imports
 
 // Your web app's Firebase configuration
 // This configuration includes the project ID "gen-lang-client-0753950904"
 const firebaseConfig = {
-  apiKey: "AIzaSyC_ciJWsHoUvBHEkeUOUZ-Buq6wnX-tnGw", // PASTE THE KEY FROM FIREBASE CONSOLE HERE
+  apiKey: "AIzaSyC_ciJWsHoUvBHEkeUOUZ-Buq6wnX-tnGw",
   authDomain: "gen-lang-client-0753950904.firebaseapp.com",
   projectId: "gen-lang-client-0753950904",
   storageBucket: "gen-lang-client-0753950904.firebasestorage.app",

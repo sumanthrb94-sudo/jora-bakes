@@ -18,7 +18,9 @@ import { Profile } from './pages/Profile';
 import { OrderTracking } from './pages/OrderTracking';
 import { OrderHistory } from './pages/OrderHistory';
 import { Notifications } from './pages/Notifications';
+import { AdminOrders } from './AdminOrders';
 import { SavedAddresses } from './pages/SavedAddresses';
+import { AdminDashboard } from './AdminDashboard'; // Import AdminDashboard
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 export default function App() {
@@ -39,6 +41,8 @@ export default function App() {
                   <Route path="notifications" element={<Notifications />} />
                   <Route path="track" element={<OrderTracking />} />
                   <Route path="addresses" element={<SavedAddresses />} />
+                  <Route path="admin/orders" element={<AdminOrders />} />
+                  <Route path="admin" element={<AdminDashboard />} /> {/* Add the Admin Dashboard route */}
                 </Route>
               </Routes>
             </Router>

@@ -28,8 +28,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
+        console.log("Auth state changed: User logged in. UID:", firebaseUser.uid);
         // Fetch or create profile
         try {
+          console.log("Attempting to fetch profile for UID:", firebaseUser.uid);
           let userProfile = await getDocument<UserProfile>('users', firebaseUser.uid);
           if (!userProfile) {
             const newProfile: UserProfile = {
@@ -59,7 +61,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Initialize Notifications
         try {
           NotificationService.requestPermission();
-          notificationUnsubscribe = NotificationService.listenToOrderUpdates(firebaseUser.uid);
+          const isAdminUser = firebaseUser.email === 'sumanthbolla97@gmail.com';
+          notificationUnsubscribe = NotificationService.listenToOrderUpdates(firebaseUser.uid, isAdminUser);
         } catch (err) {
           console.warn("Notification service failed to initialize:", err);
         }
@@ -72,7 +75,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       setLoading(false);
     });
-
     return () => {
       unsubscribe();
       if (notificationUnsubscribe) notificationUnsubscribe();

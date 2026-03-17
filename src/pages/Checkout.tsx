@@ -20,12 +20,12 @@ export const Checkout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderId, setOrderId] = useState('');
   const [saveAddress, setSaveAddress] = useState(false);
-
+  
   const [formData, setFormData] = useState({
     name: profile?.name || '',
-    phone: profile?.phone || profile?.phone || '',
-    email: profile?.email || '',
-    address: profile?.address || '',
+    phone: profile?.phone || '',
+    email: profile?.email || '', // Use profile?.email directly
+    address: profile?.addresses?.[0]?.street || '', // Use the first saved address street if available
     instructions: '',
     paymentMethod: 'upi'
   });
@@ -388,7 +388,10 @@ export const Checkout = () => {
               </h3>
               
               <div className="space-y-3">
-                <label className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.paymentMethod === 'upi' ? 'border-[var(--color-terracotta)] bg-[var(--color-beige)]' : 'border-gray-100'}`}>
+                <label 
+                  onClick={() => setFormData({ ...formData, paymentMethod: 'upi' })}
+                  className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.paymentMethod === 'upi' ? 'border-[var(--color-terracotta)] bg-[var(--color-beige)]' : 'border-gray-100'}`}
+                >
                   <div className="flex items-center gap-3">
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.paymentMethod === 'upi' ? 'border-[var(--color-terracotta)]' : 'border-gray-300'}`}>
                       {formData.paymentMethod === 'upi' && <div className="w-2.5 h-2.5 rounded-full bg-[var(--color-terracotta)]" />}
@@ -397,7 +400,10 @@ export const Checkout = () => {
                   </div>
                 </label>
                 
-                <label className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.paymentMethod === 'card' ? 'border-[var(--color-terracotta)] bg-[var(--color-beige)]' : 'border-gray-100'}`}>
+                <label 
+                  onClick={() => setFormData({ ...formData, paymentMethod: 'card' })}
+                  className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.paymentMethod === 'card' ? 'border-[var(--color-terracotta)] bg-[var(--color-beige)]' : 'border-gray-100'}`}
+                >
                   <div className="flex items-center gap-3">
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.paymentMethod === 'card' ? 'border-[var(--color-terracotta)]' : 'border-gray-300'}`}>
                       {formData.paymentMethod === 'card' && <div className="w-2.5 h-2.5 rounded-full bg-[var(--color-terracotta)]" />}
@@ -406,7 +412,10 @@ export const Checkout = () => {
                   </div>
                 </label>
 
-                <label className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.paymentMethod === 'cod' ? 'border-[var(--color-terracotta)] bg-[var(--color-beige)]' : 'border-gray-100'}`}>
+                <label 
+                  onClick={() => setFormData({ ...formData, paymentMethod: 'cod' })}
+                  className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.paymentMethod === 'cod' ? 'border-[var(--color-terracotta)] bg-[var(--color-beige)]' : 'border-gray-100'}`}
+                >
                   <div className="flex items-center gap-3">
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.paymentMethod === 'cod' ? 'border-[var(--color-terracotta)]' : 'border-gray-300'}`}>
                       {formData.paymentMethod === 'cod' && <div className="w-2.5 h-2.5 rounded-full bg-[var(--color-terracotta)]" />}
