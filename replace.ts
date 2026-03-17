@@ -19,13 +19,17 @@ function walk(dir: string): string[] {
 const files = walk('src').filter(f => f.endsWith('.tsx') || f.endsWith('.css'));
 
 const replacements = [
-  { from: /src\/components\/Layout\.tsx/g, to: '--color-brand-dark' },
-  { from: /--color-brand-dark/g, to: '--color-chocolate' },
-  { from: /--color-brand-beige/g, to: '--color-beige' },
-  { from: /--color-brand-terracotta/g, to: '--color-terracotta' },
-  { from: /--color-brand-cream/g, to: '--color-cream' },
-  { from: /--color-brand-sage/g, to: '--color-sage' },
-  { from: /font-script/g, to: 'font-script' },
+  { from: /--color-beige/g, to: '--color-bg-primary' },
+  { from: /--color-cream/g, to: '--color-bg-secondary' },
+  { from: /--color-primary/g, to: '--color-bg-primary' },
+  { from: /--color-chocolate/g, to: '--color-text-primary' },
+  { from: /--color-shadow/g, to: '--color-text-primary' },
+  { from: /--color-terracotta/g, to: '--color-action-primary' },
+  { from: /--color-accent/g, to: '--color-action-primary' },
+  { from: /--color-sage/g, to: '--color-text-secondary' },
+  { from: /--color-tertiary/g, to: '--color-text-secondary' },
+  { from: /--color-gold/g, to: '--color-action-hover' },
+  { from: /--color-secondary/g, to: '--color-bg-tertiary' }
 ];
 
 files.forEach(f => {

@@ -82,11 +82,11 @@ export const Home = () => {
         </div>
         <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-4 -mx-4 px-4 snap-x">
           {[
-            { name: 'Brownies', category: 'brownies', img: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&q=80&w=200' },
-            { name: 'Cheesecakes', category: 'cakes', img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&q=80&w=200' },
-            { name: 'Burnt Basque', category: 'cakes', img: 'https://images.unsplash.com/photo-1650302525164-32b0c1ecac6e?auto=format&fit=crop&q=80&w=200' },
-            { name: 'Cupcakes', category: 'cakes', img: 'https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?auto=format&fit=crop&q=80&w=200' },
-            { name: 'Tiramisu', category: 'cakes', img: 'https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&q=80&w=200' }
+            { name: 'Millet Brownies', category: 'millet_brownies', img: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&q=80&w=200' },
+            { name: 'Cheese Cakes', category: 'cheese_cakes', img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&q=80&w=200' },
+            { name: 'Burnt Basque', category: 'burnt_basque', img: 'https://images.unsplash.com/photo-1650302525164-32b0c1ecac6e?auto=format&fit=crop&q=80&w=200' },
+            { name: 'Cupcakes', category: 'cupcakes', img: 'https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?auto=format&fit=crop&q=80&w=200' },
+            { name: 'Tiramisu', category: 'tiramisu', img: 'https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&q=80&w=200' }
           ].map((cat, i) => (
             <Link 
               key={cat.name} 

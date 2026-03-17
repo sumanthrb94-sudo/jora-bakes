@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Clock, Package, Truck, MapPin, Phone, MessageCircle, Search, RefreshCw } from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
-import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { doc, onSnapshot, updateDoc, collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 export const OrderTracking = () => {
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const orderIdParam = searchParams.get('id');
   const [orderIdInput, setOrderIdInput] = useState(orderIdParam || '');
@@ -36,8 +37,31 @@ export const OrderTracking = () => {
       });
 
       return () => unsubscribe();
+    } else if (user && !orderIdParam) {
+      const fetchLatestOrder = async () => {
+        setLoading(true);
+        try {
+          const q = query(
+            collection(db, 'orders'),
+            where('userId', '==', user.uid),
+            orderBy('createdAt', 'desc'),
+            limit(1)
+          );
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            const latestDoc = querySnapshot.docs[0];
+            navigate(`/track?id=${latestDoc.id}`, { replace: true });
+          } else {
+            setLoading(false);
+          }
+        } catch (err) {
+          console.error("Error fetching latest order:", err);
+          setLoading(false);
+        }
+      };
+      fetchLatestOrder();
     }
-  }, [orderIdParam]);
+  }, [orderIdParam, user, navigate]);
 
   const handleNextStatus = async () => {
     if (!order || !order.id) return;

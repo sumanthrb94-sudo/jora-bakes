@@ -3,7 +3,7 @@ import { Product } from '../types';
 export const products: Product[] = [
   {
     id: 'p1',
-    category: 'brownies',
+    category: 'millet_brownies',
     name: 'Millet Brownie',
     description: 'Guilt-free, fudgy brownies made with your choice of wholesome, nutrient-rich millets.',
     price: 150,
@@ -28,7 +28,7 @@ export const products: Product[] = [
   },
   {
     id: 'p2',
-    category: 'cakes',
+    category: 'cheese_cakes',
     name: 'Classic Cheesecake',
     description: 'Rich, creamy, and perfectly smooth baked cheesecake with a buttery cracker crust.',
     price: 250,
@@ -51,7 +51,7 @@ export const products: Product[] = [
   },
   {
     id: 'p3',
-    category: 'cakes',
+    category: 'burnt_basque',
     name: 'Burnt Basque Cheesecake',
     description: 'Caramelized, rustic top with a beautifully soft, gooey, and melt-in-your-mouth center.',
     price: 280,
@@ -74,7 +74,7 @@ export const products: Product[] = [
   },
   {
     id: 'p4',
-    category: 'cakes',
+    category: 'cupcakes',
     name: 'Assorted Cupcakes 🧁',
     description: 'Soft, fluffy, and perfectly sweet cupcakes topped with rich buttercream frosting. Perfect for any celebration.',
     price: 120,
@@ -98,7 +98,7 @@ export const products: Product[] = [
   },
   {
     id: 'p5',
-    category: 'cakes',
+    category: 'tiramisu',
     name: 'Signature Tiramisu',
     description: 'Layers of espresso-soaked ladyfingers and velvety mascarpone cream, generously dusted with cocoa powder.',
     price: 350,

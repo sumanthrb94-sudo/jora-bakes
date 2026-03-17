@@ -26,7 +26,7 @@ export const AdminProducts = () => {
     name: '',
     description: '',
     price: 0,
-    category: 'cakes',
+    category: 'millet_brownies',
     isAvailable: true,
     stockQuantity: 10,
     images: [''],
@@ -69,7 +69,7 @@ export const AdminProducts = () => {
     } else {
       setEditingId(null);
       setFormData({
-        name: '', description: '', price: 0, category: 'cakes', isAvailable: true, stockQuantity: 10, images: ['']
+        name: '', description: '', price: 0, category: 'millet_brownies', isAvailable: true, stockQuantity: 10, images: ['']
       });
     }
     setIsModalOpen(true);
@@ -227,7 +227,7 @@ export const AdminProducts = () => {
                     <h3 className="font-bold text-[var(--color-chocolate)]">{product.name}</h3>
                     <span className="font-bold text-[var(--color-terracotta)]">₹{product.price}</span>
                   </div>
-                  <p className="text-xs text-gray-500 capitalize mb-2">{product.category}</p>
+                  <p className="text-xs text-gray-500 capitalize mb-2">{product.category.replace('_', ' ')}</p>
                   <div className="flex items-center gap-2">
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${product.isAvailable && (product.stockQuantity === undefined || product.stockQuantity > 0) ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                       {product.isAvailable && (product.stockQuantity === undefined || product.stockQuantity > 0) ? 'In Stock' : 'Out of Stock'}
@@ -281,9 +281,12 @@ export const AdminProducts = () => {
                   </div>
                   <div>
                     <label className="text-xs font-semibold text-gray-500 block mb-1">Category</label>
-                    <select value={formData.category || 'cakes'} onChange={e => setFormData({...formData, category: e.target.value as any})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-[var(--color-terracotta)]">
-                      <option value="cakes">Cakes / Cheesecakes</option>
-                      <option value="brownies">Brownies</option>
+                    <select value={formData.category || 'millet_brownies'} onChange={e => setFormData({...formData, category: e.target.value as any})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-[var(--color-terracotta)]">
+                      <option value="millet_brownies">Millet Brownies</option>
+                      <option value="cheese_cakes">Cheese Cakes</option>
+                      <option value="burnt_basque">Burnt Basque</option>
+                      <option value="cupcakes">Cupcakes</option>
+                      <option value="tiramisu">Tiramisu</option>
                     </select>
                   </div>
                 </div>

@@ -1,17 +1,43 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Montserrat:wght@500&family=Playfair+Display:wght@700&family=Source+Sans+3:wght@400&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-cream: #FFF8E7;
-  --color-beige: #F5F1E6;
-  --color-terracotta: #E07A5F;
-  --color-sage: #87A8A3;
-  --color-chocolate: #5D4037;
-  --color-gold: #D4A574;
+  /* Semantic Color System */
+  --color-bg-primary: #FAF7F2;
+  --color-bg-secondary: #F5F0E8;
+  --color-bg-tertiary: #D4A5A5;
+  --color-surface-elevated: #FFFFFF;
+  --color-text-primary: #2C2C2C;
+  --color-text-secondary: #4A4A3A;
+  --color-text-tertiary: #8B8680;
+  --color-action-primary: #C9A961;
+  --color-action-hover: #B8944F;
+  --color-border-subtle: #E8E2D9;
+  --color-border-focus: #C9A961;
+  --color-success: #7A8B6E;
+  --color-error: #C17A6B;
+  --color-overlay: rgba(44, 44, 44, 0.6);
   
-  --font-script: "Playfair Display", cursive;
-  --font-body: "Inter", sans-serif;
-  --font-sans: "Inter", sans-serif;
+  --font-display: "Playfair Display", serif;
+  --font-heading: "Cormorant Garamond", serif;
+  --font-body: "Source Sans 3", "Source Sans Pro", sans-serif;
+  --font-accent: "Montserrat", sans-serif;
+
+  /* Legacy mappings so existing classes don't break */
+  --font-script: var(--font-display);
+  --font-sans: var(--font-body);
+
+  --color-primary: var(--color-bg-primary);
+  --color-secondary: var(--color-bg-tertiary);
+  --color-tertiary: var(--color-text-secondary);
+  --color-accent: var(--color-action-primary);
+  --color-shadow: var(--color-text-primary);
+  --color-cream: var(--color-bg-secondary);
+  --color-beige: var(--color-bg-primary);
+  --color-chocolate: var(--color-text-primary);
+  --color-terracotta: var(--color-action-primary);
+  --color-sage: var(--color-text-secondary);
+  --color-gold: var(--color-action-hover);
 
   --spacing-xs: 4px;
   --spacing-sm: 8px;
@@ -27,8 +53,9 @@
 
 body {
   font-family: var(--font-body);
-  background-color: var(--color-beige);
-  color: var(--color-chocolate);
+  font-weight: 400;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
   /* Mobile-first constraints */
   max-width: 428px;
   margin: 0 auto;
@@ -36,6 +63,31 @@ body {
   box-shadow: 0 0 20px rgba(0,0,0,0.05);
   position: relative;
   overflow-x: hidden;
+}
+
+@layer base {
+  /* Display / Hero */
+  h1, .font-script {
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+  
+  /* Headings */
+  h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+  }
+  
+  /* Body */
+  p, span, div, input, textarea {
+    font-family: var(--font-body);
+  }
+
+  /* Accents / Labels */
+  label, button, .uppercase, .tracking-wider, .text-xs, .text-[10px] {
+    font-family: var(--font-accent);
+    font-weight: 500;
+  }
 }
 
 /* Hide scrollbar for horizontal scrolling areas */

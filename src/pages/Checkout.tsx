@@ -173,28 +173,28 @@ export const Checkout = () => {
 
   if (step === 3) {
     return (
-      <div className="min-h-screen bg-[var(--color-beige)] flex flex-col items-center w-full max-w-[428px] mx-auto p-6 pt-12 text-center">
+      <div className="min-h-screen bg-[var(--color-primary)] flex flex-col items-center w-full max-w-[428px] mx-auto p-8 pt-16 text-center">
         <motion.div
-          initial={{ scale: 0, rotate: -10 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', damping: 12, stiffness: 100 }}
-          className="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center mb-8 shadow-xl shadow-green-200 shrink-0"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: 'spring', damping: 15, stiffness: 100 }}
+          className="w-24 h-24 rounded-full flex items-center justify-center mb-8 border-[3px] border-[var(--color-accent)] text-[var(--color-accent)] bg-[var(--color-cream)] shadow-lg shadow-[var(--color-accent)]/10 shrink-0"
         >
-          <CheckCircle2 size={40} />
+          <CheckCircle2 size={48} strokeWidth={1.5} />
         </motion.div>
         
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="w-full space-y-2 mb-8"
+          className="w-full space-y-4 mb-10"
         >
-          <div className="inline-block bg-green-100 text-green-700 px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-2">
+          <div className="inline-block border border-[var(--color-accent)] text-[var(--color-accent)] px-5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest mb-1">
             Payment Successful
           </div>
-          <h2 className="font-script text-5xl text-[var(--color-chocolate)] leading-tight">Order Confirmed!</h2>
-          <p className="text-gray-500 text-sm px-4 leading-relaxed">
-            JORA BAKES  has received your order and is getting the oven ready! We've sent your receipt to your WhatsApp.
+          <h2 className="font-script text-5xl text-[var(--color-shadow)] leading-tight">Order Confirmed</h2>
+          <p className="text-[var(--color-tertiary)] text-sm px-4 leading-relaxed font-medium">
+            JORA BAKES has received your order. We are preparing your artisanal treats with care.
           </p>
         </motion.div>
         
@@ -202,40 +202,40 @@ export const Checkout = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white rounded-[32px] p-6 shadow-xl shadow-black/5 w-full mb-8 border border-white relative overflow-hidden"
+          className="bg-[var(--color-cream)] rounded-[32px] p-8 w-full mb-10 border border-[var(--color-secondary)]/30 relative overflow-hidden"
         >
           {/* Decorative background element */}
-          <div className="absolute -top-12 -right-12 w-32 h-32 bg-[var(--color-beige)] rounded-full opacity-50" />
+          <div className="absolute -top-16 -right-16 w-40 h-40 bg-[var(--color-primary)] rounded-full opacity-50 border border-[var(--color-secondary)]/20" />
           
           <div className="relative z-10">
-            <div className="flex justify-between items-start mb-6 gap-2">
+            <div className="flex justify-between items-start mb-8 gap-2">
               <div className="text-left">
-                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Order ID</p>
-                <p className="font-mono font-bold text-[var(--color-chocolate)] text-sm sm:text-base">#{orderId}</p>
+                <p className="text-[10px] text-[var(--color-tertiary)] uppercase font-bold tracking-wider mb-1.5">Order No.</p>
+                <p className="font-mono font-bold text-[var(--color-shadow)] text-sm sm:text-base tracking-wide">#{orderId}</p>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Total Paid</p>
-                <p className="font-bold text-[var(--color-terracotta)] text-xl sm:text-2xl">₹{checkoutState.grandTotal || (cartTotal + 50)}</p>
+                <p className="text-[10px] text-[var(--color-tertiary)] uppercase font-bold tracking-wider mb-1.5">Total Paid</p>
+                <p className="font-bold text-[var(--color-accent)] text-xl sm:text-2xl">₹{checkoutState.grandTotal || (cartTotal + 50)}</p>
               </div>
             </div>
             
-            <div className="space-y-4 pt-6 border-t border-dashed border-gray-100">
+            <div className="space-y-5 pt-6 border-t border-[var(--color-secondary)]/30">
               <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400 font-medium">Status</span>
-                <span className="bg-green-50 text-green-600 px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-xs text-[var(--color-tertiary)] font-bold uppercase tracking-wider">Status</span>
+                <span className="bg-[var(--color-primary)] text-[var(--color-accent)] px-4 py-1.5 rounded-full text-[10px] font-bold flex items-center gap-2 border border-[var(--color-secondary)]/20">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] animate-pulse" />
                   Confirmed
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400 font-medium">Delivery Date</span>
-                <span className="text-xs font-bold text-[var(--color-chocolate)]">
+                <span className="text-xs text-[var(--color-tertiary)] font-bold uppercase tracking-wider">Delivery</span>
+                <span className="text-sm font-bold text-[var(--color-shadow)]">
                   {checkoutState.deliveryDate ? new Date(checkoutState.deliveryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Tomorrow'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400 font-medium">Time Slot</span>
-                <span className="text-xs font-bold text-[var(--color-chocolate)]">
+                <span className="text-xs text-[var(--color-tertiary)] font-bold uppercase tracking-wider">Time</span>
+                <span className="text-sm font-bold text-[var(--color-shadow)]">
                   {checkoutState.deliveryTime || '10 AM - 1 PM'}
                 </span>
               </div>
@@ -251,15 +251,15 @@ export const Checkout = () => {
         >
           <button 
             onClick={() => navigate(`/track?id=${orderId}`)}
-            className="w-full bg-[var(--color-terracotta)] text-white py-5 rounded-2xl font-bold text-lg shadow-lg shadow-orange-200 hover:scale-[1.02] active:scale-[0.98] transition-all"
+            className="w-full bg-[var(--color-shadow)] text-[var(--color-primary)] py-4 rounded-2xl font-bold text-sm uppercase tracking-wider shadow-xl hover:opacity-90 transition-all border border-[var(--color-shadow)]"
           >
             Track My Treats
           </button>
           <button 
             onClick={() => navigate('/')}
-            className="w-full py-4 text-[var(--color-chocolate)] font-bold text-sm hover:bg-white/50 rounded-2xl transition-all"
+            className="w-full py-4 text-[var(--color-tertiary)] font-bold text-sm uppercase tracking-wider hover:text-[var(--color-shadow)] transition-all"
           >
-            Back to Home
+            Back to Menu
           </button>
         </motion.div>
       </div>
