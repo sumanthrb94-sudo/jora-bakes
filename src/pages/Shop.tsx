@@ -107,36 +107,6 @@ export const Shop = () => {
         )}
       </div>
 
-      {/* Floating Cart Bar */}
-      <AnimatePresence>
-        {cartCount > 0 && (
-          <motion.div
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-[72px] left-4 right-4 max-w-[396px] mx-auto z-30"
-          >
-            <div className="bg-[var(--color-terracotta)] text-white rounded-2xl p-4 shadow-xl flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="bg-white/20 p-2 rounded-full">
-                  <ShoppingBag size={20} />
-                </div>
-                <div>
-                  <div className="text-xs font-medium opacity-90">{cartCount} Treat{cartCount > 1 ? 's' : ''}</div>
-                  <div className="font-bold text-lg">₹{cartTotal}</div>
-                </div>
-              </div>
-              <button 
-                onClick={() => window.location.href = '/cart'}
-                className="bg-white text-[var(--color-terracotta)] px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm"
-              >
-                View Box
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <QuickViewModal 
         product={selectedProduct} 
         isOpen={isModalOpen} 

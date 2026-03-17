@@ -59,37 +59,6 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
           className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           referrerPolicy="no-referrer"
         />
-        
-        {/* Functional Zomato-style Add Button */}
-        <div 
-          className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 shadow-lg rounded-xl overflow-hidden"
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-        >
-          {totalQuantityInCart === 0 ? (
-            <button
-              onClick={handleAdd}
-              className="bg-white text-[var(--color-terracotta)] border border-gray-100 px-7 py-2 rounded-xl font-black text-sm hover:bg-gray-50 transition-colors"
-            >
-              ADD
-            </button>
-          ) : (
-            <div className="bg-[var(--color-terracotta)] text-white flex items-center justify-between min-w-[90px] h-[38px]">
-              <button 
-                onClick={handleDecrement}
-                className="w-8 h-full flex items-center justify-center hover:bg-black/10 transition-colors"
-              >
-                <Minus size={16} strokeWidth={3} />
-              </button>
-              <span className="font-bold text-sm px-1">{totalQuantityInCart}</span>
-              <button 
-                onClick={handleIncrement}
-                className="w-8 h-full flex items-center justify-center hover:bg-black/10 transition-colors"
-              >
-                <Plus size={16} strokeWidth={3} />
-              </button>
-            </div>
-          )}
-        </div>
       </div>
 
       <div className="px-2 pb-3 flex flex-col flex-grow text-center">
@@ -106,8 +75,39 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
         </div>
         
         <h3 className="font-bold text-[var(--color-chocolate)] text-sm line-clamp-1 mb-1">{product.name}</h3>
-        <div className="font-bold text-gray-700 text-sm mb-2">₹{product.price}</div>
-        <p className="text-[11px] text-gray-500 line-clamp-2 mt-auto leading-relaxed">{product.description}</p>
+        <p className="text-[11px] text-gray-500 line-clamp-2 leading-relaxed flex-grow">{product.description}</p>
+        <div className="font-bold text-gray-700 text-sm mt-1.5 mb-3">₹{product.price}</div>
+        
+        {/* Functional Zomato-style Add Button */}
+        <div 
+          className="mx-auto"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+        >
+          {totalQuantityInCart === 0 ? (
+            <button
+              onClick={handleAdd}
+              className="bg-white text-[var(--color-terracotta)] border border-gray-200 px-8 py-2 rounded-xl font-black text-sm hover:border-[var(--color-terracotta)] transition-colors shadow-sm"
+            >
+              ADD
+            </button>
+          ) : (
+            <div className="bg-[var(--color-terracotta)] text-white flex items-center justify-between min-w-[100px] h-[38px] rounded-xl shadow-sm overflow-hidden">
+              <button 
+                onClick={handleDecrement}
+                className="w-8 h-full flex items-center justify-center hover:bg-black/10 transition-colors"
+              >
+                <Minus size={16} strokeWidth={3} />
+              </button>
+              <span className="font-bold text-sm px-1">{totalQuantityInCart}</span>
+              <button 
+                onClick={handleIncrement}
+                className="w-8 h-full flex items-center justify-center hover:bg-black/10 transition-colors"
+              >
+                <Plus size={16} strokeWidth={3} />
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </motion.div>
   );
