@@ -62,7 +62,7 @@ export class NotificationService {
             };
 
             const message = statusMessages[currentStatus] || `Your order status is now: ${currentStatus.replace('_', ' ')}`;
-            this.sendLocalNotification(`Order Update #${orderId.slice(-6)}`, message);
+            this.sendLocalNotification(`Order Update #${orderId.slice(-6)}`, message.replace('Zora', 'JORA BAKES '));
           }
         }
         

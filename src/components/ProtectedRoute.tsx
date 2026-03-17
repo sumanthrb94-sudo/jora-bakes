@@ -14,8 +14,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--color-beige)]">
-        <div className="text-[var(--color-terracotta)] font-script text-2xl animate-pulse">
-          Zora is preparing your experience...
+        <div className="text-[var(--color-terracotta)] font-script text-2xl animate-pulse"> 
+          JORA BAKES is preparing your experience...
         </div>
       </div>
     );
@@ -29,7 +29,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
             <User size={40} />
           </div>
           
-          <h1 className="font-script text-5xl text-[var(--color-chocolate)] mb-4">Welcome to Zora</h1>
+          <h1 className="font-script text-5xl text-[var(--color-chocolate)] mb-4">Welcome to JORA BAKES </h1>
           
           <p className="text-[var(--color-chocolate)] opacity-70 text-lg leading-relaxed mb-12 w-full">
             Sign in to explore our artisanal treats and manage your curated orders.

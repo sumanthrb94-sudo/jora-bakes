@@ -24,9 +24,9 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export const CartProvider = ({ children }: { children: ReactNode }) => {
+export const CartProvider = ({ children }: { children: ReactNode }) => { 
   const [cart, setCart] = useState<CartItem[]>(() => {
-    const savedCart = localStorage.getItem('zora_cart');
+    const savedCart = localStorage.getItem('jora_cart');
     if (savedCart) {
       const parsed = JSON.parse(savedCart);
       return parsed.map((item: any) => ({
@@ -38,7 +38,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('zora_cart', JSON.stringify(cart));
+    localStorage.setItem('jora_cart', JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = (
@@ -88,7 +88,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
 
     if (isNew) {
-      toast.success(`Zora is packing your ${product.name}!`);
+      toast.success(`JORA BAKES is packing your ${product.name}!`);
     } else {
       toast.success(`Added more ${product.name} to your box!`);
     }

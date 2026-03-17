@@ -177,7 +177,7 @@ export const Checkout = () => {
           </div>
           <h2 className="font-script text-5xl text-[var(--color-chocolate)] leading-tight">Order Confirmed!</h2>
           <p className="text-gray-500 text-sm px-4 leading-relaxed">
-            Zora has received your order and is getting the oven ready! We've sent your receipt to your WhatsApp.
+            JORA BAKES  has received your order and is getting the oven ready! We've sent your receipt to your WhatsApp.
           </p>
         </motion.div>
         

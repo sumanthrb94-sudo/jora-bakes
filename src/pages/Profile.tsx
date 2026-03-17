@@ -42,7 +42,7 @@ export const Profile = () => {
             <User size={40} />
           </div>
           
-          <h1 className="font-script text-5xl text-[var(--color-chocolate)] mb-4">Join Zora's Circle</h1>
+          <h1 className="font-script text-5xl text-[var(--color-chocolate)] mb-4">Join JORA BAKES 's Circle</h1>
           
           <p className="text-[var(--color-chocolate)] opacity-70 text-lg leading-relaxed mb-12 w-full">
             Log in to track orders, save addresses, and earn loyalty points for free treats!
@@ -104,7 +104,7 @@ export const Profile = () => {
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-2">
               <Star size={20} className="text-yellow-400 fill-yellow-400" />
-              <h3 className="font-bold text-lg">Zora's Circle</h3>
+              <h3 className="font-bold text-lg">JORA BAKES 's Circle</h3>
             </div>
             <div className="flex items-end gap-2 mb-4">
               <span className="text-4xl font-black">{profile?.points || 0}</span>

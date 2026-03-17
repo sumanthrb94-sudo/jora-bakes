@@ -36,8 +36,8 @@ export const Home = () => {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             className="font-script text-6xl text-white drop-shadow-lg mb-4"
-          >
-            Zora Bakes
+          > 
+            JORA BAKES 
           </motion.h1>
           <motion.p 
             initial={{ y: 20, opacity: 0 }}
@@ -135,7 +135,7 @@ export const Home = () => {
           <h2 className="font-script text-4xl text-[var(--color-terracotta)] mb-2">Baker's Choice</h2>
           <h3 className="text-xl font-bold text-[var(--color-chocolate)] mb-3">Lemon Blueberry Loaf</h3>
           <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-            "This week I'm loving our zesty lemon loaf. It's the perfect companion for your evening tea. The blueberries are fresh from the local market!" - Zora
+            "This week I'm loving our zesty lemon loaf. It's the perfect companion for your evening tea. The blueberries are fresh from the local market!" - JORA BAKES 
           </p>
           <button 
             onClick={() => {
@@ -152,7 +152,7 @@ export const Home = () => {
 
       {/* Footer */}
       <footer className="bg-[var(--color-chocolate)] text-[var(--color-beige)] py-10 px-6 text-center">
-        <h2 className="font-script text-4xl mb-4 text-[var(--color-terracotta)]">Zora Bakes</h2>
+        <h2 className="font-script text-4xl mb-4 text-[var(--color-terracotta)]">JORA BAKES </h2>
         <p className="text-sm opacity-80 mb-6">Homemade with love by our bakers in Bangalore.</p>
         
         <div className="flex flex-col gap-4 items-center text-sm opacity-90 mb-8">
@@ -167,7 +167,7 @@ export const Home = () => {
         </div>
         
         <div className="text-xs opacity-50">
-          &copy; {new Date().getFullYear()} Zora Bakes. All rights reserved.
+          &copy; {new Date().getFullYear()} JORA BAKES . All rights reserved.
         </div>
       </footer>
 

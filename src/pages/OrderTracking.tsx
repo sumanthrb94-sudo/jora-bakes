@@ -221,7 +221,7 @@ export const OrderTracking = () => {
               <Package size={40} />
             </div>
             <h3 className="text-xl font-bold text-[var(--color-chocolate)] mb-2">Where are your treats?</h3>
-            <p className="text-gray-500 text-sm">Enter your order ID from your confirmation WhatsApp to see real-time updates from Zora's kitchen.</p>
+            <p className="text-gray-500 text-sm">Enter your order ID from your confirmation WhatsApp to see real-time updates from JORA BAKES 's kitchen.</p>
           </div>
         )}
 
