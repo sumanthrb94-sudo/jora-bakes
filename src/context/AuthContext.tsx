@@ -3,18 +3,7 @@ import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { auth, loginWithGoogle, logout as firebaseLogout } from '../firebase';
 import { getDocument, createDocument, updateDocument } from '../services/firestore';
 import { NotificationService } from '../services/NotificationService';
-import { Address } from '../types';
-
-interface UserProfile {
-  uid: string;
-  email: string;
-  name: string;
-  role: 'admin' | 'customer';
-  points: number;
-  createdAt: string;
-  addresses?: Address[];
-  phone?: string;
-}
+import { UserProfile, Address } from '../types';
 
 interface AuthContextType {
   user: FirebaseUser | null;

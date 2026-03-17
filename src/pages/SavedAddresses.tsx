@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { MapPin, Plus, Trash2, Home, Briefcase, Gift, ArrowLeft, Check } from 'lucide-react';
-import { Address } from '../types';
+import { Address } from '../types'; // Ensure Address is imported from types.ts
 import toast from 'react-hot-toast';
 
 export const SavedAddresses = () => {

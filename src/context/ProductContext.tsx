@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
-import { Product } from '../types';
 import { subscribeToCollection, createDocument } from '../services/firestore';
+import { Product } from '../types'; // Import Product from types.ts
 import { products as initialProducts } from '../data/products';
 import { useAuth } from './AuthContext';
 

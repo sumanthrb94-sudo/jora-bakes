@@ -1,35 +1,23 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirestore, doc, getDocFromCache, getDocFromServer } from 'firebase/firestore';
-import firebaseConfig from '../firebase-applet-config.json';
+
+// Your web app's Firebase configuration
+// This configuration includes the project ID "gen-lang-client-0753950904"
+const firebaseConfig = {
+  apiKey: "AIzaSyC_ciJWsHoUvBHEkeUOUZ-Bu6wnX-tnGw",
+  authDomain: "gen-lang-client-0753950904.firebaseapp.com",
+  projectId: "gen-lang-client-0753950904",
+  storageBucket: "gen-lang-client-0753950904.firebasestorage.app",
+  messagingSenderId: "20483674637",
+  appId: "1:20483674637:web:d75741d6023f8e517bbb44",
+  firestoreDatabaseId: "ai-studio-b35406e0-0fe9-4f0d-a34d-b78e3c5d10cf" // Retained from firebase-applet-config.json
+};
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
-
-// Connection test with retry
-export const checkDbConnection = async (retries = 3): Promise<boolean> => {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const { getDocs, collection, query, limit } = await import('firebase/firestore');
-      // Try to list products (likely to exist and be readable)
-      const q = query(collection(db, 'products'), limit(1));
-      const connectionPromise = getDocs(q);
-      const timeoutPromise = new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error('Timeout')), 5000)
-      );
-      await Promise.race([connectionPromise, timeoutPromise]);
-      console.log("Database connection verified via products collection.");
-      return true;
-    } catch (error) {
-      console.warn(`Database connection attempt ${i + 1} failed:`, error);
-      if (i < retries - 1) await new Promise(resolve => setTimeout(resolve, 2000));
-    }
-  }
-  return false;
-};
-
 export const loginWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
