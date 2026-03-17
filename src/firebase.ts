@@ -5,7 +5,7 @@ import { getFirestore, doc, getDocFromCache, getDocFromServer } from 'firebase/f
 // Your web app's Firebase configuration
 // This configuration includes the project ID "gen-lang-client-0753950904"
 const firebaseConfig = {
-  apiKey: "AIzaSyC_ciJWsHoUvBHEkeUOUZ-Bu6wnX-tnGw",
+  apiKey: "AIzaSyC_ciJWsHoUvBHEkeUOUZ-Buq6wnX-tnGw", // PASTE THE KEY FROM FIREBASE CONSOLE HERE
   authDomain: "gen-lang-client-0753950904.firebaseapp.com",
   projectId: "gen-lang-client-0753950904",
   storageBucket: "gen-lang-client-0753950904.firebasestorage.app",
