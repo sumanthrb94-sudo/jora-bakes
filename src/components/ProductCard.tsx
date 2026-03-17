@@ -16,26 +16,43 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
   const itemsInCart = cart.filter(item => item.product.id === product.id);
   const totalQuantityInCart = itemsInCart.reduce((sum, item) => sum + item.quantity, 0);
 
+  // Get a reference to the specific cart item to handle exact increment/decrement natively
+  const cartItem = itemsInCart.length === 1 ? itemsInCart[0] : null;
+
   const handleAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
-    // Always open the quick view to manage variants and quantity
-    onQuickView(product);
+    // Instantly add the default (first) variant to make the ADD button fast and frictionless
+    addToCart(product, 1, product.variants[0]);
+  };
+
+  const handleIncrement = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (itemsInCart.length > 1 || !cartItem) {
+      onQuickView(product); // Open modal only if they have multiple different variants of this product in cart
+    } else {
+      updateQuantity(cartItem.id, cartItem.quantity + 1);
+    }
+  };
+
+  const handleDecrement = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (itemsInCart.length > 1 || !cartItem) {
+      onQuickView(product);
+    } else {
+      updateQuantity(cartItem.id, cartItem.quantity - 1);
+    }
   };
 
   return (
     <motion.div 
-      whileHover={{ y: -4, boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' }}
+      whileHover={{ y: -4, boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)' }}
       onClick={() => onQuickView(product)}
-      className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 relative cursor-pointer flex flex-col h-full transition-shadow duration-300"
+      className="bg-white rounded-3xl p-2 shadow-sm border border-gray-100 relative cursor-pointer flex flex-col h-full transition-all duration-300"
     >
-      {product.isEggless && (
-        <div className="absolute top-3 left-3 z-10 bg-green-100/90 backdrop-blur-sm text-green-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
-          <div className="w-2 h-2 rounded-full bg-green-500"></div>
-          100% Eggless
-        </div>
-      )}
-
-      <div className="aspect-[16/10] overflow-hidden bg-gray-50 relative">
+      <div className="aspect-square rounded-2xl overflow-hidden bg-gray-50 relative mb-3">
         <img 
           src={product.images[0]} 
           alt={product.name}
@@ -43,50 +60,54 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
           referrerPolicy="no-referrer"
         />
         
-        {/* Floating Quick Add Button (only shows when quantity is 0) */}
-        <AnimatePresence>
-          {totalQuantityInCart === 0 && (
-            <motion.button
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={(e) => { e.stopPropagation(); onQuickView(product); }}
-              className="absolute bottom-3 right-3 w-10 h-10 bg-[var(--color-terracotta)] text-white rounded-full flex items-center justify-center shadow-lg hover:bg-opacity-90 z-20"
+        {/* Functional Zomato-style Add Button */}
+        <div 
+          className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 shadow-lg rounded-xl overflow-hidden"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+        >
+          {totalQuantityInCart === 0 ? (
+            <button
+              onClick={handleAdd}
+              className="bg-white text-[var(--color-terracotta)] border border-gray-100 px-7 py-2 rounded-xl font-black text-sm hover:bg-gray-50 transition-colors"
             >
-              <Plus size={20} />
-            </motion.button>
+              ADD
+            </button>
+          ) : (
+            <div className="bg-[var(--color-terracotta)] text-white flex items-center justify-between min-w-[90px] h-[38px]">
+              <button 
+                onClick={handleDecrement}
+                className="w-8 h-full flex items-center justify-center hover:bg-black/10 transition-colors"
+              >
+                <Minus size={16} strokeWidth={3} />
+              </button>
+              <span className="font-bold text-sm px-1">{totalQuantityInCart}</span>
+              <button 
+                onClick={handleIncrement}
+                className="w-8 h-full flex items-center justify-center hover:bg-black/10 transition-colors"
+              >
+                <Plus size={16} strokeWidth={3} />
+              </button>
+            </div>
           )}
-        </AnimatePresence>
+        </div>
       </div>
 
-      <div className="p-4 flex flex-col flex-grow">
-        <div className="text-xs text-gray-500 mb-1">{product.weight}</div>
-        <h3 className="font-semibold text-[var(--color-chocolate)] text-sm line-clamp-1 mb-1">{product.name}</h3>
-        <p className="text-xs text-gray-500 line-clamp-2 mb-3 flex-grow">{product.description}</p>
-        
-        <div className="flex items-center justify-between mt-auto h-8">
-          <div className="font-bold text-[var(--color-chocolate)]">
-            ₹{product.price}
-          </div>
-          
-          <AnimatePresence mode="wait">
-            {totalQuantityInCart > 0 ? (
-              <motion.button 
-                key="options"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleAdd}
-                className="bg-[var(--color-sage)] text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm"
-              >
-                {totalQuantityInCart} in box
-              </motion.button>
-            ) : (
-              <motion.div key="empty" className="w-8" /> /* Placeholder to keep layout stable */
-            )}
-          </AnimatePresence>
+      <div className="px-2 pb-3 flex flex-col flex-grow text-center">
+        <div className="flex items-center justify-center gap-1.5 mb-1.5">
+          {/* Pure Veg Indicator */}
+          {product.isEggless && (
+            <div className="w-3.5 h-3.5 border-2 border-green-600 rounded-sm flex items-center justify-center">
+              <div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
+            </div>
+          )}
+          {product.variants.length > 1 && (
+            <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-1.5 py-0.5 rounded">Customizable</span>
+          )}
         </div>
+        
+        <h3 className="font-bold text-[var(--color-chocolate)] text-sm line-clamp-1 mb-1">{product.name}</h3>
+        <div className="font-bold text-gray-700 text-sm mb-2">₹{product.price}</div>
+        <p className="text-[11px] text-gray-500 line-clamp-2 mt-auto leading-relaxed">{product.description}</p>
       </div>
     </motion.div>
   );

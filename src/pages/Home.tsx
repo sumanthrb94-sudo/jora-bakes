@@ -12,9 +12,6 @@ export const Home = () => {
   const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const featuredProducts = products.filter(p => p.isBestSeller);
-  const newArrivals = products.filter(p => p.isNew);
-
   const handleQuickView = (product: Product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
@@ -72,7 +69,7 @@ export const Home = () => {
       {/* Seasonal Banner */}
       <section className="bg-[var(--color-terracotta)] text-white py-3 px-4 text-center flex items-center justify-center gap-2">
         <Sparkles size={16} className="text-[var(--color-gold)]" />
-        <span className="text-sm font-medium">Spring Collection is here! Treat yourself to our new Lemon Lavender cookies.</span>
+        <span className="text-sm font-medium">Our curated menu is live! Try our guilt-free Millet Brownies.</span>
       </section>
 
       {/* Categories */}
@@ -85,16 +82,15 @@ export const Home = () => {
         </div>
         <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-4 -mx-4 px-4 snap-x">
           {[
-            { name: 'Cakes', img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=200' },
-            { name: 'Brownies', img: 'https://images.unsplash.com/photo-1461009112677-30cf7d86a48f?auto=format&fit=crop&q=80&w=200' },
-            { name: 'Cookies', img: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&q=80&w=200' },
-            { name: 'Bread', img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=200' },
-            { name: 'Loaves', img: 'https://images.unsplash.com/photo-1534620808146-d33bb39128b2?auto=format&fit=crop&q=80&w=200' },
-            { name: 'Custom', img: 'https://images.unsplash.com/photo-1486427944299-d1955d23e34d?auto=format&fit=crop&q=80&w=200' }
+            { name: 'Brownies', category: 'brownies', img: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&q=80&w=200' },
+            { name: 'Cheesecakes', category: 'cakes', img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&q=80&w=200' },
+            { name: 'Burnt Basque', category: 'cakes', img: 'https://images.unsplash.com/photo-1650302525164-32b0c1ecac6e?auto=format&fit=crop&q=80&w=200' },
+            { name: 'Cupcakes', category: 'cakes', img: 'https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?auto=format&fit=crop&q=80&w=200' },
+            { name: 'Tiramisu', category: 'cakes', img: 'https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&q=80&w=200' }
           ].map((cat, i) => (
             <Link 
               key={cat.name} 
-              to={`/shop?category=${cat.name.toLowerCase()}`}
+              to={`/shop?category=${cat.category}`}
               className="snap-start shrink-0 flex flex-col items-center gap-3"
             >
               <div className="w-20 h-20 rounded-full bg-[var(--color-beige)] border-2 border-[var(--color-cream)] shadow-sm flex items-center justify-center overflow-hidden">
@@ -114,13 +110,13 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Our Menu */}
       <section className="py-8 px-4 bg-[var(--color-beige)]">
         <div className="flex justify-between items-end mb-6">
-          <h2 className="font-script text-4xl text-[var(--color-chocolate)]">Fan Favorites</h2>
+          <h2 className="font-script text-4xl text-[var(--color-chocolate)]">Our Menu</h2>
         </div>
         <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-4 -mx-4 px-4 snap-x">
-          {featuredProducts.map((product) => (
+          {products.map((product) => (
             <div key={product.id} className="snap-start shrink-0 w-[240px]">
               <ProductCard product={product} onQuickView={handleQuickView} />
             </div>
@@ -133,9 +129,9 @@ export const Home = () => {
         <div className="bg-[var(--color-cream)] rounded-3xl p-6 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--color-sage)] opacity-10 rounded-bl-full" />
           <h2 className="font-script text-4xl text-[var(--color-terracotta)] mb-2">Baker's Choice</h2>
-          <h3 className="text-xl font-bold text-[var(--color-chocolate)] mb-3">Lemon Blueberry Loaf</h3>
+          <h3 className="text-xl font-bold text-[var(--color-chocolate)] mb-3">Signature Tiramisu</h3>
           <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-            "This week I'm loving our zesty lemon loaf. It's the perfect companion for your evening tea. The blueberries are fresh from the local market!" - JORA BAKES 
+            "This week I'm absolutely loving our Signature Tiramisu. The balance of espresso and velvety mascarpone is the perfect afternoon pick-me-up!" - JORA BAKES 
           </p>
           <button 
             onClick={() => {
