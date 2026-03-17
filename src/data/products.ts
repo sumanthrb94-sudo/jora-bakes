@@ -59,12 +59,12 @@ export const products: Product[] = [
       { id: 'v5', flavor: 'Lemon', priceModifier: 0, weight: '6-inch' },
       { id: 'v6', flavor: 'Lemon', priceModifier: 600, weight: '1kg' },
     ],
-    isEggless: true,
+    isEggless: true, 
     isAvailable: true, 
     bakeTime: 'Made fresh daily',
-    allergens: ['dairy', 'gluten'],
+    allergens: ['dairy', 'gluten'], // Removed 'eggs'
     images: ['https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&q=80&w=800'],
-    ingredients: ['Flour', 'Butter', 'Sugar', 'Fresh Lemons'],
+    ingredients: ['Flour', 'Butter', 'Sugar', 'Fresh Lemons'], // Removed 'Eggs'
     shelfLife: '4 days',
     storage: 'Store in an airtight container at room temperature.',
     pairings: ['Earl Grey Tea'],
@@ -129,12 +129,12 @@ export const products: Product[] = [
       { id: 'v11', flavor: 'Salted Caramel', priceModifier: 0, weight: 'Box of 4' },
       { id: 'v12', flavor: 'Salted Caramel', priceModifier: 200, weight: 'Box of 6' }
     ],
-    isEggless: true,
+    isEggless: true, 
     isAvailable: true, 
     bakeTime: 'Made fresh daily',
-    allergens: ['dairy', 'gluten'],
+    allergens: ['dairy', 'gluten'], // Removed 'eggs'
     images: ['https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&q=80&w=800'],
-    ingredients: ['Dark Chocolate', 'Butter', 'Sugar', 'Flour', 'Caramel', 'Sea Salt'],
+    ingredients: ['Dark Chocolate', 'Butter', 'Sugar', 'Flour', 'Caramel', 'Sea Salt'], // Removed 'Eggs'
     shelfLife: '5 days',
     storage: 'Store in an airtight container at room temperature.',
     pairings: ['Black Coffee'],
@@ -199,12 +199,12 @@ export const products: Product[] = [
       { id: 'v17', flavor: 'Almond', priceModifier: 0, weight: 'Pack of 6' },
       { id: 'v18', flavor: 'Almond', priceModifier: 250, weight: 'Pack of 12' }
     ],
-    isEggless: true,
+    isEggless: true, 
     isAvailable: true, 
     bakeTime: 'Made fresh daily',
-    allergens: ['nuts', 'dairy', 'gluten'],
+    allergens: ['nuts', 'dairy', 'gluten'], // Removed 'eggs'
     images: ['https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&q=80&w=800'],
-    ingredients: ['Flour', 'Sugar', 'Almonds', 'Vanilla'],
+    ingredients: ['Flour', 'Sugar', 'Almonds', 'Vanilla'], // Removed 'Eggs'
     shelfLife: '2 weeks',
     storage: 'Store in an airtight container at room temperature.',
     pairings: ['Espresso', 'Vin Santo'],

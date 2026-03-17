@@ -13,6 +13,7 @@ export const Profile = () => {
     { icon: Bell, label: 'Notifications', desc: 'Order updates and alerts', path: '/notifications' },
     { icon: MapPin, label: 'Saved Addresses', desc: 'Manage delivery locations', path: '/addresses' },
     { icon: Settings, label: 'Account Settings', desc: 'Password, notifications, preferences', path: '/settings' },
+    ...(isAdmin ? [{ icon: User, label: 'Admin Dashboard', desc: 'Manage orders, users, and products', path: '/admin' }] : []),
   ];
 
   const handleLogout = async () => {

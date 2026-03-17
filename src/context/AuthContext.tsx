@@ -36,7 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               uid: firebaseUser.uid,
               email: firebaseUser.email || '',
               name: firebaseUser.displayName || 'JORA BAKES Guest',
-              role: firebaseUser.email === 'sumanthrb94@gmail.com' ? 'admin' : 'customer',
+              role: firebaseUser.email === 'sumanthbolla97@gmail.com' ? 'admin' : 'customer',
               points: 0,
               createdAt: new Date().toISOString(),
             };
@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             uid: firebaseUser.uid,
             email: firebaseUser.email || '',
             name: firebaseUser.displayName || 'JORA BAKES Guest',
-            role: firebaseUser.email === 'sumanthrb94@gmail.com' ? 'admin' : 'customer',
+            role: firebaseUser.email === 'sumanthbolla97@gmail.com' ? 'admin' : 'customer',
             points: 0,
             createdAt: new Date().toISOString(),
           });
