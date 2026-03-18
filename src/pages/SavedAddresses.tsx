@@ -10,6 +10,7 @@ export const SavedAddresses = () => {
   const { profile, updateProfile } = useAuth();
   const navigate = useNavigate();
   const [isAdding, setIsAdding] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [newAddress, setNewAddress] = useState<Partial<Address>>({
     label: 'Home',
     street: '',
@@ -27,20 +28,28 @@ export const SavedAddresses = () => {
       return;
     }
 
-    const addressToAdd: Address = {
-      id: Math.random().toString(36).substr(2, 9),
-      label: newAddress.label as any,
-      street: newAddress.street!,
-      city: newAddress.city!,
-      pincode: newAddress.pincode!,
-      instructions: newAddress.instructions
-    };
+    setIsSaving(true);
+    try {
+      const addressToAdd: Address = {
+        id: Math.random().toString(36).substr(2, 9),
+        label: newAddress.label as any,
+        street: newAddress.street!,
+        city: newAddress.city!,
+        pincode: newAddress.pincode!,
+        instructions: newAddress.instructions
+      };
 
-    const updatedAddresses = [...addresses, addressToAdd];
-    await updateProfile({ addresses: updatedAddresses });
-    setIsAdding(false);
-    setNewAddress({ label: 'Home', street: '', city: '', pincode: '', instructions: '' });
-    toast.success('Address added successfully');
+      const updatedAddresses = [...addresses, addressToAdd];
+      await updateProfile({ addresses: updatedAddresses });
+      setIsAdding(false);
+      setNewAddress({ label: 'Home', street: '', city: '', pincode: '', instructions: '' });
+      toast.success('Address added successfully');
+    } catch (error: any) {
+      console.error("Failed to save address:", error);
+      toast.error(error.message?.includes('permission') ? "Permission denied. Check Rules!" : "Failed to save address");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleDeleteAddress = async (id: string) => {
@@ -217,9 +226,14 @@ export const SavedAddresses = () => {
                   </button>
                   <button 
                     type="submit"
-                    className="flex-1 py-4 rounded-2xl font-bold text-white bg-[var(--color-terracotta)] shadow-lg"
+                    disabled={isSaving}
+                    className="flex-1 py-4 rounded-2xl font-bold text-white bg-[var(--color-terracotta)] shadow-lg disabled:opacity-70 flex items-center justify-center"
                   >
-                    Save Address
+                    {isSaving ? (
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      'Save Address'
+                    )}
                   </button>
                 </div>
               </form>

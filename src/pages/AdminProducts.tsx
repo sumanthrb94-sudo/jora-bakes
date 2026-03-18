@@ -95,9 +95,9 @@ export const AdminProducts = () => {
         const storageRef = ref(storage, `products/${Date.now()}_${imageFile.name}`);
         const snapshot = await uploadBytes(storageRef, imageFile);
         imageUrl = await getDownloadURL(snapshot.ref);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Image upload failed:", error);
-        toast.error("Failed to upload image.");
+        toast.error(error.message?.includes('permission') ? "Storage permission denied. Check Rules!" : "Failed to upload image.");
         setIsSaving(false);
         return;
       }

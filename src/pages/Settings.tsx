@@ -25,24 +25,32 @@ export const Settings = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    try {
-      let photoURL = profile?.photoURL;
-      
-      if (imageFile) {
+
+    let photoURL = profile?.photoURL;
+    
+    if (imageFile) {
+      try {
         const storageRef = ref(storage, `users/${user?.uid}/profile_${Date.now()}`);
         const snapshot = await uploadBytes(storageRef, imageFile);
         photoURL = await getDownloadURL(snapshot.ref);
+      } catch (uploadError: any) {
+        console.error("Image upload failed:", uploadError);
+        toast.error(uploadError.message?.includes('permission') ? "Storage permission denied. Check Rules!" : "Failed to upload image.");
+        setSaving(false);
+        return; // Stop execution here
       }
+    }
 
+    try {
       const updateData: any = { name, phone };
       if (photoURL) updateData.photoURL = photoURL;
 
       await updateProfile(updateData);
       toast.success('Profile updated successfully!');
       navigate('/profile');
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating profile:", error);
-      toast.error('Failed to update profile');
+      toast.error(error.message?.includes('permission') ? "Database permission denied. Check Rules!" : "Failed to update profile");
     } finally {
       setSaving(false);
     }
