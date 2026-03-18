@@ -17,7 +17,7 @@ export const AdminProducts = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,9 +87,10 @@ export const AdminProducts = () => {
       return;
     }
 
+    setIsSaving(true);
+
     let imageUrl = formData.images?.[0] || '';
     if (imageFile) {
-      setUploadingImage(true);
       try {
         const storageRef = ref(storage, `products/${Date.now()}_${imageFile.name}`);
         const snapshot = await uploadBytes(storageRef, imageFile);
@@ -97,10 +98,9 @@ export const AdminProducts = () => {
       } catch (error) {
         console.error("Image upload failed:", error);
         toast.error("Failed to upload image.");
-        setUploadingImage(false);
+        setIsSaving(false);
         return;
       }
-      setUploadingImage(false);
     }
 
     const productData = { ...formData, images: [imageUrl] };
@@ -123,9 +123,15 @@ export const AdminProducts = () => {
         toast.success('Product created successfully!');
       }
       setIsModalOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving product:", error);
-      toast.error("Failed to save product.");
+      if (error.message && error.message.includes('permission')) {
+        toast.error("Permission denied. Check Firestore Rules!");
+      } else {
+        toast.error("Failed to save product.");
+      }
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -318,8 +324,8 @@ export const AdminProducts = () => {
                   <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-4 bg-gray-100 text-gray-600 font-bold rounded-xl">
                     Cancel
                   </button>
-                  <button type="submit" disabled={uploadingImage} className="flex-1 py-4 bg-[var(--color-terracotta)] text-white font-bold rounded-xl shadow-lg disabled:opacity-50 flex items-center justify-center">
-                    {uploadingImage ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Save Item'}
+                  <button type="submit" disabled={isSaving} className="flex-1 py-4 bg-[var(--color-terracotta)] text-white font-bold rounded-xl shadow-lg disabled:opacity-50 flex items-center justify-center">
+                    {isSaving ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : 'Save Item'}
                   </button>
                 </div>
               </form>

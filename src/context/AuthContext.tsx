@@ -21,6 +21,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Add any new admin email addresses to this list inside the quotes
+const ADMIN_EMAILS = ['sumanthbolla97@gmail.com', 'sumanthrb94@gmail.com', 'newadmin@gmail.com'];
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -42,7 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               uid: firebaseUser.uid,
               email: firebaseUser.email || '',
               name: firebaseUser.displayName || 'JORA BAKES Guest',
-              role: firebaseUser.email === 'sumanthbolla97@gmail.com' ? 'admin' : 'customer',
+              role: ADMIN_EMAILS.includes(firebaseUser.email || '') ? 'admin' : 'customer',
               points: 0,
               createdAt: new Date().toISOString(),
             };
@@ -52,20 +55,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setProfile(userProfile);
         } catch (err) {
           console.error("Failed to fetch profile, using fallback:", err);
-          setProfile({
+          let fallbackProfile: UserProfile = {
             uid: firebaseUser.uid,
             email: firebaseUser.email || '',
             name: firebaseUser.displayName || 'JORA BAKES Guest',
-            role: firebaseUser.email === 'sumanthbolla97@gmail.com' ? 'admin' : 'customer',
+            role: ADMIN_EMAILS.includes(firebaseUser.email || '') ? 'admin' : 'customer',
             points: 0,
             createdAt: new Date().toISOString(),
-          });
+          };
+          setProfile(fallbackProfile);
+          userProfile = fallbackProfile; // ensure notifications initialize properly
         }
 
         // Initialize Notifications
         try {
           NotificationService.requestPermission();
-          const isAdminUser = firebaseUser.email === 'sumanthbolla97@gmail.com';
+          const isAdminUser = userProfile?.role === 'admin' || ADMIN_EMAILS.includes(firebaseUser.email || '');
           notificationUnsubscribe = NotificationService.listenToOrderUpdates(firebaseUser.uid, isAdminUser);
         } catch (err) {
           console.warn("Notification service failed to initialize:", err);

@@ -43,6 +43,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       else if (error.code === 'auth/email-already-in-use') msg = "Email is already in use";
       else if (error.code === 'auth/weak-password') msg = "Password should be at least 6 characters";
       toast.error(msg);
+    } finally {
       setIsEmailLoading(false);
     }
   };
@@ -52,8 +53,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     try {
       await login();
     } catch (error) {
-      setIsGoogleLoading(false);
       toast.error("Google login failed.");
+    } finally {
+      setIsGoogleLoading(false);
     }
   };
 
