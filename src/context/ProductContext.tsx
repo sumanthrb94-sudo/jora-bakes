@@ -22,16 +22,9 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
       'products', 
       (data) => {
         if (data.length === 0) {
-          if (isAdmin) {
-            // Seed initial data if admin
-            initialProducts.forEach(async (p) => {
-              await createDocument('products', p, p.id);
-            });
-          } else {
-            // Use local data if Firestore is empty and not admin
-            setProducts(initialProducts);
-            setLoading(false);
-          }
+          // If database is empty, just show empty products. Admin can manually seed from Admin Dashboard.
+          setProducts([]);
+          setLoading(false);
         } else {
           setProducts(data);
           setLoading(false);
