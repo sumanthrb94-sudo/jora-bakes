@@ -145,86 +145,23 @@ export const OrderTracking = () => {
         )}
 
         {order && (
-          <>
-            {/* Order Summary Card */}
+          <div className="space-y-4">
+            {/* Delivery Status & Timeline */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-3xl p-6 shadow-sm"
+              className="bg-white rounded-3xl p-6 shadow-sm border-t-4 border-t-[var(--color-terracotta)]"
             >
-              <div className="flex justify-between items-start mb-4">
+              <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h2 className="text-lg font-bold text-[var(--color-chocolate)]">#{order.id}</h2>
-                  <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleString()}</p>
+                  <h2 className="text-xl font-bold text-[var(--color-chocolate)] mb-1">
+                    {order.status === 'delivered' ? 'Delivered on' : 'Arriving by'}
+                  </h2>
+                  <p className="text-lg font-semibold text-[var(--color-terracotta)]">
+                    {new Date(order.deliveryDate).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">Slot: {order.deliverySlot}</p>
                 </div>
-                <div className="bg-[var(--color-beige)] text-[var(--color-terracotta)] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                  {order.paymentMethod || 'PAID'}
-                </div>
-              </div>
-              
-              <div className="border-t border-gray-100 pt-4">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Estimated Delivery</h3>
-                <p className="font-medium text-[var(--color-chocolate)]">
-                  {new Date(order.deliveryDate).toLocaleDateString()} | {order.deliverySlot}
-                </p>
-              </div>
-
-              {/* Customer Details */}
-              {order.customer && (
-                <div className="border-t border-gray-100 pt-4 mt-4">
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Delivery Details</h3>
-                  <p className="font-medium text-[var(--color-chocolate)] text-sm">{order.customer.name}</p>
-                  <p className="text-sm text-gray-600">{order.customer.phone}</p>
-                  <p className="text-sm text-gray-600 mt-1">{order.address?.street}</p>
-                  {order.address?.instructions && (
-                    <p className="text-xs text-gray-500 mt-1 italic">Note: {order.address.instructions}</p>
-                  )}
-                </div>
-              )}
-
-              {/* Bill Details */}
-              {order.items && order.items.length > 0 && (
-                <div className="border-t border-gray-100 pt-4 mt-4">
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Bill Details</h3>
-                  <div className="space-y-3">
-                    {order.items.map((item: any, index: number) => {
-                      const itemPrice = item.product.price + item.variant.priceModifier;
-                      const itemTotal = (itemPrice + (item.isGiftWrap ? 100 : 0)) * item.quantity;
-                      return (
-                        <div key={index} className="flex justify-between items-start">
-                          <div className="flex-1 pr-4">
-                            <p className="font-medium text-sm text-[var(--color-chocolate)]">
-                              {item.quantity}x {item.product.name}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-0.5">
-                              {item.variant.weight} - {item.variant.flavor}
-                              {item.isGiftWrap && <span className="text-[var(--color-terracotta)] font-medium"> (Gift Wrapped +₹100)</span>}
-                            </p>
-                          </div>
-                          <div className="text-sm font-semibold text-[var(--color-chocolate)] whitespace-nowrap">
-                            ₹{itemTotal}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div className="border-t border-dashed border-gray-200 mt-4 pt-4 flex justify-between items-center">
-                    <span className="font-bold text-[var(--color-chocolate)]">Total Amount</span>
-                    <span className="font-bold text-[var(--color-terracotta)] text-lg">₹{order.total}</span>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-
-            {/* Tracking Timeline */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-white rounded-3xl p-6 shadow-sm"
-            >
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="font-bold text-[var(--color-chocolate)]">Order Status</h3>
                 {isAdmin && (
                   <button 
                     onClick={handleNextStatus}
@@ -280,7 +217,73 @@ export const OrderTracking = () => {
                 </div>
               </div>
             </motion.div>
-          </>
+
+            {/* Package Items */}
+            {order.items && order.items.length > 0 && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-white rounded-3xl p-6 shadow-sm"
+              >
+                <h3 className="text-sm font-bold text-gray-800 mb-4">Package Details</h3>
+                <div className="space-y-4">
+                  {order.items.map((item: any, index: number) => (
+                    <div key={index} className="flex gap-4 items-center">
+                      <div className="w-16 h-16 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0">
+                        {item.product?.images?.[0] ? (
+                          <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <Package className="w-6 h-6 m-5 text-gray-300" />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-sm text-[var(--color-chocolate)] line-clamp-1">{item.product.name}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">Qty: {item.quantity} • {item.variant.flavor}</p>
+                        {item.isGiftWrap && <p className="text-[10px] text-[var(--color-terracotta)] font-medium mt-1">🎁 Gift Wrapped</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Order Info (Minimal) */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-3xl p-6 shadow-sm"
+            >
+              <h3 className="text-sm font-bold text-gray-800 mb-4">Order Info</h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Order ID</span>
+                  <span className="font-medium text-[var(--color-chocolate)]">#{order.id}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Order Date</span>
+                  <span className="font-medium text-[var(--color-chocolate)]">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Payment</span>
+                  <span className="font-medium text-gray-700 uppercase">{order.paymentMethod || 'PAID'}</span>
+                </div>
+                <div className="flex justify-between font-bold">
+                  <span className="text-[var(--color-chocolate)]">Total Amount</span>
+                  <span className="text-[var(--color-terracotta)]">₹{order.total}</span>
+                </div>
+                <div className="pt-3 mt-3 border-t border-gray-100 flex justify-between items-start">
+                  <span className="text-gray-500">Delivering to</span>
+                  <div className="text-right">
+                    <span className="font-medium text-[var(--color-chocolate)] block">{order.customer?.name}</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         )}
 
         {!order && !loading && !error && (

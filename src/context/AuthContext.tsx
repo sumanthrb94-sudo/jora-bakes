@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
-import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
+import { User as FirebaseUser, onAuthStateChanged, updateProfile as updateFirebaseProfile } from 'firebase/auth';
 import { auth, loginWithGoogle, logout as firebaseLogout, loginWithEmail as firebaseLoginEmail, registerWithEmail as firebaseRegisterEmail } from '../firebase';
 import { getDocument, createDocument, updateDocument } from '../services/firestore';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 import { NotificationService } from '../services/NotificationService';
 import { UserProfile, Address } from '../types';
 
@@ -12,7 +14,7 @@ interface AuthContextType {
   login: () => Promise<void>;
   logout: () => Promise<void>;
   loginEmail: (email: string, pass: string) => Promise<void>;
-  registerEmail: (email: string, pass: string) => Promise<void>;
+  registerEmail: (email: string, pass: string, name?: string, phone?: string) => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
   isAdmin: boolean;
 }
@@ -102,8 +104,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await firebaseLoginEmail(email, pass);
   };
 
-  const registerEmail = async (email: string, pass: string) => {
-    await firebaseRegisterEmail(email, pass);
+  const registerEmail = async (email: string, pass: string, name?: string, phone?: string) => {
+    const user = await firebaseRegisterEmail(email, pass);
+    if (user && (name || phone)) {
+      if (name) {
+        await updateFirebaseProfile(user, { displayName: name }).catch(console.error);
+      }
+      const updateData: Partial<UserProfile> = {};
+      if (name) updateData.name = name;
+      if (phone) updateData.phone = phone;
+      
+      await setDoc(doc(db, 'users', user.uid), updateData, { merge: true });
+      setProfile(prev => prev ? { ...prev, ...updateData } : null);
+    }
   };
 
   const updateProfile = async (data: Partial<UserProfile>) => {

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ArrowLeft, Save, User, Phone, Mail } from 'lucide-react';
+import { ArrowLeft, Save, User, Phone, Mail, Camera } from 'lucide-react';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '../firebase';
 import toast from 'react-hot-toast';
 
 export const Settings = () => {
@@ -10,6 +12,7 @@ export const Settings = () => {
   
   const [name, setName] = useState(profile?.name || '');
   const [phone, setPhone] = useState(profile?.phone || '');
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -23,7 +26,18 @@ export const Settings = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      await updateProfile({ name, phone });
+      let photoURL = profile?.photoURL;
+      
+      if (imageFile) {
+        const storageRef = ref(storage, `users/${user?.uid}/profile_${Date.now()}`);
+        const snapshot = await uploadBytes(storageRef, imageFile);
+        photoURL = await getDownloadURL(snapshot.ref);
+      }
+
+      const updateData: any = { name, phone };
+      if (photoURL) updateData.photoURL = photoURL;
+
+      await updateProfile(updateData);
       toast.success('Profile updated successfully!');
       navigate('/profile');
     } catch (error) {
@@ -47,6 +61,32 @@ export const Settings = () => {
       <div className="p-4 space-y-6">
         <div className="bg-white rounded-3xl p-6 shadow-sm">
           <form onSubmit={handleSave} className="space-y-4">
+            <div className="flex flex-col items-center mb-6">
+              <div className="relative w-24 h-24 rounded-full bg-gray-100 border-4 border-white shadow-md flex items-center justify-center overflow-hidden">
+                {(imageFile || profile?.photoURL || user?.photoURL) ? (
+                  <img 
+                    src={imageFile ? URL.createObjectURL(imageFile) : (profile?.photoURL || user?.photoURL)} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover" 
+                  />
+                ) : (
+                  <User size={40} className="text-gray-400" />
+                )}
+                <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer text-white">
+                  <Camera size={24} />
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="hidden" 
+                    onChange={e => {
+                      if (e.target.files && e.target.files[0]) setImageFile(e.target.files[0]);
+                    }}
+                  />
+                </label>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">Tap to change picture</p>
+            </div>
+
             <div>
               <label className="text-xs font-semibold text-gray-500 mb-1 flex items-center gap-1">
                 <User size={14} /> Full Name
@@ -89,7 +129,7 @@ export const Settings = () => {
             <button 
               type="submit"
               disabled={saving}
-              className="w-full mt-6 bg-[var(--color-chocolate)] text-[var(--color-cream)] py-3 rounded-xl font-bold text-sm shadow-md hover:bg-opacity-90 transition-all flex items-center justify-center gap-2"
+              className="w-full mt-6 bg-[var(--color-chocolate)] text-[var(--color-cream)] py-3 rounded-xl font-bold text-sm shadow-md hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-70 h-11"
             >
               {saving ? (
                 <div className="w-5 h-5 border-2 border-[var(--color-cream)] border-t-transparent rounded-full animate-spin" />

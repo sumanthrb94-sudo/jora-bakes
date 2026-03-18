@@ -24,6 +24,7 @@ import { AdminOrders } from './AdminOrders';
 import { SavedAddresses } from './pages/SavedAddresses';
 import { AdminDashboard } from './AdminDashboard'; // Import AdminDashboard
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { ScrollToTop } from './components/ScrollToTop';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
         <ProductProvider>
           <CartProvider>
             <Router>
+              <ScrollToTop />
               <Routes>
                 <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
                   <Route index element={<Home />} />

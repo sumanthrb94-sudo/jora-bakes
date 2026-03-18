@@ -40,6 +40,7 @@ export interface UserProfile {
   createdAt: string; // ISO string
   addresses?: Address[];
   phone?: string;
+  photoURL?: string;
 }
 
 export interface Order {

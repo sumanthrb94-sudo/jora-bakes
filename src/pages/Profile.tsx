@@ -11,7 +11,11 @@ export const Profile = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isEmailLoading, setIsEmailLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const menuItems = [
     { icon: Package, label: 'My Orders', desc: 'Track, return, or buy things again', path: '/orders' },
@@ -36,9 +40,14 @@ export const Profile = () => {
       toast.error("Please enter both email and password.");
       return;
     }
+    if (isSignUp && (!name || !phone)) {
+      toast.error("Please enter your name and phone number.");
+      return;
+    }
+    setIsEmailLoading(true);
     try {
       if (isSignUp) {
-        await registerEmail(email, password);
+        await registerEmail(email, password, name, phone);
       } else {
         await loginEmail(email, password);
       }
@@ -48,6 +57,17 @@ export const Profile = () => {
       else if (error.code === 'auth/email-already-in-use') msg = "Email is already in use";
       else if (error.code === 'auth/weak-password') msg = "Password should be at least 6 characters";
       toast.error(msg);
+      setIsEmailLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setIsGoogleLoading(true);
+    try {
+      await login();
+    } catch (error) {
+      setIsGoogleLoading(false);
+      toast.error("Google login failed.");
     }
   };
 
@@ -76,6 +96,24 @@ export const Profile = () => {
           </p>
           
           <form onSubmit={handleEmailAuth} className="w-full space-y-3 mb-6">
+            {isSignUp && (
+              <>
+                <input 
+                  type="text" 
+                  placeholder="Full Name" 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)]"
+                />
+                <input 
+                  type="tel" 
+                  placeholder="Phone Number" 
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)]"
+                />
+              </>
+            )}
             <input 
               type="email" 
               placeholder="Email Address" 
@@ -92,14 +130,20 @@ export const Profile = () => {
             />
             <button 
               type="submit"
-              className="w-full bg-[var(--color-chocolate)] text-[var(--color-cream)] py-3 rounded-xl font-bold text-sm shadow-md hover:bg-opacity-90 transition-all mt-2"
+              disabled={isEmailLoading || isGoogleLoading}
+              className="w-full bg-[var(--color-chocolate)] text-[var(--color-cream)] py-3 rounded-xl font-bold text-sm shadow-md hover:bg-opacity-90 transition-all mt-2 disabled:opacity-70 flex justify-center items-center h-11"
             >
-              {isSignUp ? 'Create Account' : 'Sign In'}
+              {isEmailLoading ? (
+                <div className="w-5 h-5 border-2 border-[var(--color-cream)] border-t-transparent rounded-full animate-spin" />
+              ) : (
+                isSignUp ? 'Create Account' : 'Sign In'
+              )}
             </button>
             <button 
               type="button" 
               onClick={() => setIsSignUp(!isSignUp)}
-              className="text-xs text-gray-500 hover:text-[var(--color-terracotta)] mt-2"
+              disabled={isEmailLoading || isGoogleLoading}
+              className="text-xs text-gray-500 hover:text-[var(--color-terracotta)] mt-2 disabled:opacity-50"
             >
               {isSignUp ? 'Already have an account? Sign in' : 'Need an account? Sign up'}
             </button>
@@ -111,11 +155,18 @@ export const Profile = () => {
           </div>
 
           <button 
-            onClick={login}
-            className="w-full bg-white text-[var(--color-chocolate)] border border-gray-200 py-3 rounded-xl font-bold text-sm shadow-sm hover:bg-gray-50 transition-all transform active:scale-95 flex items-center justify-center gap-3"
+            onClick={handleGoogleLogin}
+            disabled={isEmailLoading || isGoogleLoading}
+            className="w-full bg-white text-[var(--color-chocolate)] border border-gray-200 py-3 rounded-xl font-bold text-sm shadow-sm hover:bg-gray-50 transition-all transform active:scale-95 flex items-center justify-center gap-3 disabled:opacity-70 h-11"
           >
-            <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5 bg-white rounded-full p-0.5" />
-            Continue with Google
+            {isGoogleLoading ? (
+              <div className="w-5 h-5 border-2 border-[var(--color-chocolate)] border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5 bg-white rounded-full p-0.5" />
+                Continue with Google
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -139,8 +190,8 @@ export const Profile = () => {
           <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--color-sage)] opacity-10 rounded-bl-full" />
           
           <div className="w-16 h-16 bg-[var(--color-beige)] rounded-full flex items-center justify-center text-[var(--color-terracotta)] shrink-0 border-2 border-[var(--color-cream)] overflow-hidden">
-            {user.photoURL ? (
-              <img src={user.photoURL} alt={user.displayName || ''} className="w-full h-full object-cover" />
+            {(profile?.photoURL || user.photoURL) ? (
+              <img src={profile?.photoURL || user.photoURL} alt={user.displayName || ''} className="w-full h-full object-cover" />
             ) : (
               <User size={32} />
             )}

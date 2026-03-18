@@ -20,49 +20,41 @@ export const Home = () => {
   return (
     <div className="pb-24">
       {/* Hero Section */}
-      <section className="relative h-[65vh] w-full bg-[var(--color-beige)] overflow-hidden">
-        <div className="absolute inset-0 bg-black/40 z-10" />
-        <img 
-          src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=1200" 
-          alt="Premium artisanal desserts" 
-          className="w-full h-full object-cover"
-          referrerPolicy="no-referrer"
-        />
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
-          <motion.h1 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="font-script text-6xl text-white drop-shadow-lg mb-4"
-          > 
-            JORA BAKES 
-          </motion.h1>
-          <motion.p 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="text-white text-lg font-medium mb-8 drop-shadow-md"
+      <section className="relative h-[65vh] w-full bg-[var(--color-cream)] flex flex-col items-center justify-center text-center px-6 border-b border-gray-100 overflow-hidden">
+        <motion.h1 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="font-script text-6xl text-[var(--color-terracotta)] mb-4"
+        > 
+          JORA BAKES 
+        </motion.h1>
+        <motion.p 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="text-[var(--color-chocolate)] text-lg font-medium mb-8 max-w-[280px] opacity-80"
+        >
+          Artisanal goodies, baked fresh and delivered to your door.
+        </motion.p>
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="mb-8"
+        >
+          <Link 
+            to="/shop" 
+            className="bg-[var(--color-chocolate)] text-[var(--color-cream)] px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:bg-opacity-90 transition-all inline-block"
           >
-            Artisanal goodies, baked fresh and delivered to your door.
-          </motion.p>
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Link 
-              to="/shop" 
-              className="bg-[var(--color-terracotta)] text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:bg-opacity-90 transition-all"
-            >
-              Explore Our Goodies
-            </Link>
-          </motion.div>
-        </div>
+            Explore Our Goodies
+          </Link>
+        </motion.div>
         
         {/* Trust Badges */}
-        <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/60 to-transparent py-6 px-4 flex justify-center gap-6 text-white text-xs font-medium">
-          <div className="flex items-center gap-1.5"><Star size={14} className="text-yellow-400 fill-yellow-400" /> Homemade</div>
-          <div className="flex items-center gap-1.5"><Clock size={14} className="text-[var(--color-sage)]" /> Fresh Daily</div>
-          <div className="flex items-center gap-1.5"><Heart size={14} className="text-red-400 fill-red-400" /> 100% Eggless</div>
+        <div className="absolute bottom-0 left-0 right-0 py-6 px-4 flex justify-center gap-6 text-[var(--color-chocolate)] text-[10px] font-bold uppercase tracking-wider bg-white/50 backdrop-blur-md border-t border-white">
+          <div className="flex items-center gap-1.5"><Star size={14} className="text-[var(--color-terracotta)] fill-[var(--color-terracotta)]" /> Homemade</div>
+          <div className="flex items-center gap-1.5"><Clock size={14} className="text-[var(--color-terracotta)]" /> Fresh Daily</div>
+          <div className="flex items-center gap-1.5"><Heart size={14} className="text-[var(--color-terracotta)] fill-[var(--color-terracotta)]" /> 100% Eggless</div>
         </div>
       </section>
 
@@ -74,10 +66,15 @@ export const Home = () => {
 
       {/* Categories */}
       <section className="py-8 px-4 bg-white">
-        <div className="flex justify-between items-end mb-6">
+        <div className="flex justify-between items-center mb-6">
           <h2 className="font-script text-4xl text-[var(--color-chocolate)]">Fresh from the Oven</h2>
-          <Link to="/shop" className="text-sm font-semibold text-[var(--color-terracotta)] flex items-center">
-            See All <ChevronRight size={16} />
+          <Link to="/shop" className="w-10 h-10 bg-[var(--color-beige)] rounded-full text-[var(--color-terracotta)] flex items-center justify-center hover:bg-[var(--color-terracotta)] hover:text-white transition-colors shadow-sm shrink-0">
+            <motion.div
+              animate={{ x: [0, 4, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+            >
+              <ChevronRight size={20} />
+            </motion.div>
           </Link>
         </div>
         <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-4 -mx-4 px-4 snap-x">
