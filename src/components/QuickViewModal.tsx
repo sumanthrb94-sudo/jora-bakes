@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Product, Variant } from '../types';
 import { useCart } from '../context/CartContext';
-import { X, Plus, Minus, Info, Share2 } from 'lucide-react';
+import { X, Plus, Minus, Info, Share2, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 
@@ -149,6 +149,16 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
               )}
 
               <div className="bg-[var(--color-beige)] rounded-2xl p-4 mb-6 space-y-3">
+                {product.bakeTime && (
+                  <div className="flex items-start gap-3 pb-3 border-b border-gray-200/50">
+                    <Clock size={18} className="text-[var(--color-terracotta)] mt-0.5 shrink-0" />
+                    <div>
+                      <h5 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Preparation Time</h5>
+                      <p className="text-sm font-bold text-[var(--color-terracotta)]">{product.bakeTime}</p>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="flex items-start gap-3">
                   <Info size={18} className="text-[var(--color-sage)] mt-0.5 shrink-0" />
                   <div>

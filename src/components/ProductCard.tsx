@@ -1,7 +1,7 @@
 import React from 'react';
 import { Product } from '../types';
 import { useCart } from '../context/CartContext';
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 
@@ -84,6 +84,13 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
         </div>
         
         <h3 className="font-bold text-[var(--color-chocolate)] text-sm line-clamp-1 mb-1">{product.name}</h3>
+        
+        {product.bakeTime && (
+          <div className="flex items-center justify-center gap-1 text-[9px] font-black text-[var(--color-terracotta)] uppercase tracking-wider mb-1.5 bg-orange-50 self-center px-2 py-0.5 rounded-full w-fit mx-auto">
+            <Clock size={10} strokeWidth={3} /> {product.bakeTime}
+          </div>
+        )}
+        
         <p className="text-[11px] text-gray-500 line-clamp-2 leading-relaxed flex-grow">{product.description}</p>
         <div className="font-bold text-gray-700 text-sm mt-1.5 mb-3">₹{product.price}</div>
         

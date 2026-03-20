@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
-import { User as FirebaseUser, onAuthStateChanged, updateProfile as updateFirebaseProfile } from 'firebase/auth';
+import { User as FirebaseUser, onAuthStateChanged, updateProfile as updateFirebaseProfile, getRedirectResult } from 'firebase/auth';
 import { auth, loginWithGoogle, logout as firebaseLogout, loginWithEmail as firebaseLoginEmail, registerWithEmail as firebaseRegisterEmail } from '../firebase';
 import { getDocument, createDocument, updateDocument } from '../services/firestore';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import toast from 'react-hot-toast';
 import { NotificationService } from '../services/NotificationService';
 import { UserProfile, Address } from '../types';
 
@@ -31,6 +32,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     let notificationUnsubscribe: (() => void) | undefined;
+
+    // Catch any errors that occurred during the Google Redirect flow
+    getRedirectResult(auth).catch((error) => {
+      console.error("Redirect Auth Error:", error);
+      toast.error(`Google Login Failed: ${error.message}`);
+      setLoading(false);
+    });
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);

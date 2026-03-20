@@ -20,8 +20,14 @@ export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const storage = getStorage(app);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
+
 export const loginWithGoogle = async () => {
   try {
+    // Using Popup instead of Redirect to bypass strict mobile browser cookie blocking
     const result = await signInWithPopup(auth, googleProvider);
     return result.user;
   } catch (error) {

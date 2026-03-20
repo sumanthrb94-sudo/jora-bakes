@@ -132,8 +132,9 @@ export const AuthView: React.FC<AuthViewProps> = ({
     setIsGoogleLoading(true);
     try {
       await login();
-    } catch (error) {
-      toast.error("Google login failed.");
+    } catch (error: any) {
+      console.error("Google login failed:", error);
+      toast.error(`Google Login Error: ${error.code || error.message}`, { duration: 4000 });
     } finally {
       setIsGoogleLoading(false);
     }
