@@ -35,25 +35,21 @@ export default function App() {
             <Router>
               <ScrollToTop />
               <Routes>
-                {/* Layout is now unlocked so guests can browse Home, Shop, and Cart */}
-                <Route path="/" element={<Layout />}>
+                {/* Entire app requires login on startup */}
+                <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
                   <Route index element={<Home />} />
                   <Route path="shop" element={<Shop />} />
                   <Route path="cart" element={<Cart />} />
                   <Route path="track" element={<OrderTracking />} />
-                  
-                  {/* Profile handles its own auth internally to show a custom message */}
                   <Route path="profile" element={<Profile />} />
-                  
-                  {/* Protected Routes - These strictly require login */}
-                  <Route path="checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-                  <Route path="orders" element={<ProtectedRoute><OrderHistory /></ProtectedRoute>} />
-                  <Route path="notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-                  <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                  <Route path="addresses" element={<ProtectedRoute><SavedAddresses /></ProtectedRoute>} />
-                  <Route path="admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-                  <Route path="admin/products" element={<ProtectedRoute><AdminProducts /></ProtectedRoute>} />
-                  <Route path="admin/orders" element={<ProtectedRoute><AdminOrders /></ProtectedRoute>} />
+                  <Route path="checkout" element={<Checkout />} />
+                  <Route path="orders" element={<OrderHistory />} />
+                  <Route path="notifications" element={<Notifications />} />
+                  <Route path="settings" element={<Settings />} />
+                  <Route path="addresses" element={<SavedAddresses />} />
+                  <Route path="admin" element={<AdminDashboard />} />
+                  <Route path="admin/products" element={<AdminProducts />} />
+                  <Route path="admin/orders" element={<AdminOrders />} />
                 </Route>
               </Routes>
             </Router>
