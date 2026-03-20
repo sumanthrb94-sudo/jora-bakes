@@ -5,163 +5,179 @@ import { ProductCard } from '../components/ProductCard';
 import { QuickViewModal } from '../components/QuickViewModal';
 import { Product } from '../types';
 import { motion } from 'framer-motion';
-import { ChevronRight, Star, Heart, Clock, MapPin, Sparkles } from 'lucide-react';
+import { ChevronRight, Clock, MapPin, Search, ChevronDown, User, Sparkles } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { AuthView } from '../components/AuthView';
 
 export const Home = () => {
   const { products, loading } = useProducts();
   const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const { user, profile } = useAuth();
+
+  // Swiggy-style: Force login screen on app start if unauthenticated
+  if (!user) {
+    return (
+      <AuthView 
+        title="Welcome to JORA BAKES" 
+        subtitle="Log in or sign up to explore artisanal treats" 
+      />
+    );
+  }
 
   const handleQuickView = (product: Product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
 
+  // Filter products for different sections
+  const bestSellers = products.slice(0, 4); 
+  const trending = products.slice(2, 6);
+
   return (
-    <div className="pb-24">
-      {/* Hero Section */}
-      <section className="relative h-[65vh] w-full bg-[var(--color-cream)] flex flex-col items-center justify-center text-center px-6 border-b border-gray-100 overflow-hidden">
-        <motion.h1 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="font-script text-6xl text-[var(--color-terracotta)] mb-4"
-        > 
-          JORA BAKES 
-        </motion.h1>
-        <motion.p 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="text-[var(--color-chocolate)] text-lg font-medium mb-8 max-w-[280px] opacity-80"
-        >
-          Artisanal goodies, baked fresh and delivered to your door.
-        </motion.p>
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="mb-8"
-        >
-          <Link 
-            to="/shop" 
-            className="bg-[var(--color-chocolate)] text-[var(--color-cream)] px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:bg-opacity-90 transition-all inline-block"
-          >
-            Explore Our Goodies
-          </Link>
-        </motion.div>
-        
-        {/* Trust Badges */}
-        <div className="absolute bottom-0 left-0 right-0 py-6 px-4 flex justify-center gap-6 text-[var(--color-chocolate)] text-[10px] font-bold uppercase tracking-wider bg-white/50 backdrop-blur-md border-t border-white">
-          <div className="flex items-center gap-1.5"><Star size={14} className="text-[var(--color-terracotta)] fill-[var(--color-terracotta)]" /> Homemade</div>
-          <div className="flex items-center gap-1.5"><Clock size={14} className="text-[var(--color-terracotta)]" /> Fresh Daily</div>
-          <div className="flex items-center gap-1.5"><Heart size={14} className="text-[var(--color-terracotta)] fill-[var(--color-terracotta)]" /> 100% Eggless</div>
+    <div className="bg-[#f7f5f0] min-h-screen pb-24">
+      {/* Swiggy Style Sticky App Bar */}
+      <div className="bg-white sticky top-0 z-30 pt-safe shadow-sm rounded-b-[24px] mb-4">
+        <div className="px-4 pt-4 pb-4">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-2 flex-1">
+              <div className="w-9 h-9 bg-orange-50 rounded-full flex items-center justify-center text-[var(--color-terracotta)] shrink-0">
+                <MapPin size={20} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1 font-black text-[var(--color-chocolate)] text-sm">
+                  {profile?.addresses?.[0]?.label || 'Delivering to'} <ChevronDown size={16} className="text-[var(--color-terracotta)]" />
+                </div>
+                <p className="text-[11px] text-gray-500 truncate font-medium mt-0.5">
+                  {profile?.addresses?.[0]?.street || 'Jains Carlton Creek, Manikonda'}
+                </p>
+              </div>
+            </div>
+            <Link to="/profile" className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-sm shrink-0">
+              {(profile?.photoURL || user.photoURL) ? (
+                <img src={profile?.photoURL || user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <span className="font-bold text-[var(--color-terracotta)]">{(user.displayName || profile?.name || 'G')[0].toUpperCase()}</span>
+              )}
+            </Link>
+          </div>
+          
+          {/* Global Search Bar */}
+          <div className="relative">
+            <input 
+              type="text" 
+              placeholder="Search for brownies, cakes, or cookies..." 
+              onClick={() => { /* Navigation to a dedicated search page could go here */ }}
+              className="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3.5 pl-11 pr-4 text-sm font-medium text-[var(--color-chocolate)] focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)] shadow-inner transition-all placeholder:text-gray-400" 
+            />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-terracotta)]" size={18} strokeWidth={2.5} />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 border-l border-gray-200 pl-3">
+              <Sparkles size={16} className="text-[var(--color-gold)]" />
+            </div>
+          </div>
         </div>
-      </section>
+      </div>
 
-      {/* Seasonal Banner */}
-      <section className="bg-[var(--color-terracotta)] text-white py-3 px-4 text-center flex items-center justify-center gap-2">
-        <Sparkles size={16} className="text-[var(--color-gold)]" />
-        <span className="text-sm font-medium">Our curated menu is live! Try our guilt-free Millet Brownies.</span>
-      </section>
-
-      {/* Categories */}
-      <section className="py-8 px-4 bg-white">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="font-script text-4xl text-[var(--color-chocolate)]">Fresh from the Oven</h2>
-          <Link to="/shop" className="w-10 h-10 bg-[var(--color-beige)] rounded-full text-[var(--color-terracotta)] flex items-center justify-center hover:bg-[var(--color-terracotta)] hover:text-white transition-colors shadow-sm shrink-0">
-            <motion.div
-              animate={{ x: [0, 4, 0] }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+      {/* Promotional Offers Banner */}
+      <div className="px-4 mb-6">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-gradient-to-br from-[var(--color-terracotta)] to-orange-500 rounded-[24px] p-5 text-white relative overflow-hidden shadow-lg shadow-orange-500/20"
+        >
+          <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+          <div className="absolute right-0 bottom-0 w-24 h-24 bg-black/10 rounded-tl-full" />
+          
+          <div className="relative z-10 w-2/3">
+            <span className="text-[9px] font-black uppercase tracking-widest bg-white/20 px-2.5 py-1 rounded-full mb-2 inline-block backdrop-blur-sm shadow-sm border border-white/10">
+              Deal of the Day
+            </span>
+            <h2 className="text-xl font-black mb-1 leading-tight tracking-tight">Try our Signature Tiramisu</h2>
+            <p className="text-xs text-white/90 mb-4 font-medium">Espresso and velvety mascarpone.</p>
+            <button 
+              onClick={() => {
+                const p = products.find(p => p.id === 'p5');
+                if (p) handleQuickView(p);
+              }}
+              className="bg-white text-[var(--color-terracotta)] text-xs font-black px-5 py-2.5 rounded-full shadow-sm hover:scale-105 transition-transform active:scale-95"
             >
-              <ChevronRight size={20} />
-            </motion.div>
-          </Link>
+              Order Now
+            </button>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Quick Categories "What's on your mind?" */}
+      <section className="mb-6">
+        <div className="flex items-center justify-between px-4 mb-4">
+          <h2 className="text-sm font-black text-gray-800 uppercase tracking-wider flex items-center gap-2">
+            <div className="w-1 h-4 bg-[var(--color-terracotta)] rounded-full" />
+            What's on your mind?
+          </h2>
         </div>
-        <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-4 -mx-4 px-4 snap-x">
+        <div className="flex gap-4 overflow-x-auto hide-scrollbar px-4 pb-2 snap-x">
           {[
-            { name: 'Millet Brownies', category: 'millet_brownies', img: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&q=80&w=200' },
+            { name: 'Brownies', category: 'millet_brownies', img: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&q=80&w=200' },
             { name: 'Cheese Cakes', category: 'cheese_cakes', img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&q=80&w=200' },
-            { name: 'Burnt Basque', category: 'burnt_basque', img: 'https://images.unsplash.com/photo-1650302525164-32b0c1ecac6e?auto=format&fit=crop&q=80&w=200' },
+            { name: 'Basque', category: 'burnt_basque', img: 'https://images.unsplash.com/photo-1650302525164-32b0c1ecac6e?auto=format&fit=crop&q=80&w=200' },
             { name: 'Cupcakes', category: 'cupcakes', img: 'https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?auto=format&fit=crop&q=80&w=200' },
-            { name: 'Tiramisu', category: 'tiramisu', img: 'https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&q=80&w=200' }
+            { name: 'Tiramisu', category: 'tiramisu', img: 'https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&q=80&w=200' },
           ].map((cat, i) => (
             <Link 
               key={cat.name} 
               to={`/shop?category=${cat.category}`}
               className="snap-start shrink-0 flex flex-col items-center gap-3"
             >
-              <div className="w-20 h-20 rounded-full bg-[var(--color-beige)] border-2 border-[var(--color-cream)] shadow-sm flex items-center justify-center overflow-hidden">
+              <div className="w-20 h-20 rounded-full bg-white shadow-sm flex items-center justify-center overflow-hidden border border-gray-100 p-0.5">
                 <img 
                   src={cat.img} 
                   alt={cat.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-full"
                   referrerPolicy="no-referrer"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=200';
-                  }}
                 />
               </div>
-              <span className="text-sm font-medium text-[var(--color-chocolate)]">{cat.name}</span>
+              <span className="text-xs font-bold text-gray-700">{cat.name}</span>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* Our Menu */}
-      <section className="py-8 px-4 bg-[var(--color-beige)]">
-        <div className="flex justify-between items-end mb-6">
-          <h2 className="font-script text-4xl text-[var(--color-chocolate)]">Our Menu</h2>
+      {/* Trending / Recommended (Horizontal Scroll) */}
+      <section className="mb-8">
+        <div className="flex items-center justify-between px-4 mb-4">
+          <h2 className="text-lg font-black text-[var(--color-chocolate)] tracking-tight">Recommended for you</h2>
+          <Link to="/shop" className="text-xs font-bold text-[var(--color-terracotta)] flex items-center">
+            See all <ChevronRight size={14} />
+          </Link>
         </div>
-        <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-4 -mx-4 px-4 snap-x">
-          {products.map((product) => (
-            <div key={product.id} className="snap-start shrink-0 w-[240px]">
+        <div className="flex gap-4 overflow-x-auto hide-scrollbar px-4 pb-4 snap-x">
+          {bestSellers.map((product) => (
+            <div key={product.id} className="snap-start shrink-0 w-[260px]">
               <ProductCard product={product} onQuickView={handleQuickView} />
             </div>
           ))}
         </div>
       </section>
 
-      {/* Baker's Choice */}
-      <section className="py-10 px-4 bg-white">
-        <div className="bg-[var(--color-cream)] rounded-3xl p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--color-sage)] opacity-10 rounded-bl-full" />
-          <h2 className="font-script text-4xl text-[var(--color-terracotta)] mb-2">Baker's Choice</h2>
-          <h3 className="text-xl font-bold text-[var(--color-chocolate)] mb-3">Signature Tiramisu</h3>
-          <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-            "This week I'm absolutely loving our Signature Tiramisu. The balance of espresso and velvety mascarpone is the perfect afternoon pick-me-up!" - JORA BAKES 
-          </p>
-          <button 
-            onClick={() => {
-              const p = products.find(p => p.id === 'p5');
-              if (p) handleQuickView(p);
-            }}
-            className="bg-[var(--color-chocolate)] text-[var(--color-cream)] px-6 py-2.5 rounded-full text-sm font-bold shadow-md disabled:opacity-50"
-            disabled={loading}
-          >
-            Treat Yourself
-          </button>
+      {/* All Products Grid */}
+      <section className="px-4">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-black text-[var(--color-chocolate)] tracking-tight">Top Picks from Menu</h2>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} onQuickView={handleQuickView} />
+          ))}
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-[var(--color-chocolate)] text-[var(--color-beige)] py-10 px-6 text-center">
-        <h2 className="font-script text-4xl mb-4 text-[var(--color-terracotta)]">JORA BAKES </h2>
-        <p className="text-sm opacity-80 mb-6">Homemade with love by our bakers in Hyderabad</p>
-        
-        <div className="flex flex-col gap-4 items-center text-sm opacity-90 mb-8">
-          <div className="flex items-center gap-2">
-            <MapPin size={16} className="text-[var(--color-terracotta)]" />
-            <span>Jains Carlton Creek , Manikonda (Pickup available)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock size={16} className="text-[var(--color-terracotta)]" />
-            <span>Mon-Sat: 10 AM - 8 PM</span>
-          </div>
+      {/* Minimal Footer */}
+      <footer className="mt-12 mb-8 text-center px-4 flex flex-col items-center">
+        <div className="w-16 h-1 bg-gray-200 rounded-full mb-6"></div>
+        <div className="flex items-center justify-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-widest mb-1">
+          <Sparkles size={12} /> Live • Love • Bake <Sparkles size={12} />
         </div>
-        
-        <div className="text-xs opacity-50">
-          &copy; {new Date().getFullYear()} JORA BAKES . All rights reserved.
-        </div>
+        <p className="text-gray-400 text-[10px] font-medium">FSSAI Certified • Hyderabad</p>
       </footer>
 
       <QuickViewModal 

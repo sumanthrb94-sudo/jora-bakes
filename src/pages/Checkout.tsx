@@ -2,81 +2,48 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle2, MapPin, CreditCard, Phone } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, MapPin, CreditCard, MessageCircle, Wallet, Banknote } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { increment } from 'firebase/firestore';
 
 import { useAuth } from '../context/AuthContext';
 import { createDocument, updateDocument } from '../services/firestore';
-import { Order, Address } from '../types';
 
 export const Checkout = () => {
   const { cart, clearCart, cartTotal } = useCart();
-  const { user, profile, updateProfile } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const checkoutState = location.state || {};
   
-  const [step, setStep] = useState(1); // 1: Details, 2: Payment, 3: Confirmation
+  const [step, setStep] = useState(1); // 1: Payment Selection, 2: Success Confirmation
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderId, setOrderId] = useState('');
-  const [saveAddress, setSaveAddress] = useState(false);
   
-  const [formData, setFormData] = useState({
-    name: profile?.name || '',
-    phone: profile?.phone || '',
-    email: profile?.email || '', // Use profile?.email directly
-    address: profile?.addresses?.[0]?.street || '', // Use the first saved address street if available
-    instructions: '',
-    paymentMethod: 'upi'
-  });
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'whatsapp' | 'cod'>('razorpay');
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  // Redirect to cart if they bypassed it
+  useEffect(() => {
+    if (step === 1 && (!checkoutState || !checkoutState.selectedAddress || cart.length === 0)) {
+      navigate('/cart', { replace: true });
+    }
+  }, [checkoutState, cart, navigate, step]);
 
-  const handleNext = async () => {
-    if (step === 1) {
-      if (!formData.name || !formData.phone || !formData.address) {
-        toast.error('Please fill in all required fields');
-        return;
-      }
-
-      if (saveAddress && user) {
-        try {
-          const currentAddresses = profile?.addresses || [];
-          if (!currentAddresses.some(a => a.street === formData.address)) {
-            const newAddr: Address = {
-              id: Math.random().toString(36).substr(2, 9),
-              label: 'Other',
-              street: formData.address,
-              city: '',
-              pincode: ''
-            };
-            await updateProfile({
-              addresses: [...currentAddresses, newAddr],
-              phone: formData.phone,
-              name: formData.name
-            });
-          } else {
-            await updateProfile({
-              phone: formData.phone,
-              name: formData.name
-            });
-          }
-        } catch (error) {
-          console.error("Error saving address:", error);
-        }
-      }
-
-      setStep(2);
-    } else if (step === 2) {
+  const handlePayment = async () => {
       setIsProcessing(true);
       
       try {
+        // 1. Mock Razorpay Flow
+        if (paymentMethod === 'razorpay') {
+          toast.loading('Opening secure payment gateway...', { duration: 1500 });
+          // Simulate Razorpay SDK popup delay
+          await new Promise(resolve => setTimeout(resolve, 2500));
+          toast.success('Payment verified successfully!');
+        }
+
         const timestamp = Date.now().toString().slice(-6);
         const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-        const newOrderId = `ZB${timestamp}${random}`;
+        const newOrderId = `JB${timestamp}${random}`;
         
         console.log('Creating order:', newOrderId);
 
@@ -95,17 +62,18 @@ export const Checkout = () => {
             deliverySlot: item.deliverySlot
           })),
           customer: {
-            name: formData.name,
-            phone: formData.phone,
-            email: formData.email
+            name: profile?.name || 'Guest',
+            phone: profile?.phone || '',
+            email: profile?.email || ''
           },
           address: {
-            street: formData.address,
-            instructions: formData.instructions
+            street: checkoutState.selectedAddress?.street || 'No address provided',
+            instructions: checkoutState.selectedAddress?.instructions || '',
+            label: checkoutState.selectedAddress?.label || 'Delivery'
           },
           total: Number(checkoutState.grandTotal || (cartTotal + 50)),
-          status: 'received',
-          paymentMethod: formData.paymentMethod,
+          status: paymentMethod === 'razorpay' ? 'confirmed' : 'received',
+          paymentMethod: paymentMethod,
           createdAt: new Date().toISOString(),
           deliveryDate: checkoutState.deliveryDate instanceof Date 
             ? checkoutState.deliveryDate.toISOString() 
@@ -116,39 +84,35 @@ export const Checkout = () => {
 
         console.log('Attempting to save order to database...');
         
+        await createDocument('orders', orderData, newOrderId);
+        console.log('Order saved successfully');
+        
+        // Decrease stock quantity for each ordered item
         try {
-          const result = await createDocument('orders', orderData, newOrderId);
-          if (!result) {
-            throw new Error('Database returned empty result');
-          }
-          console.log('Order saved successfully');
-          
-          // Decrease stock quantity for each ordered item
-          try {
-            const stockUpdates = cart.map(item => {
-              // Only update if the product has stock tracking enabled
-              if (item.product.stockQuantity !== undefined) {
-                return updateDocument('products', item.product.id, {
-                  stockQuantity: increment(-item.quantity) as unknown as number
-                });
-              }
-              return Promise.resolve();
-            });
-            await Promise.all(stockUpdates);
-          } catch (stockError) {
-            console.error('Failed to update stock quantities:', stockError);
-          }
-        } catch (dbError) {
-          console.warn('Database write failed:', dbError);
-          // Fallback to mock behavior if write fails
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          toast('Order placed (offline sync pending)');
+          const stockUpdates = cart.map(item => {
+            if (item.product.stockQuantity !== undefined) {
+              return updateDocument('products', item.product.id, {
+                stockQuantity: increment(-item.quantity) as unknown as number
+              });
+            }
+            return Promise.resolve();
+          });
+          await Promise.all(stockUpdates);
+        } catch (stockError) {
+          console.error('Failed to update stock quantities:', stockError);
+        }
+
+        // 2. WhatsApp Redirection Flow
+        if (paymentMethod === 'whatsapp') {
+          const waNumber = "917799934943"; // Jora Bakes business number
+          const text = `Hello JORA BAKES! 🍰\n\nI just placed an order on the app and want to confirm it via WhatsApp.\n\n*Order ID:* #${newOrderId}\n*Total:* ₹${checkoutState.grandTotal}\n*Delivery Date:* ${checkoutState.deliveryDate}\n\nPlease confirm my order!`;
+          const encodedText = encodeURIComponent(text);
+          window.open(`https://wa.me/${waNumber}?text=${encodedText}`, '_blank');
         }
 
         setOrderId(newOrderId);
-        setStep(3);
+        setStep(2);
         clearCart();
-        toast.success('Order Placed Successfully!');
       } catch (error: any) {
         console.error("Error in checkout flow:", error);
         let errorMessage = 'Something went wrong. Please try again.';
@@ -168,10 +132,9 @@ export const Checkout = () => {
       } finally {
         setIsProcessing(false);
       }
-    }
   };
 
-  if (step === 3) {
+  if (step === 2) {
     return (
       <div className="min-h-screen bg-[var(--color-primary)] flex flex-col items-center w-full max-w-[428px] mx-auto p-8 pt-16 text-center">
         <motion.div
@@ -190,7 +153,7 @@ export const Checkout = () => {
           className="w-full space-y-4 mb-10"
         >
           <div className="inline-block border border-[var(--color-accent)] text-[var(--color-accent)] px-5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest mb-1">
-            Payment Successful
+            {paymentMethod === 'cod' ? 'Order Received' : 'Payment Successful'}
           </div>
           <h2 className="font-script text-5xl text-[var(--color-shadow)] leading-tight">Order Confirmed</h2>
           <p className="text-[var(--color-tertiary)] text-sm px-4 leading-relaxed font-medium">
@@ -224,7 +187,7 @@ export const Checkout = () => {
                 <span className="text-xs text-[var(--color-tertiary)] font-bold uppercase tracking-wider">Status</span>
                 <span className="bg-[var(--color-primary)] text-[var(--color-accent)] px-4 py-1.5 rounded-full text-[10px] font-bold flex items-center gap-2 border border-[var(--color-secondary)]/20">
                   <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] animate-pulse" />
-                  Confirmed
+                  {paymentMethod === 'razorpay' ? 'Confirmed' : 'Received'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -267,196 +230,94 @@ export const Checkout = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-beige)] pb-32">
+    <div className="min-h-screen bg-[#f7f5f0] pb-32">
       {/* Header */}
-      <div className="bg-white sticky top-0 z-30 shadow-sm px-4 py-4 flex items-center gap-4">
-        <button onClick={() => step === 1 ? navigate(-1) : setStep(1)} className="p-2 bg-gray-50 rounded-full text-[var(--color-chocolate)]">
+      <div className="bg-white sticky top-0 z-30 shadow-sm px-4 py-3 flex items-center gap-3 pt-safe">
+        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-[var(--color-chocolate)] hover:bg-gray-50 rounded-full transition-colors">
           <ArrowLeft size={20} />
         </button>
-        <h1 className="font-script text-3xl text-[var(--color-terracotta)]">Checkout</h1>
-      </div>
-
-      {/* Step Indicator */}
-      <div className="px-6 py-4 flex items-center justify-center">
-        <div className="flex items-center w-full max-w-xs">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= 1 ? 'bg-[var(--color-terracotta)] text-white' : 'bg-gray-200 text-gray-500'}`}>1</div>
-          <div className={`flex-1 h-1 mx-2 rounded-full ${step >= 2 ? 'bg-[var(--color-terracotta)]' : 'bg-gray-200'}`} />
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= 2 ? 'bg-[var(--color-terracotta)] text-white' : 'bg-gray-200 text-gray-500'}`}>2</div>
-          <div className={`flex-1 h-1 mx-2 rounded-full ${step >= 3 ? 'bg-[var(--color-terracotta)]' : 'bg-gray-200'}`} />
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= 3 ? 'bg-[var(--color-terracotta)] text-white' : 'bg-gray-200 text-gray-500'}`}>3</div>
+        <div>
+          <h1 className="font-black text-lg text-[var(--color-chocolate)] tracking-tight leading-none">Payment</h1>
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">Secure Checkout</p>
         </div>
       </div>
 
-      <div className="p-4">
-        {step === 1 && (
+      <div className="p-3">
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             className="space-y-6"
           >
-            <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
-              <h3 className="font-bold text-[var(--color-chocolate)] flex items-center gap-2 mb-4">
-                <Phone size={18} className="text-[var(--color-terracotta)]" />
-                Contact Info
-              </h3>
-              
-              <div>
-                <label className="text-xs font-semibold text-gray-500 mb-1 block">Full Name *</label>
-                <input 
-                  type="text" 
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)]"
-                  placeholder="John Doe"
-                />
-              </div>
-              
-              <div>
-                <label className="text-xs font-semibold text-gray-500 mb-1 block">WhatsApp Number *</label>
-                <input 
-                  type="tel" 
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)]"
-                  placeholder="+91 98765 43210"
-                />
-                <p className="text-[10px] text-gray-400 mt-1">We'll send order updates here.</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
-              <h3 className="font-bold text-[var(--color-chocolate)] flex items-center gap-2 mb-4">
-                <MapPin size={18} className="text-[var(--color-terracotta)]" />
-                Delivery Address
-              </h3>
-
-              {profile?.addresses && profile.addresses.length > 0 && (
-                <div className="mb-4">
-                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Saved Addresses</label>
-                  <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
-                    {profile.addresses.map((addr) => (
-                      <button
-                        key={addr.id}
-                        type="button"
-                        onClick={() => setFormData({ ...formData, address: addr.street })}
-                        className={`shrink-0 px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
-                          formData.address === addr.street 
-                            ? 'bg-[var(--color-terracotta)] border-[var(--color-terracotta)] text-white' 
-                            : 'bg-gray-50 border-gray-100 text-gray-500'
-                        }`}
-                      >
-                        {addr.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              <div>
-                <label className="text-xs font-semibold text-gray-500 mb-1 block">Complete Address *</label>
-                <textarea 
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)] resize-none h-24"
-                  placeholder="House/Flat No., Building Name, Street, Area, Landmark"
-                />
-              </div>
-              
-              <div>
-                <label className="text-xs font-semibold text-gray-500 mb-1 block">Delivery Instructions (Optional)</label>
-                <input 
-                  type="text" 
-                  name="instructions"
-                  value={formData.instructions}
-                  onChange={handleInputChange}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)]"
-                  placeholder="E.g., Leave at security, call before arriving"
-                />
-              </div>
-
-              {user && (
-                <label className="flex items-center gap-3 cursor-pointer pt-2">
-                  <div 
-                    onClick={() => setSaveAddress(!saveAddress)}
-                    className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${saveAddress ? 'bg-[var(--color-terracotta)] border-[var(--color-terracotta)]' : 'border-gray-300'}`}
-                  >
-                    {saveAddress && <CheckCircle2 size={14} className="text-white" />}
-                  </div>
-                  <span className="text-sm text-gray-600 font-medium">Save this address for future orders</span>
-                </label>
-              )}
-            </div>
-          </motion.div>
-        )}
-
-        {step === 2 && (
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-6"
-          >
-            <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
-              <h3 className="font-bold text-[var(--color-chocolate)] flex items-center gap-2 mb-4">
-                <CreditCard size={18} className="text-[var(--color-terracotta)]" />
-                Payment Method
-              </h3>
+            <div className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100">
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Select Payment Method</p>
               
               <div className="space-y-3">
+                {/* Razorpay Mock */}
                 <label 
-                  onClick={() => setFormData({ ...formData, paymentMethod: 'upi' })}
-                  className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.paymentMethod === 'upi' ? 'border-[var(--color-terracotta)] bg-[var(--color-beige)]' : 'border-gray-100'}`}
+                  onClick={() => setPaymentMethod('razorpay')}
+                  className={`flex items-center justify-between p-4 rounded-2xl border-2 cursor-pointer transition-all relative overflow-hidden ${paymentMethod === 'razorpay' ? 'border-[var(--color-terracotta)] bg-orange-50/50' : 'border-gray-100 hover:border-gray-200 bg-white'}`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.paymentMethod === 'upi' ? 'border-[var(--color-terracotta)]' : 'border-gray-300'}`}>
-                      {formData.paymentMethod === 'upi' && <div className="w-2.5 h-2.5 rounded-full bg-[var(--color-terracotta)]" />}
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${paymentMethod === 'razorpay' ? 'bg-[var(--color-terracotta)] text-white' : 'bg-gray-50 text-gray-500'}`}>
+                      <Wallet size={20} />
                     </div>
-                    <span className="font-semibold text-[var(--color-chocolate)]">UPI (GPay, PhonePe, Paytm)</span>
+                    <div>
+                      <span className="font-bold text-sm text-[var(--color-chocolate)] block">UPI, Cards & NetBanking</span>
+                      <span className="text-[10px] font-medium text-gray-500">Powered by Razorpay</span>
+                    </div>
                   </div>
+                  {paymentMethod === 'razorpay' && <CheckCircle2 size={20} className="text-[var(--color-terracotta)] absolute right-4" />}
                 </label>
                 
+                {/* WhatsApp Mock */}
                 <label 
-                  onClick={() => setFormData({ ...formData, paymentMethod: 'card' })}
-                  className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.paymentMethod === 'card' ? 'border-[var(--color-terracotta)] bg-[var(--color-beige)]' : 'border-gray-100'}`}
+                  onClick={() => setPaymentMethod('whatsapp')}
+                  className={`flex items-center justify-between p-4 rounded-2xl border-2 cursor-pointer transition-all relative overflow-hidden ${paymentMethod === 'whatsapp' ? 'border-[#25D366] bg-[#25D366]/5' : 'border-gray-100 hover:border-gray-200 bg-white'}`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.paymentMethod === 'card' ? 'border-[var(--color-terracotta)]' : 'border-gray-300'}`}>
-                      {formData.paymentMethod === 'card' && <div className="w-2.5 h-2.5 rounded-full bg-[var(--color-terracotta)]" />}
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${paymentMethod === 'whatsapp' ? 'bg-[#25D366] text-white' : 'bg-gray-50 text-gray-500'}`}>
+                      <MessageCircle size={20} />
                     </div>
-                    <span className="font-semibold text-[var(--color-chocolate)]">Credit / Debit Card</span>
+                    <div>
+                      <span className="font-bold text-sm text-[var(--color-chocolate)] block">Order via WhatsApp</span>
+                      <span className="text-[10px] font-medium text-gray-500">Fast & Personalized Service</span>
+                    </div>
                   </div>
+                  {paymentMethod === 'whatsapp' && <CheckCircle2 size={20} className="text-[#25D366] absolute right-4" />}
                 </label>
 
+                {/* COD */}
                 <label 
-                  onClick={() => setFormData({ ...formData, paymentMethod: 'cod' })}
-                  className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all ${formData.paymentMethod === 'cod' ? 'border-[var(--color-terracotta)] bg-[var(--color-beige)]' : 'border-gray-100'}`}
+                  onClick={() => setPaymentMethod('cod')}
+                  className={`flex items-center justify-between p-4 rounded-2xl border-2 cursor-pointer transition-all relative overflow-hidden ${paymentMethod === 'cod' ? 'border-[var(--color-terracotta)] bg-orange-50/50' : 'border-gray-100 hover:border-gray-200 bg-white'}`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.paymentMethod === 'cod' ? 'border-[var(--color-terracotta)]' : 'border-gray-300'}`}>
-                      {formData.paymentMethod === 'cod' && <div className="w-2.5 h-2.5 rounded-full bg-[var(--color-terracotta)]" />}
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${paymentMethod === 'cod' ? 'bg-[var(--color-terracotta)] text-white' : 'bg-gray-50 text-gray-500'}`}>
+                      <Banknote size={20} />
                     </div>
-                    <span className="font-semibold text-[var(--color-chocolate)]">Cash on Delivery</span>
+                    <div>
+                      <span className="font-bold text-sm text-[var(--color-chocolate)] block">Cash on Delivery</span>
+                      <span className="text-[10px] font-medium text-gray-500">Pay when your treats arrive</span>
+                    </div>
                   </div>
+                  {paymentMethod === 'cod' && <CheckCircle2 size={20} className="text-[var(--color-terracotta)] absolute right-4" />}
                 </label>
               </div>
             </div>
           </motion.div>
-        )}
       </div>
 
-      {/* Footer Action */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-[428px] mx-auto bg-white border-t border-gray-100 p-4 z-30 pb-safe">
+      {/* Fixed Footer Action */}
+      <div className="fixed bottom-0 left-0 right-0 max-w-[428px] mx-auto bg-white shadow-[0_-4px_10px_-1px_rgba(0,0,0,0.08)] p-4 z-30 pb-safe">
         <button 
-          onClick={handleNext}
+          onClick={handlePayment}
           disabled={isProcessing}
-          className="w-full bg-[var(--color-chocolate)] text-[var(--color-cream)] py-4 rounded-2xl font-bold text-lg shadow-lg hover:bg-opacity-90 transition-all flex items-center justify-center gap-2"
+          className={`w-full py-4 rounded-2xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 text-white ${paymentMethod === 'whatsapp' ? 'bg-[#25D366] hover:bg-[#20bd5a]' : 'bg-[var(--color-terracotta)] hover:bg-orange-600 active:scale-[0.98]'}`}
         >
           {isProcessing ? (
             <div className="w-6 h-6 border-2 border-[var(--color-cream)] border-t-transparent rounded-full animate-spin" />
           ) : (
-            step === 1 ? 'Continue to Payment' : `Pay ₹${checkoutState.grandTotal || (cartTotal + 50)}`
+            paymentMethod === 'whatsapp' ? `Send Order to WhatsApp • ₹${checkoutState.grandTotal}` : `Pay ₹${checkoutState.grandTotal}`
           )}
         </button>
       </div>

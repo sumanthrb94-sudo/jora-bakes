@@ -303,19 +303,24 @@ export const OrderTracking = () => {
           transition={{ delay: 0.2 }}
           className="grid grid-cols-2 gap-4"
         >
-          <button className="bg-white rounded-2xl p-4 shadow-sm flex flex-col items-center justify-center gap-2 text-[var(--color-chocolate)] hover:bg-gray-50 transition-colors">
+          <a 
+            href="https://wa.me/917799934943" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="bg-white rounded-2xl p-4 shadow-sm flex flex-col items-center justify-center gap-2 text-[var(--color-chocolate)] hover:bg-gray-50 transition-colors"
+          >
             <div className="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
               <MessageCircle size={20} />
             </div>
             <span className="text-xs font-semibold">WhatsApp Us</span>
-          </button>
+          </a>
           
-          <button className="bg-white rounded-2xl p-4 shadow-sm flex flex-col items-center justify-center gap-2 text-[var(--color-chocolate)] hover:bg-gray-50 transition-colors">
+          <a href="tel:+917799934943" className="bg-white rounded-2xl p-4 shadow-sm flex flex-col items-center justify-center gap-2 text-[var(--color-chocolate)] hover:bg-gray-50 transition-colors">
             <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
               <Phone size={20} />
             </div>
             <span className="text-xs font-semibold">Call Support</span>
-          </button>
+          </a>
         </motion.div>
       </div>
     </div>

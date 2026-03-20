@@ -1,28 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { User, MapPin, Package, Settings, LogOut, ChevronRight, Star, Bell } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { User, MapPin, Package, Settings, LogOut, ChevronRight, Bell, ShieldCheck } from 'lucide-react';
+import { AuthView } from '../components/AuthView';
  
 export const Profile = () => {
-  const { user, profile, loading, login, logout, isAdmin, loginEmail, registerEmail } = useAuth();
+  const { user, profile, loading, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [isEmailLoading, setIsEmailLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  // Swiggy Style: Split top actions into a grid to save vertical space
+  const quickLinks = [
+    { icon: Package, label: 'Orders', path: '/orders' },
+    { icon: MapPin, label: 'Addresses', path: '/addresses' },
+    { icon: Bell, label: 'Alerts', path: '/notifications' },
+  ];
 
-  const menuItems = [
-    { icon: Package, label: 'My Orders', desc: 'Track, return, or buy things again', path: '/orders' },
-    { icon: Bell, label: 'Notifications', desc: 'Order updates and alerts', path: '/notifications' },
-    { icon: MapPin, label: 'Saved Addresses', desc: 'Manage delivery locations', path: '/addresses' },
+  // Subdued list for settings
+  const listItems = [
     { icon: Settings, label: 'Account Settings', desc: 'Password, notifications, preferences', path: '/settings' },
-    ...(isAdmin ? [{ icon: User, label: 'Admin Dashboard', desc: 'Manage orders, users, and products', path: '/admin' }] : []),
+    ...(isAdmin ? [{ icon: ShieldCheck, label: 'Admin Dashboard', desc: 'Manage orders, users, and products', path: '/admin' }] : []),
   ];
 
   const handleLogout = async () => {
@@ -31,45 +28,6 @@ export const Profile = () => {
       navigate('/');
     } catch (error) {
       console.error("Logout failed:", error);
-    }
-  };
-
-  const handleEmailAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) {
-      toast.error("Please enter both email and password.");
-      return;
-    }
-    if (isSignUp && (!name || !phone)) {
-      toast.error("Please enter your name and phone number.");
-      return;
-    }
-    setIsEmailLoading(true);
-    try {
-      if (isSignUp) {
-        await registerEmail(email, password, name, phone);
-      } else {
-        await loginEmail(email, password);
-      }
-    } catch (error: any) {
-      let msg = "Authentication failed";
-      if (error.code === 'auth/invalid-credential') msg = "Invalid email or password";
-      else if (error.code === 'auth/email-already-in-use') msg = "Email is already in use";
-      else if (error.code === 'auth/weak-password') msg = "Password should be at least 6 characters";
-      toast.error(msg);
-    } finally {
-      setIsEmailLoading(false);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    setIsGoogleLoading(true);
-    try {
-      await login();
-    } catch (error) {
-      toast.error("Google login failed.");
-    } finally {
-      setIsGoogleLoading(false);
     }
   };
 
@@ -84,164 +42,103 @@ export const Profile = () => {
   }
 
   if (!user) {
-    return (
-      <div className="min-h-screen bg-[var(--color-beige)] flex flex-col items-center justify-center p-8 text-center">
-        <div className="w-full max-w-[320px] flex flex-col items-center">
-          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-[var(--color-terracotta)] mb-8 shadow-sm border-4 border-white">
-            <User size={40} />
-          </div>
-          
-          <h1 className="font-script text-5xl text-[var(--color-chocolate)] mb-4">Join JORA BAKES 's Circle</h1>
-          
-          <p className="text-[var(--color-chocolate)] opacity-70 text-base leading-relaxed mb-8 w-full">
-            Log in to track orders, save addresses, and earn loyalty points for free treats!
-          </p>
-          
-          <form onSubmit={handleEmailAuth} className="w-full space-y-3 mb-6">
-            {isSignUp && (
-              <>
-                <input 
-                  type="text" 
-                  placeholder="Full Name" 
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)]"
-                />
-                <input 
-                  type="tel" 
-                  placeholder="Phone Number" 
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)]"
-                />
-              </>
-            )}
-            <input 
-              type="email" 
-              placeholder="Email Address" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)]"
-            />
-            <input 
-              type="password" 
-              placeholder="Password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)]"
-            />
-            <button 
-              type="submit"
-              disabled={isEmailLoading || isGoogleLoading}
-              className="w-full bg-[var(--color-chocolate)] text-[var(--color-cream)] py-3 rounded-xl font-bold text-sm shadow-md hover:bg-opacity-90 transition-all mt-2 disabled:opacity-70 flex justify-center items-center h-11"
-            >
-              {isEmailLoading ? (
-                <div className="w-5 h-5 border-2 border-[var(--color-cream)] border-t-transparent rounded-full animate-spin" />
-              ) : (
-                isSignUp ? 'Create Account' : 'Sign In'
-              )}
-            </button>
-            <button 
-              type="button" 
-              onClick={() => setIsSignUp(!isSignUp)}
-              disabled={isEmailLoading || isGoogleLoading}
-              className="text-xs text-gray-500 hover:text-[var(--color-terracotta)] mt-2 disabled:opacity-50"
-            >
-              {isSignUp ? 'Already have an account? Sign in' : 'Need an account? Sign up'}
-            </button>
-          </form>
-          
-          <div className="relative w-full mb-6 flex items-center justify-center">
-            <div className="border-t border-gray-300 w-full absolute"></div>
-            <span className="bg-[var(--color-beige)] px-3 text-xs text-gray-400 relative z-10 font-medium tracking-wider">OR</span>
-          </div>
-
-          <button 
-            onClick={handleGoogleLogin}
-            disabled={isEmailLoading || isGoogleLoading}
-            className="w-full bg-white text-[var(--color-chocolate)] border border-gray-200 py-3 rounded-xl font-bold text-sm shadow-sm hover:bg-gray-50 transition-all transform active:scale-95 flex items-center justify-center gap-3 disabled:opacity-70 h-11"
-          >
-            {isGoogleLoading ? (
-              <div className="w-5 h-5 border-2 border-[var(--color-chocolate)] border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <>
-                <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5 bg-white rounded-full p-0.5" />
-                Continue with Google
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-    );
+    return <AuthView title="Join JORA BAKES" subtitle="Log in to track orders, save addresses, and earn loyalty points!" />;
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-beige)] pb-32">
-      {/* Header */}
-      <div className="bg-white sticky top-0 z-30 shadow-sm px-4 py-4">
-        <h1 className="font-script text-3xl text-[var(--color-terracotta)]">Profile</h1>
+    <div className="min-h-screen bg-[#f7f5f0] pb-32">
+      {/* Swiggy Style Unified Header & User Banner */}
+      <div className="bg-white pt-10 pb-6 px-5 rounded-b-[32px] shadow-sm mb-5">
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 bg-gray-100 rounded-full border-2 border-white shadow-sm overflow-hidden shrink-0">
+              {(profile?.photoURL || user.photoURL) ? (
+                <img src={profile?.photoURL || user.photoURL} alt={user.displayName || ''} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-[var(--color-terracotta)] text-white font-bold text-2xl">
+                  {(user.displayName || profile?.name || 'G')[0].toUpperCase()}
+                </div>
+              )}
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-[var(--color-chocolate)] tracking-tight mb-0.5">
+                {user.displayName || profile?.name || 'Jora Guest'}
+              </h2>
+              <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
+                {profile?.phone || user.phoneNumber || 'No phone added'}
+              </p>
+              <p className="text-xs font-medium text-gray-500">{user.email}</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => navigate('/settings')} 
+            className="text-[var(--color-terracotta)] text-[10px] font-black uppercase tracking-wider bg-orange-50 px-3 py-1.5 rounded-full hover:bg-orange-100 transition-colors"
+          >
+            Edit
+          </button>
+        </div>
       </div>
 
       <div className="p-4 space-y-6">
-        {/* User Info Card */}
+        {/* Space-Efficient Quick Links Grid */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-3xl p-6 shadow-sm flex items-center gap-4 relative overflow-hidden"
+          className="grid grid-cols-3 gap-3"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--color-sage)] opacity-10 rounded-bl-full" />
-          
-          <div className="w-16 h-16 bg-[var(--color-beige)] rounded-full flex items-center justify-center text-[var(--color-terracotta)] shrink-0 border-2 border-[var(--color-cream)] overflow-hidden">
-            {(profile?.photoURL || user.photoURL) ? (
-              <img src={profile?.photoURL || user.photoURL} alt={user.displayName || ''} className="w-full h-full object-cover" />
-            ) : (
-              <User size={32} />
-            )}
-          </div>
-          
-          <div className="flex-1 z-10">
-            <h2 className="text-xl font-bold text-[var(--color-chocolate)] mb-1">{user.displayName}</h2>
-            <p className="text-xs text-gray-400">{user.email}</p>
-          </div>
-        </motion.div>
-
-        {/* Menu Items */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white rounded-3xl shadow-sm overflow-hidden"
-        >
-          {menuItems.map((item, index) => (
+          {quickLinks.map((item, index) => (
             <button 
               key={item.label}
-              onClick={() => item.path && navigate(item.path)}
-              className={`w-full flex items-center p-4 transition-colors hover:bg-gray-50 ${
-                index !== menuItems.length - 1 ? 'border-b border-gray-100' : ''
-              }`}
+              onClick={() => navigate(item.path)}
+              className="bg-white py-4 px-2 rounded-[24px] shadow-sm flex flex-col items-center justify-center gap-2.5 hover:bg-gray-50 transition-colors active:scale-95"
             >
-              <div className="w-10 h-10 rounded-full bg-[var(--color-beige)] flex items-center justify-center text-[var(--color-terracotta)] shrink-0 mr-4">
+              <div className="w-10 h-10 rounded-full bg-orange-50 text-[var(--color-terracotta)] flex items-center justify-center">
                 <item.icon size={20} />
               </div>
-              <div className="flex-1 text-left">
-                <h4 className="font-semibold text-[var(--color-chocolate)] text-sm">{item.label}</h4>
-                <p className="text-xs text-gray-500">{item.desc}</p>
-              </div>
-              <ChevronRight size={20} className="text-gray-400" />
+              <span className="text-[11px] font-bold text-gray-700">{item.label}</span>
             </button>
           ))}
         </motion.div>
 
-        {/* Logout */}
-        <motion.button 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 p-4 text-red-500 font-semibold text-sm bg-white rounded-2xl shadow-sm hover:bg-red-50 transition-colors"
+        {/* Detailed Options List */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white rounded-[28px] shadow-sm overflow-hidden"
         >
-          <LogOut size={18} />
-          Log Out
+          {listItems.map((item, index) => (
+            <button 
+              key={item.label}
+              onClick={() => item.path && navigate(item.path)}
+              className={`w-full flex items-center p-5 transition-colors hover:bg-gray-50 ${
+                index !== listItems.length - 1 ? 'border-b border-gray-50' : ''
+              }`}
+            >
+              <div className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 shrink-0 mr-4">
+                <item.icon size={18} />
+              </div>
+              <div className="flex-1 text-left">
+                <h4 className="font-bold text-sm text-[var(--color-chocolate)]">{item.label}</h4>
+                <p className="text-[11px] text-gray-400 font-medium mt-0.5">{item.desc}</p>
+              </div>
+              <ChevronRight size={18} className="text-gray-300" />
+            </button>
+          ))}
+        </motion.div>
+
+        {/* Premium Logout Button */}
+        <motion.button 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          onClick={handleLogout}
+          className="w-full bg-white flex justify-between items-center p-5 rounded-[24px] shadow-sm hover:bg-red-50 transition-colors group"
+        >
+          <span className="font-bold text-sm text-gray-700 group-hover:text-red-600 transition-colors">Log Out</span>
+          <div className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-red-100 group-hover:text-red-500 transition-colors">
+            <LogOut size={16} />
+          </div>
         </motion.button>
       </div>
     </div>

@@ -68,16 +68,19 @@ export const SavedAddresses = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-beige)] pb-32">
-      {/* Header */}
-      <div className="bg-white sticky top-0 z-30 shadow-sm px-4 py-4 flex items-center gap-4">
-        <button onClick={() => navigate('/profile')} className="p-2 bg-gray-50 rounded-full text-[var(--color-chocolate)]">
+    <div className="min-h-screen bg-[#f7f5f0] pb-32">
+      {/* Swiggy Style Sticky Header */}
+      <div className="bg-white sticky top-0 z-30 shadow-sm px-4 py-3 flex items-center gap-3 pt-safe">
+        <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-[var(--color-chocolate)] hover:bg-gray-50 rounded-full transition-colors">
           <ArrowLeft size={20} />
         </button>
-        <h1 className="font-script text-3xl text-[var(--color-terracotta)]">Saved Addresses</h1>
+        <div>
+          <h1 className="font-black text-lg text-[var(--color-chocolate)] tracking-tight leading-none">Saved Addresses</h1>
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">Manage Locations</p>
+        </div>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="p-3 space-y-3">
         <AnimatePresence mode="wait">
           {!isAdding ? (
             <motion.div
@@ -107,24 +110,24 @@ export const SavedAddresses = () => {
                     <motion.div
                       key={addr.id}
                       layout
-                      className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex justify-between items-start"
+                      className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex justify-between items-start cursor-pointer hover:border-[var(--color-terracotta)] transition-colors group"
                     >
                       <div className="flex gap-4">
-                        <div className="w-10 h-10 rounded-full bg-[var(--color-beige)] flex items-center justify-center text-[var(--color-terracotta)] shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-gray-50 group-hover:bg-orange-50 flex items-center justify-center text-gray-500 group-hover:text-[var(--color-terracotta)] shrink-0 transition-colors">
                           {getLabelIcon(addr.label)}
                         </div>
                         <div>
-                          <h4 className="font-bold text-[var(--color-chocolate)]">{addr.label}</h4>
-                          <p className="text-sm text-gray-600 mt-1">{addr.street}</p>
-                          <p className="text-xs text-gray-400">{addr.city} - {addr.pincode}</p>
+                          <h4 className="font-bold text-sm text-[var(--color-chocolate)]">{addr.label}</h4>
+                          <p className="text-xs text-gray-500 font-medium mt-1 leading-relaxed">{addr.street}</p>
+                          <p className="text-[11px] font-bold text-gray-400 mt-1 uppercase tracking-wider">{addr.city} • {addr.pincode}</p>
                           {addr.instructions && (
-                            <p className="text-[10px] text-[var(--color-sage)] mt-2 italic">"{addr.instructions}"</p>
+                            <p className="text-[10px] bg-gray-50 px-2 py-1 rounded text-gray-500 mt-2 font-medium">Note: {addr.instructions}</p>
                           )}
                         </div>
                       </div>
                       <button 
                         onClick={() => handleDeleteAddress(addr.id)}
-                        className="p-2 text-gray-300 hover:text-red-500 transition-colors"
+                        className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -132,9 +135,9 @@ export const SavedAddresses = () => {
                   ))}
                   <button 
                     onClick={() => setIsAdding(true)}
-                    className="w-full py-4 border-2 border-dashed border-gray-200 rounded-2xl text-gray-400 font-bold flex items-center justify-center gap-2 hover:border-[var(--color-terracotta)] hover:text-[var(--color-terracotta)] transition-all"
+                    className="w-full py-4 border-2 border-dashed border-gray-200 rounded-2xl text-[var(--color-terracotta)] bg-white font-bold text-sm flex items-center justify-center gap-2 hover:border-[var(--color-terracotta)] hover:bg-orange-50 transition-all shadow-sm"
                   >
-                    <Plus size={20} /> Add New Address
+                    <Plus size={18} strokeWidth={2.5} /> Add New Address
                   </button>
                 </>
               )}
@@ -145,24 +148,25 @@ export const SavedAddresses = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="bg-white rounded-3xl p-6 shadow-sm"
+              className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100"
             >
-              <h3 className="text-xl font-bold text-[var(--color-chocolate)] mb-6">New Address</h3>
+              <h3 className="text-sm font-black text-[var(--color-chocolate)] uppercase tracking-wider mb-5">Add New Address</h3>
               <form onSubmit={handleAddAddress} className="space-y-4">
                 <div>
-                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Label</label>
+                  <label className="text-xs font-bold text-gray-500 mb-2 block">Save address as</label>
                   <div className="flex gap-2">
                     {['Home', 'Office', 'Gift', 'Other'].map((l) => (
                       <button
                         key={l}
                         type="button"
                         onClick={() => setNewAddress({ ...newAddress, label: l as any })}
-                        className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${
+                        className={`flex-1 py-2.5 rounded-xl text-xs font-bold border transition-all shadow-sm flex items-center justify-center gap-1.5 ${
                           newAddress.label === l 
-                            ? 'bg-[var(--color-terracotta)] border-[var(--color-terracotta)] text-white' 
-                            : 'border-gray-100 text-gray-500'
+                            ? 'bg-orange-50 border-[var(--color-terracotta)] text-[var(--color-terracotta)]' 
+                            : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300'
                         }`}
                       >
+                        {getLabelIcon(l)}
                         {l}
                       </button>
                     ))}
@@ -170,49 +174,49 @@ export const SavedAddresses = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Street Address</label>
+                  <label className="text-xs font-bold text-gray-500 mb-2 block">Complete Address</label>
                   <input 
                     type="text"
                     required
                     value={newAddress.street}
                     onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })}
                     placeholder="House No, Building, Street"
-                    className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[var(--color-terracotta)]"
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)] shadow-sm"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">City</label>
+                    <label className="text-xs font-bold text-gray-500 mb-2 block">City</label>
                     <input 
                       type="text"
                       required
                       value={newAddress.city}
                       onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
                       placeholder="City"
-                      className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[var(--color-terracotta)]"
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)] shadow-sm"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Pincode</label>
+                    <label className="text-xs font-bold text-gray-500 mb-2 block">Pincode</label>
                     <input 
                       type="text"
                       required
                       value={newAddress.pincode}
                       onChange={(e) => setNewAddress({ ...newAddress, pincode: e.target.value })}
                       placeholder="6-digit PIN"
-                      className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[var(--color-terracotta)]"
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)] shadow-sm"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Delivery Instructions (Optional)</label>
+                  <label className="text-xs font-bold text-gray-500 mb-2 block">Delivery Instructions</label>
                   <textarea 
                     value={newAddress.instructions}
                     onChange={(e) => setNewAddress({ ...newAddress, instructions: e.target.value })}
                     placeholder="E.g. Ring the bell, Leave at gate"
-                    className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[var(--color-terracotta)] h-20 resize-none"
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)] shadow-sm h-20 resize-none placeholder:font-medium"
                   />
                 </div>
 
@@ -220,14 +224,14 @@ export const SavedAddresses = () => {
                   <button 
                     type="button"
                     onClick={() => setIsAdding(false)}
-                    className="flex-1 py-4 rounded-2xl font-bold text-gray-500 bg-gray-100"
+                    className="flex-1 py-3.5 rounded-xl font-bold text-sm text-gray-500 bg-gray-100 hover:bg-gray-200 transition-colors"
                   >
                     Cancel
                   </button>
                   <button 
                     type="submit"
                     disabled={isSaving}
-                    className="flex-1 py-4 rounded-2xl font-bold text-white bg-[var(--color-terracotta)] shadow-lg disabled:opacity-70 flex items-center justify-center"
+                    className="flex-1 py-3.5 rounded-xl font-bold text-sm text-white bg-[var(--color-terracotta)] shadow-md hover:bg-orange-600 active:scale-95 transition-all disabled:opacity-70 flex items-center justify-center"
                   >
                     {isSaving ? (
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

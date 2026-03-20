@@ -1,15 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Plus, Minus, ArrowLeft, Gift, Calendar, Clock } from 'lucide-react';
+import { Trash2, Plus, Minus, ArrowLeft, Gift, Calendar, Clock, ReceiptText, ShoppingBag, ChevronRight, MapPin, Home } from 'lucide-react';
 
 export const Cart = () => {
   const { cart, updateQuantity, removeFromCart, cartTotal } = useCart();
   const navigate = useNavigate();
+  const { profile } = useAuth();
   const [giftWrap, setGiftWrap] = useState(false);
   const [deliveryDate, setDeliveryDate] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('');
+  const [selectedAddress, setSelectedAddress] = useState(profile?.addresses?.[0] || null);
+
+  // Hydrate address if profile loads asynchronously
+  useEffect(() => {
+    if (profile?.addresses?.length && !selectedAddress) {
+      setSelectedAddress(profile.addresses[0]);
+    }
+  }, [profile, selectedAddress]);
 
   const deliveryFee = cartTotal > 999 ? 0 : 50;
   const giftWrapFee = giftWrap ? 100 : 0;
@@ -119,6 +129,39 @@ export const Cart = () => {
           </AnimatePresence>
         </div>
 
+        {/* Delivery Address Block */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
+          <div className="flex justify-between items-center mb-1">
+            <h3 className="font-bold text-[var(--color-chocolate)] flex items-center gap-2">
+              <MapPin size={18} className="text-[var(--color-terracotta)]" />
+              Delivery Address
+            </h3>
+            <button 
+              onClick={() => navigate('/addresses')} 
+              className="text-xs font-bold text-[var(--color-terracotta)] bg-orange-50 px-3 py-1.5 rounded-lg hover:bg-orange-100 transition-colors"
+            >
+              {selectedAddress ? 'Change' : 'Add'}
+            </button>
+          </div>
+
+          {selectedAddress ? (
+            <div className="flex gap-3 items-start bg-gray-50/50 p-3 rounded-xl border border-gray-100">
+              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                {selectedAddress.label === 'Home' ? <Home size={14} className="text-[var(--color-terracotta)]" /> : <MapPin size={14} className="text-[var(--color-terracotta)]" />}
+              </div>
+              <div className="flex-1">
+                <h4 className="font-bold text-sm text-[var(--color-chocolate)]">{selectedAddress.label}</h4>
+                <p className="text-xs text-gray-500 line-clamp-2 mt-0.5 leading-relaxed font-medium">{selectedAddress.street}</p>
+                {selectedAddress.instructions && <p className="text-[10px] text-[var(--color-terracotta)] mt-1 font-bold">Note: {selectedAddress.instructions}</p>}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-orange-50 text-[var(--color-terracotta)] p-3 rounded-xl text-xs font-semibold flex items-center gap-2">
+              <MapPin size={14} /> Please add a delivery address to proceed.
+            </div>
+          )}
+        </div>
+
         {/* Delivery Options */}
         <div className="bg-white rounded-2xl p-5 shadow-sm space-y-4">
           <h3 className="font-bold text-[var(--color-chocolate)] flex items-center gap-2">
@@ -226,12 +269,13 @@ export const Cart = () => {
               deliveryDate, 
               deliveryTime, 
               giftWrap,
-              grandTotal
+                grandTotal,
+                selectedAddress
             } 
           })}
-          disabled={!deliveryDate || !deliveryTime}
+            disabled={!deliveryDate || !deliveryTime || !selectedAddress}
           className={`w-full py-4 rounded-2xl font-bold text-lg shadow-lg transition-colors flex items-center justify-center gap-2 ${
-            !deliveryDate || !deliveryTime
+              !deliveryDate || !deliveryTime || !selectedAddress
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
               : 'bg-[var(--color-chocolate)] text-[var(--color-cream)] hover:bg-opacity-90'
           }`}

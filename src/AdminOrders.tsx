@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
-import { subscribeToCollection, updateDocument } from './services/firestore';
+import { subscribeToCollection, updateDocument, createDocument } from './services/firestore';
 import { Order } from './types';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Clock, Package, Truck, RefreshCw, ArrowLeft } from 'lucide-react';
@@ -44,12 +44,41 @@ export const AdminOrders = () => {
     };
   }, [isAdmin, authLoading, navigate]);
 
-  const handleStatusUpdate = async (orderId: string, newStatus: string) => {
-    setUpdating(orderId);
+  const handleStatusUpdate = async (order: Order, newStatus: string) => {
+    setUpdating(order.id);
     try {
-      await updateDocument('orders', orderId, { status: newStatus });
-      // Removed explicit toast to prevent double popups when testing on your own orders. 
-      // The real-time subscription will instantly update the UI instead.
+      await updateDocument('orders', order.id, { status: newStatus });
+      
+      // Generate real-time alerts for the user
+      if (order.userId && order.userId !== 'guest') {
+        let title = '';
+        let message = '';
+        
+        if (newStatus === 'delivered') {
+          title = 'Order Delivered! 🎉';
+          message = `Your order #${order.id.slice(-6)} has been delivered. Enjoy your treats!`;
+        } else if (newStatus === 'out_for_delivery') {
+          title = 'Out for Delivery 🚚';
+          message = `Your order #${order.id.slice(-6)} is on its way to you!`;
+        } else if (newStatus === 'baking') {
+          title = 'Baking in Progress 👨‍🍳';
+          message = `We've started baking your order #${order.id.slice(-6)}!`;
+        }
+
+        if (title && message) {
+          const notifId = `notif_${Date.now()}`;
+          await createDocument('notifications', {
+            id: notifId,
+            userId: order.userId,
+            title,
+            message,
+            type: 'order_status',
+            read: false,
+            createdAt: new Date().toISOString(),
+            orderId: order.id
+          }, notifId);
+        }
+      }
     } catch (error) {
       console.error("Failed to update order status:", error);
       toast.error("Failed to update order status");
@@ -138,7 +167,7 @@ export const AdminOrders = () => {
                           {statuses.map(status => (
                             <button
                               key={status}
-                              onClick={() => handleStatusUpdate(order.id, status)}
+                              onClick={() => handleStatusUpdate(order, status)}
                               disabled={updating === order.id}
                               className={`px-3 py-1 rounded-full text-[10px] font-bold transition-colors ${order.status === status
                                 ? 'bg-[var(--color-terracotta)] text-white'
