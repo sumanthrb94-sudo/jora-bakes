@@ -10,7 +10,7 @@ interface ProductCardProps {
   onQuickView: (product: Product) => void;
 }
 
-export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }) => {
   const { cart, addToCart, updateQuantity } = useCart();
 
   // Find all items in the cart that match this product, regardless of variant
@@ -21,12 +21,15 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
   const cartItem = itemsInCart.length === 1 ? itemsInCart[0] : null;
 
   const outOfStock = product.stockQuantity !== undefined ? product.stockQuantity <= 0 : !product.isAvailable;
+  const hasCustomizations = product.customizationGroups && product.customizationGroups.length > 0;
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (outOfStock) return;
-    if (product?.variants && product.variants.length > 0) {
+    if (hasCustomizations || (product?.variants && product.variants.length > 1)) {
+      onQuickView(product); // Force modal open to pick flavors
+    } else if (product?.variants && product.variants.length === 1) {
       addToCart(product, 1, product.variants[0]);
     }
   };
@@ -38,8 +41,8 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
       toast.error(`Only ${product.stockQuantity} available in stock.`);
       return;
     }
-    if (itemsInCart.length > 1 || !cartItem) {
-      onQuickView(product); // Open modal only if they have multiple different variants of this product in cart
+    if (hasCustomizations || (product.variants && product.variants.length > 1) || itemsInCart.length > 1 || !cartItem) {
+      onQuickView(product); // Intercept incrementor and open modal so they can choose their specific flavor
     } else {
       updateQuantity(cartItem.id, cartItem.quantity + 1);
     }
@@ -78,7 +81,7 @@ export const ProductCard = ({ product, onQuickView }: ProductCardProps) => {
               <div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
             </div>
           )}
-          {product?.variants?.length > 1 && (
+          {(hasCustomizations || product?.variants?.length > 1) && (
             <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-1.5 py-0.5 rounded">Customizable</span>
           )}
         </div>

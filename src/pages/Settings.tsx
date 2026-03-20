@@ -5,6 +5,7 @@ import { ArrowLeft, Save, User, Phone, Mail, Camera } from 'lucide-react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../firebase';
 import toast from 'react-hot-toast';
+import { UserProfile } from '../types';
 
 export const Settings = () => {
   const { profile, updateProfile, user } = useAuth();
@@ -33,7 +34,8 @@ export const Settings = () => {
         const storageRef = ref(storage, `users/${user?.uid}/profile_${Date.now()}`);
         const snapshot = await uploadBytes(storageRef, imageFile);
         photoURL = await getDownloadURL(snapshot.ref);
-      } catch (uploadError: any) {
+      } catch (err: unknown) {
+        const uploadError = err as any;
         console.error("Image upload failed:", uploadError);
         toast.error(uploadError.message?.includes('permission') ? "Storage permission denied. Check Rules!" : "Failed to upload image.");
         setSaving(false);
@@ -42,13 +44,14 @@ export const Settings = () => {
     }
 
     try {
-      const updateData: any = { name, phone };
+      const updateData: Partial<UserProfile> = { name, phone };
       if (photoURL) updateData.photoURL = photoURL;
 
       await updateProfile(updateData);
       toast.success('Profile updated successfully!');
       navigate('/profile');
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err as any;
       console.error("Error updating profile:", error);
       toast.error(error.message?.includes('permission') ? "Database permission denied. Check Rules!" : "Failed to update profile");
     } finally {

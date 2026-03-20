@@ -6,6 +6,7 @@ import { doc, onSnapshot, updateDoc, collection, query, where, orderBy, limit, g
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import { Order, OrderItem } from '../types';
 
 export const OrderTracking = () => {
   const { isAdmin, user } = useAuth();
@@ -13,7 +14,7 @@ export const OrderTracking = () => {
   const [searchParams] = useSearchParams();
   const orderIdParam = searchParams.get('id');
   const [orderIdInput, setOrderIdInput] = useState(orderIdParam || '');
-  const [order, setOrder] = useState<any>(null);
+  const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [updating, setUpdating] = useState(false);
@@ -228,7 +229,7 @@ export const OrderTracking = () => {
               >
                 <h3 className="text-sm font-bold text-gray-800 mb-4">Package Details</h3>
                 <div className="space-y-4">
-                  {order.items.map((item: any, index: number) => (
+                  {order.items.map((item: OrderItem, index: number) => (
                     <div key={index} className="flex gap-4 items-center">
                       <div className="w-16 h-16 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0">
                         {item.product?.images?.[0] ? (

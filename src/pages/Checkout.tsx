@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle2, MapPin, CreditCard, MessageCircle, Wallet, Banknote } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, MessageCircle, Wallet, Banknote } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { increment } from 'firebase/firestore';
 
 import { useAuth } from '../context/AuthContext';
 import { createDocument, updateDocument } from '../services/firestore';
+import { Order } from '../types';
 
 export const Checkout = () => {
   const { cart, clearCart, cartTotal } = useCart();
@@ -47,7 +48,7 @@ export const Checkout = () => {
         
         console.log('Creating order:', newOrderId);
 
-        const orderData: any = {
+        const orderData: Order = {
           id: newOrderId,
           userId: user?.uid || 'guest',
           items: cart.map(item => ({
@@ -55,6 +56,7 @@ export const Checkout = () => {
             product: item.product,
             variant: item.variant,
             quantity: item.quantity,
+            customizations: item.customizations || [],
             specialRequest: item.specialRequest || '',
             isGiftWrap: item.isGiftWrap,
             giftMessage: item.giftMessage || '',
@@ -113,7 +115,8 @@ export const Checkout = () => {
         setOrderId(newOrderId);
         setStep(2);
         clearCart();
-      } catch (error: any) {
+      } catch (err: unknown) {
+        const error = err as any;
         console.error("Error in checkout flow:", error);
         let errorMessage = 'Something went wrong. Please try again.';
         

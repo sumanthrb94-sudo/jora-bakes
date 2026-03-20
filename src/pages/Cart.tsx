@@ -92,9 +92,17 @@ export const Cart = () => {
                     </button>
                   </div>
                   
-                  <div className="text-xs text-gray-500 mb-1">
-                    {item.variant.weight} - {item.variant.flavor}
+                  <div className="text-xs font-bold text-gray-500 mb-1">
+                    {item.variant.weight}
                   </div>
+
+                  {item.customizations && item.customizations.length > 0 && (
+                    <div className="text-[11px] text-gray-400 font-medium mb-1.5 space-y-0.5">
+                      {item.customizations.map((c, i) => (
+                        <div key={i}>{c.groupName}: {c.optionName} {c.price > 0 ? `(+₹${c.price})` : ''}</div>
+                      ))}
+                    </div>
+                  )}
                   
                   {item.specialRequest && (
                     <div className="text-xs text-[var(--color-sage)] italic mb-2 line-clamp-1">

@@ -30,7 +30,7 @@ export const loginWithGoogle = async () => {
     // Using Popup instead of Redirect to bypass strict mobile browser cookie blocking
     const result = await signInWithPopup(auth, googleProvider);
     return result.user;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error logging in with Google:", error);
     throw error;
   }
@@ -40,7 +40,7 @@ export const registerWithEmail = async (email: string, pass: string) => {
   try {
     const result = await createUserWithEmailAndPassword(auth, email, pass);
     return result.user;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error registering with email:", error);
     throw error;
   }
@@ -50,7 +50,7 @@ export const loginWithEmail = async (email: string, pass: string) => {
   try {
     const result = await signInWithEmailAndPassword(auth, email, pass);
     return result.user;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error logging in with email:", error);
     throw error;
   }
@@ -59,7 +59,7 @@ export const loginWithEmail = async (email: string, pass: string) => {
 export const logout = async () => {
   try {
     await signOut(auth);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error logging out:", error);
     throw error;
   }

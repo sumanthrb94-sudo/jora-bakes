@@ -9,14 +9,38 @@ export const products: Product[] = [
     price: 150,
     weight: '1 Piece',
     variants: [
-      { id: 'v1_jowar', flavor: 'Jowar', priceModifier: 0, weight: '1 Piece' },
-      { id: 'v1_ragi', flavor: 'Ragi', priceModifier: 0, weight: '1 Piece' },
-      { id: 'v1_wheat', flavor: 'Whole Wheat', priceModifier: 0, weight: '1 Piece' },
-      { id: 'v1_oats', flavor: 'Oats', priceModifier: 0, weight: '1 Piece' }
+      { id: 'v1_pc', flavor: 'Standard', priceModifier: 0, weight: '1 Piece' },
+      { id: 'v1_half', flavor: 'Standard', priceModifier: 550, weight: 'Half Kg' }
+    ],
+    customizationGroups: [
+      {
+        id: 'cg_millet',
+        name: 'Choose Millet Base',
+        required: true,
+        selectionType: 'single',
+        options: [
+          { id: 'opt_jowar', name: 'Jowar', priceModifier: 0, isBestSeller: true },
+          { id: 'opt_ragi', name: 'Ragi', priceModifier: 0 },
+          { id: 'opt_wheat', name: 'Whole Wheat', priceModifier: 0 },
+          { id: 'opt_oats', name: 'Oats', priceModifier: 0 }
+        ]
+      },
+      {
+        id: 'cg_topping_mb',
+        name: 'Toppings & Add-ons',
+        required: false,
+        selectionType: 'multiple',
+        options: [
+          { id: 'add_almond_mb', name: 'Almonds', priceModifier: 0 },
+          { id: 'add_cashew_mb', name: 'Cashew', priceModifier: 0 },
+          { id: 'add_walnut_mb', name: 'Walnuts', priceModifier: 0 },
+          { id: 'add_exchoc_mb', name: 'Extra Chocolate', priceModifier: 30 }
+        ]
+      }
     ],
     isEggless: true,
     isAvailable: true, 
-    bakeTime: 'Order 1 day prior',
+    bakeTime: 'Order 1 day prior for freshly baked delicacies',
     allergens: ['dairy', 'gluten'],
     images: ['https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&q=80&w=800'],
     ingredients: ['Millet Flour', 'Dark Chocolate', 'Butter', 'Jaggery'],
@@ -34,18 +58,35 @@ export const products: Product[] = [
     price: 200,
     weight: '1 Slice',
     variants: [
-      { id: 'v2_s_choc', flavor: 'Chocolate', priceModifier: 0, weight: '1 Slice' },
-      { id: 'v2_s_straw', flavor: 'Strawberry (Seasonal)', priceModifier: 0, weight: '1 Slice' },
-      { id: 'v2_s_nut', flavor: 'Nutella', priceModifier: 0, weight: '1 Slice' },
-      { id: 'v2_s_blue', flavor: 'Blueberry', priceModifier: 0, weight: '1 Slice' },
-      { id: 'v2_h_choc', flavor: 'Chocolate', priceModifier: 1000, weight: 'Half Kg' },
-      { id: 'v2_h_straw', flavor: 'Strawberry (Seasonal)', priceModifier: 1000, weight: 'Half Kg' },
-      { id: 'v2_h_nut', flavor: 'Nutella', priceModifier: 1000, weight: 'Half Kg' },
-      { id: 'v2_h_blue', flavor: 'Blueberry', priceModifier: 1000, weight: 'Half Kg' }
+      { id: 'v2_slice', flavor: 'Standard', priceModifier: 0, weight: '1 Slice' },
+      { id: 'v2_half', flavor: 'Standard', priceModifier: 1000, weight: 'Half Kg' }
+    ],
+    customizationGroups: [
+      {
+        id: 'cg_flavor',
+        name: 'Choose Flavour',
+        required: true,
+        selectionType: 'single',
+        options: [
+          { id: 'f_choc', name: 'Chocolate', priceModifier: 0, isBestSeller: true },
+          { id: 'f_straw', name: 'Strawberry (depends on seasonal availability)', priceModifier: 0 },
+          { id: 'f_nut', name: 'Nutella', priceModifier: 0, isBestSeller: true },
+          { id: 'f_blue', name: 'Blueberry', priceModifier: 0 }
+        ]
+      },
+      {
+        id: 'cg_addon_cc',
+        name: 'Extra Add-ons',
+        required: false,
+        selectionType: 'multiple',
+        options: [
+          { id: 'add_choc_cc', name: 'Add on Chocolate', priceModifier: 30 }
+        ]
+      }
     ],
     isEggless: true,
     isAvailable: true, 
-    bakeTime: 'Order 1 day prior',
+    bakeTime: 'Order 1 day prior for freshly baked delicacies',
     allergens: ['dairy', 'gluten'],
     images: ['https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&q=80&w=800'],
     ingredients: ['Cream Cheese', 'Fresh Cream', 'Sugar', 'Cracker Crumb'],
@@ -63,18 +104,35 @@ export const products: Product[] = [
     price: 200,
     weight: '1 Slice',
     variants: [
-      { id: 'v3_s_choc', flavor: 'Chocolate', priceModifier: 0, weight: '1 Slice' },
-      { id: 'v3_s_straw', flavor: 'Strawberry (Seasonal)', priceModifier: 0, weight: '1 Slice' },
-      { id: 'v3_s_nut', flavor: 'Nutella', priceModifier: 0, weight: '1 Slice' },
-      { id: 'v3_s_blue', flavor: 'Blueberry', priceModifier: 0, weight: '1 Slice' },
-      { id: 'v3_h_choc', flavor: 'Chocolate', priceModifier: 1000, weight: 'Half Kg' },
-      { id: 'v3_h_straw', flavor: 'Strawberry (Seasonal)', priceModifier: 1000, weight: 'Half Kg' },
-      { id: 'v3_h_nut', flavor: 'Nutella', priceModifier: 1000, weight: 'Half Kg' },
-      { id: 'v3_h_blue', flavor: 'Blueberry', priceModifier: 1000, weight: 'Half Kg' }
+      { id: 'v3_slice', flavor: 'Standard', priceModifier: 0, weight: '1 Slice' },
+      { id: 'v3_half', flavor: 'Standard', priceModifier: 1000, weight: 'Half Kg' }
+    ],
+    customizationGroups: [
+      {
+        id: 'cg_flavor',
+        name: 'Choose Flavour',
+        required: true,
+        selectionType: 'single',
+        options: [
+          { id: 'f_choc', name: 'Chocolate', priceModifier: 0, isBestSeller: true },
+          { id: 'f_straw', name: 'Strawberry (depends on seasonal availability)', priceModifier: 0 },
+          { id: 'f_nut', name: 'Nutella', priceModifier: 0, isBestSeller: true },
+          { id: 'f_blue', name: 'Blueberry', priceModifier: 0 }
+        ]
+      },
+      {
+        id: 'cg_addon_bb',
+        name: 'Extra Add-ons',
+        required: false,
+        selectionType: 'multiple',
+        options: [
+          { id: 'add_choc_bb', name: 'Add on Chocolate', priceModifier: 30 }
+        ]
+      }
     ],
     isEggless: true, 
     isAvailable: true, 
-    bakeTime: 'Order 1 day prior',
+    bakeTime: 'Order 1 day prior for freshly baked delicacies',
     allergens: ['dairy', 'gluten'],
     images: ['https://images.unsplash.com/photo-1650302525164-32b0c1ecac6e?auto=format&fit=crop&q=80&w=800'],
     ingredients: ['Cream Cheese', 'Heavy Cream', 'Sugar', 'Vanilla'],
@@ -92,31 +150,28 @@ export const products: Product[] = [
     price: 350,
     weight: 'Box of 4',
     variants: [
-      // Box of 4 (Base Price: 350, Modifier: 0)
-      { id: 'v4_b4_bb', flavor: 'Banana Blueberry w/ Cream Cheese', priceModifier: 0, weight: 'Box of 4' },
-      { id: 'v4_b4_rv', flavor: 'Red Velvet w/ Cream Cheese', priceModifier: 0, weight: 'Box of 4' },
-      { id: 'v4_b4_sc', flavor: 'Spiced Carrot w/ Cream Cheese', priceModifier: 0, weight: 'Box of 4' },
-      { id: 'v4_b4_cg', flavor: 'Chocolate w/ Ganache', priceModifier: 0, weight: 'Box of 4' },
-      { id: 'v4_b4_vb', flavor: 'Vanilla w/ Butter Cream', priceModifier: 0, weight: 'Box of 4' },
-      { id: 'v4_b4_as', flavor: 'Assorted Mix', priceModifier: 0, weight: 'Box of 4' },
-      // Box of 6 (Base Price: 350, Modifier: +200 = 550)
-      { id: 'v4_b6_bb', flavor: 'Banana Blueberry w/ Cream Cheese', priceModifier: 200, weight: 'Box of 6' },
-      { id: 'v4_b6_rv', flavor: 'Red Velvet w/ Cream Cheese', priceModifier: 200, weight: 'Box of 6' },
-      { id: 'v4_b6_sc', flavor: 'Spiced Carrot w/ Cream Cheese', priceModifier: 200, weight: 'Box of 6' },
-      { id: 'v4_b6_cg', flavor: 'Chocolate w/ Ganache', priceModifier: 200, weight: 'Box of 6' },
-      { id: 'v4_b6_vb', flavor: 'Vanilla w/ Butter Cream', priceModifier: 200, weight: 'Box of 6' },
-      { id: 'v4_b6_as', flavor: 'Assorted Mix', priceModifier: 200, weight: 'Box of 6' },
-      // Box of 9 (Base Price: 350, Modifier: +500 = 850)
-      { id: 'v4_b9_bb', flavor: 'Banana Blueberry w/ Cream Cheese', priceModifier: 500, weight: 'Box of 9' },
-      { id: 'v4_b9_rv', flavor: 'Red Velvet w/ Cream Cheese', priceModifier: 500, weight: 'Box of 9' },
-      { id: 'v4_b9_sc', flavor: 'Spiced Carrot w/ Cream Cheese', priceModifier: 500, weight: 'Box of 9' },
-      { id: 'v4_b9_cg', flavor: 'Chocolate w/ Ganache', priceModifier: 500, weight: 'Box of 9' },
-      { id: 'v4_b9_vb', flavor: 'Vanilla w/ Butter Cream', priceModifier: 500, weight: 'Box of 9' },
-      { id: 'v4_b9_as', flavor: 'Assorted Mix', priceModifier: 500, weight: 'Box of 9' }
+      { id: 'v4_b4', flavor: 'Standard', priceModifier: 0, weight: 'Box of 4' },
+      { id: 'v4_b6', flavor: 'Standard', priceModifier: 200, weight: 'Box of 6' },
+      { id: 'v4_b9', flavor: 'Standard', priceModifier: 500, weight: 'Box of 9' }
+    ],
+    customizationGroups: [
+      {
+        id: 'cg_flavor',
+        name: 'Choose Primary Flavour',
+        required: true,
+        selectionType: 'single',
+        options: [
+          { id: 'f_bb', name: 'Banana blueberry- with cream cheese', priceModifier: 0 },
+          { id: 'f_rv', name: 'Red velvet with cream cheese', priceModifier: 0, isBestSeller: true },
+          { id: 'f_sc', name: 'Spiced carrot with cream cheese', priceModifier: 0 },
+          { id: 'f_cg', name: 'Chocolate with ganache', priceModifier: 0 },
+          { id: 'f_vb', name: 'Vanilla with butter cream', priceModifier: 0 }
+        ]
+      }
     ],
     isEggless: true,
     isAvailable: true, 
-    bakeTime: 'Order 1 day prior',
+    bakeTime: 'Order 1 day prior for freshly baked delicacies',
     allergens: ['dairy', 'gluten'],
     images: ['https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?auto=format&fit=crop&q=80&w=800'],
     ingredients: ['Flour', 'Butter', 'Sugar', 'Milk', 'Flavoring'],
@@ -139,7 +194,7 @@ export const products: Product[] = [
     ],
     isEggless: true,
     isAvailable: true, 
-    bakeTime: 'Order 1 day prior',
+    bakeTime: 'Order 1 day prior for freshly baked delicacies',
     allergens: ['dairy', 'gluten'],
     images: ['https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&q=80&w=800'],
     ingredients: ['Mascarpone Cheese', 'Espresso', 'Cocoa Powder', 'Vanilla Sponge'],

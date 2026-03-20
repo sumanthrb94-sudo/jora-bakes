@@ -18,6 +18,7 @@ export const AdminProducts = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(false);
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -95,7 +96,8 @@ export const AdminProducts = () => {
         const storageRef = ref(storage, `products/${Date.now()}_${imageFile.name}`);
         const snapshot = await uploadBytes(storageRef, imageFile);
         imageUrl = await getDownloadURL(snapshot.ref);
-      } catch (error: any) {
+      } catch (err: unknown) {
+        const error = err as any;
         console.error("Image upload failed:", error);
         toast.error(error.message?.includes('permission') ? "Storage permission denied. Check Rules!" : "Failed to upload image.");
         setIsSaving(false);
@@ -123,7 +125,8 @@ export const AdminProducts = () => {
         toast.success('Product created successfully!');
       }
       setIsModalOpen(false);
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err as any;
       console.error("Error saving product:", error);
       if (error.message && error.message.includes('permission')) {
         toast.error("Permission denied. Check Firestore Rules!");
@@ -140,7 +143,8 @@ export const AdminProducts = () => {
       try {
         await deleteDocument('products', id);
         toast.success("Product deleted.");
-        } catch (error: any) {
+      } catch (err: unknown) {
+        const error = err as any;
         console.error("Error deleting product:", error);
           if (error.message && error.message.includes('permission')) {
             toast.error("Permission denied. Check Firestore Rules!");
@@ -153,6 +157,7 @@ export const AdminProducts = () => {
 
   const handleSeedData = async () => {
     if (window.confirm("This will copy your static menu into the database. Proceed?")) {
+      setIsSeeding(true);
       let successCount = 0;
       for (const p of staticProducts) {
         try {
@@ -162,6 +167,7 @@ export const AdminProducts = () => {
           console.error("Failed to seed product", p.id);
         }
       }
+      setIsSeeding(false);
       toast.success(`Successfully seeded ${successCount} products!`);
     }
   };
@@ -196,8 +202,9 @@ export const AdminProducts = () => {
             <Database size={40} className="mx-auto text-[var(--color-terracotta)] mb-4 opacity-50" />
             <h2 className="text-xl font-bold text-[var(--color-chocolate)] mb-2">No Database Products</h2>
             <p className="text-gray-500 text-sm mb-4">Your Firestore database doesn't have any products yet.</p>
-            <button onClick={handleSeedData} className="bg-[var(--color-sage)] text-white px-6 py-2 rounded-xl font-bold">
-              Seed Initial Menu
+            <button onClick={handleSeedData} disabled={isSeeding} className="bg-[var(--color-terracotta)] text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-orange-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mx-auto">
+              {isSeeding ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Database size={18} />}
+              {isSeeding ? 'Seeding Database...' : 'Seed Initial Menu'}
             </button>
           </div>
         )}
@@ -287,7 +294,7 @@ export const AdminProducts = () => {
                   </div>
                   <div>
                     <label className="text-xs font-semibold text-gray-500 block mb-1">Category</label>
-                    <select value={formData.category || 'millet_brownies'} onChange={e => setFormData({...formData, category: e.target.value as any})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-[var(--color-terracotta)]">
+                    <select value={formData.category || 'millet_brownies'} onChange={e => setFormData({...formData, category: e.target.value as Product['category']})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-[var(--color-terracotta)]">
                       <option value="millet_brownies">Millet Brownies</option>
                       <option value="cheese_cakes">Cheese Cakes</option>
                       <option value="burnt_basque">Burnt Basque</option>

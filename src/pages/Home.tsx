@@ -5,7 +5,7 @@ import { ProductCard } from '../components/ProductCard';
 import { QuickViewModal } from '../components/QuickViewModal';
 import { Product } from '../types';
 import { motion } from 'framer-motion';
-import { ChevronRight, Clock, MapPin, Search, ChevronDown, User, Sparkles } from 'lucide-react';
+import { ChevronRight, MapPin, Search, ChevronDown, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { AuthView } from '../components/AuthView';
 

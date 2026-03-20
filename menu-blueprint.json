@@ -1,0 +1,216 @@
+{
+  "catalog": {
+    "metadata": {
+      "fulfillmentPolicy": "PRE_ORDER",
+      "minimumLeadTimeHours": 24,
+      "orderConstraints": "Order 1 day prior for freshly baked delicacies"
+    },
+    "categories": [
+      {
+        "id": "cat_cheesecakes",
+        "name": "Cheesecakes"
+      },
+      {
+        "id": "cat_cupcakes",
+        "name": "Cupcakes"
+      }
+    ],
+    "items": [
+      {
+        "id": "item_cheesecake_classic",
+        "categoryId": "cat_cheesecakes",
+        "name": "Cheesecake",
+        "basePrice": 200,
+        "variantGroups": [
+          {
+            "id": "vg_size_cheesecake",
+            "name": "Size",
+            "required": true,
+            "variants": [
+              {
+                "id": "var_slice_cc",
+                "name": "Slice",
+                "price": 200,
+                "isDefault": true
+              },
+              {
+                "id": "var_halfkg_cc",
+                "name": "Half Kg",
+                "price": 1200,
+                "isDefault": false
+              }
+            ]
+          }
+        ],
+        "customizationGroups": [
+          {
+            "id": "cg_flavor_cheesecake",
+            "name": "Choose Flavour",
+            "required": true,
+            "selectionType": "SINGLE",
+            "options": [
+              {
+                "id": "opt_flavor_chocolate",
+                "name": "Chocolate",
+                "priceModifier": 0,
+                "isSeasonal": false
+              },
+              {
+                "id": "opt_flavor_strawberry",
+                "name": "Strawberry",
+                "priceModifier": 0,
+                "isSeasonal": true
+              },
+              {
+                "id": "opt_flavor_nutella",
+                "name": "Nutella",
+                "priceModifier": 0,
+                "isSeasonal": false
+              },
+              {
+                "id": "opt_flavor_blueberry",
+                "name": "Blueberry",
+                "priceModifier": 0,
+                "isSeasonal": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "item_burnt_basque",
+        "categoryId": "cat_cheesecakes",
+        "name": "Burnt Basque",
+        "basePrice": 200,
+        "variantGroups": [
+          {
+            "id": "vg_size_basque",
+            "name": "Size",
+            "required": true,
+            "variants": [
+              {
+                "id": "var_slice_basque",
+                "name": "Slice",
+                "price": 200,
+                "isDefault": true
+              },
+              {
+                "id": "var_halfkg_basque",
+                "name": "Half Kg",
+                "price": 1200,
+                "isDefault": false
+              }
+            ]
+          }
+        ],
+        "customizationGroups": [
+          {
+            "id": "cg_flavor_basque",
+            "name": "Choose Flavour",
+            "required": true,
+            "selectionType": "SINGLE",
+            "options": [
+              {
+                "id": "opt_flavor_chocolate_basque",
+                "name": "Chocolate",
+                "priceModifier": 0,
+                "isSeasonal": false
+              },
+              {
+                "id": "opt_flavor_strawberry_basque",
+                "name": "Strawberry",
+                "priceModifier": 0,
+                "isSeasonal": true
+              },
+              {
+                "id": "opt_flavor_nutella_basque",
+                "name": "Nutella",
+                "priceModifier": 0,
+                "isSeasonal": false
+              },
+              {
+                "id": "opt_flavor_blueberry_basque",
+                "name": "Blueberry",
+                "priceModifier": 0,
+                "isSeasonal": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "item_cupcakes",
+        "categoryId": "cat_cupcakes",
+        "name": "Cupcakes",
+        "basePrice": 350,
+        "variantGroups": [
+          {
+            "id": "vg_size_cupcake",
+            "name": "Box Size",
+            "required": true,
+            "variants": [
+              {
+                "id": "var_box_4",
+                "name": "Box of 4",
+                "price": 350,
+                "isDefault": true
+              },
+              {
+                "id": "var_box_6",
+                "name": "Box of 6",
+                "price": 550,
+                "isDefault": false
+              },
+              {
+                "id": "var_box_9",
+                "name": "Box of 9",
+                "price": 850,
+                "isDefault": false
+              }
+            ]
+          }
+        ],
+        "customizationGroups": [
+          {
+            "id": "cg_flavor_cupcake",
+            "name": "Choose Flavour",
+            "required": true,
+            "selectionType": "SINGLE",
+            "options": [
+              {
+                "id": "opt_cupcake_banana_blue",
+                "name": "Banana Blueberry with Cream Cheese",
+                "priceModifier": 0,
+                "isSeasonal": false
+              },
+              {
+                "id": "opt_cupcake_red_velvet",
+                "name": "Red Velvet with Cream Cheese",
+                "priceModifier": 0,
+                "isSeasonal": false
+              },
+              {
+                "id": "opt_cupcake_spiced_carrot",
+                "name": "Spiced Carrot with Cream Cheese",
+                "priceModifier": 0,
+                "isSeasonal": false
+              },
+              {
+                "id": "opt_cupcake_choco_ganache",
+                "name": "Chocolate with Ganache",
+                "priceModifier": 0,
+                "isSeasonal": false
+              },
+              {
+                "id": "opt_cupcake_vanilla_butter",
+                "name": "Vanilla with Butter Cream",
+                "priceModifier": 0,
+                "isSeasonal": false
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

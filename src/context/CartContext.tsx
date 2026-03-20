@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
-import { CartItem, Product, Variant } from '../types';
+import { CartItem, Product, Variant, SelectedCustomization } from '../types';
 import toast from 'react-hot-toast';
 
 interface CartContextType {
@@ -9,6 +9,7 @@ interface CartContextType {
     quantity: number, 
     variant: Variant, 
     specialRequest?: string,
+    customizations?: SelectedCustomization[],
     isGiftWrap?: boolean,
     giftMessage?: string,
     deliveryDate?: Date,
@@ -30,7 +31,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     if (savedCart) {
       try {
         const parsed = JSON.parse(savedCart);
-        return parsed.map((item: any) => ({
+        return parsed.map((item: CartItem) => ({
           ...item,
           deliveryDate: new Date(item.deliveryDate)
         }));
@@ -50,13 +51,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     product: Product, 
     quantity: number, 
     variant: Variant, 
-    specialRequest?: string
+    specialRequest?: string,
+    customizations?: SelectedCustomization[]
   ) => {
     const isExisting = cart.some(
       (item) => 
         item.product.id === product.id && 
         item.variant.id === variant.id &&
-        (item.specialRequest || '') === (specialRequest || '')
+        (item.specialRequest || '') === (specialRequest || '') &&
+        JSON.stringify(item.customizations || []) === JSON.stringify(customizations || [])
     );
 
     if (isExisting) {
@@ -70,7 +73,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         (item) => 
           item.product.id === product.id && 
           item.variant.id === variant.id &&
-          (item.specialRequest || '') === (specialRequest || '')
+          (item.specialRequest || '') === (specialRequest || '') &&
+          JSON.stringify(item.customizations || []) === JSON.stringify(customizations || [])
       );
 
       if (existingItemIndex >= 0) {
@@ -86,6 +90,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           product,
           variant,
           quantity,
+          customizations: customizations || [],
           specialRequest: specialRequest || '',
           isGiftWrap: false,
           giftMessage: '',
@@ -124,8 +129,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const cartTotal = useMemo(() => {
     return cart.reduce((total, item) => {
       const itemPrice = item.product.price + item.variant.priceModifier;
+      const customPrice = (item.customizations || []).reduce((sum, c) => sum + c.price, 0);
       const giftWrapFee = item.isGiftWrap ? 100 : 0;
-      return total + (itemPrice + giftWrapFee) * item.quantity;
+      return total + (itemPrice + customPrice + giftWrapFee) * item.quantity;
     }, 0);
   }, [cart]);
 

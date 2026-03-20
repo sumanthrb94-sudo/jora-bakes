@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { User, MapPin, Package, Settings, LogOut, ChevronRight, Bell, ShieldCheck } from 'lucide-react';
+import { MapPin, Package, Settings, LogOut, ChevronRight, Bell, ShieldCheck } from 'lucide-react';
 import { AuthView } from '../components/AuthView';
 import { LoadingScreen } from '../components/LoadingScreen';
  

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { MapPin, Plus, Trash2, Home, Briefcase, Gift, ArrowLeft, Check } from 'lucide-react';
+import { MapPin, Plus, Trash2, Home, Briefcase, Gift, ArrowLeft } from 'lucide-react';
 import { Address } from '../types'; // Ensure Address is imported from types.ts
 import toast from 'react-hot-toast';
 
@@ -32,7 +32,7 @@ export const SavedAddresses = () => {
     try {
       const addressToAdd: Address = {
         id: Math.random().toString(36).substr(2, 9),
-        label: newAddress.label as any,
+        label: newAddress.label as Address['label'],
         street: newAddress.street!,
         city: newAddress.city!,
         pincode: newAddress.pincode!,
@@ -44,7 +44,8 @@ export const SavedAddresses = () => {
       setIsAdding(false);
       setNewAddress({ label: 'Home', street: '', city: '', pincode: '', instructions: '' });
       toast.success('Address added successfully');
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err as any;
       console.error("Failed to save address:", error);
       toast.error(error.message?.includes('permission') ? "Permission denied. Check Rules!" : "Failed to save address");
     } finally {

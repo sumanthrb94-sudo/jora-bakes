@@ -1,9 +1,38 @@
 // c:\Users\91779\OneDrive\Desktop\JORA-BAKES\jora-bakes\src\types.ts
 
 // Assuming this structure from firebase-blueprint.json
+
+export interface CustomizationOption {
+  id: string;
+  name: string;
+  priceModifier: number;
+  isBestSeller?: boolean;
+}
+
+export interface CustomizationGroup {
+  id: string;
+  name: string;
+  required: boolean;
+  selectionType: 'single' | 'multiple';
+  options: CustomizationOption[];
+}
+
+export interface SelectedCustomization {
+  groupName: string;
+  optionName: string;
+  price: number;
+}
+
+export interface Variant {
+  id: string;
+  flavor: string;
+  priceModifier: number;
+  weight: string;
+}
+
 export interface Product {
   id: string;
-  category: 'cakes' | 'brownies' | 'cookies' | 'bread' | 'loaves' | 'custom';
+  category: string;
   name: string;
   description: string;
   price: number;
@@ -20,6 +49,8 @@ export interface Product {
   pairings?: string[];
   isBestSeller?: boolean;
   isNew?: boolean;
+  variants?: Variant[];
+  customizationGroups?: CustomizationGroup[];
 }
 
 export interface Address {
@@ -53,16 +84,30 @@ export interface Order {
   deliveryDate: string; // Date string
   deliverySlot: string;
   customer: { name: string; phone: string; email: string; };
-  address: { street: string; instructions?: string; };
+  address: { street: string; instructions?: string; label?: string; };
   paymentMethod: string;
   giftWrap?: boolean;
+}
+
+export interface CartItem {
+  id: string;
+  product: Product;
+  variant: Variant;
+  quantity: number;
+  customizations?: SelectedCustomization[];
+  specialRequest?: string;
+  isGiftWrap?: boolean;
+  giftMessage?: string;
+  deliveryDate?: Date;
+  deliverySlot?: string;
 }
 
 export interface OrderItem {
   id: string;
   product: Product; // Full product details at the time of order
-  variant: { id: string; flavor: string; priceModifier: number; weight: string; };
+  variant: Variant;
   quantity: number;
+  customizations?: SelectedCustomization[];
   specialRequest?: string;
   isGiftWrap?: boolean;
   giftMessage?: string;

@@ -45,9 +45,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (firebaseUser) {
         console.log("Auth state changed: User logged in. UID:", firebaseUser.uid);
         // Fetch or create profile
+        let userProfile: UserProfile | null = null;
         try {
           console.log("Attempting to fetch profile for UID:", firebaseUser.uid);
-          let userProfile = await getDocument<UserProfile>('users', firebaseUser.uid);
+          userProfile = await getDocument<UserProfile>('users', firebaseUser.uid);
           if (!userProfile) {
             const newProfile: UserProfile = {
               uid: firebaseUser.uid,

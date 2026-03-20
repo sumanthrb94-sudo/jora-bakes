@@ -1,9 +1,16 @@
 import React from 'react';
 
-export class ErrorBoundary extends React.Component<any, any> {
-  constructor(props: any) {
+interface Props { children: React.ReactNode; }
+interface State { hasError: boolean; error: Error | null; }
+
+export class ErrorBoundary extends React.Component<Props, State> {
+  public state: State;
+  public props: Props;
+
+  constructor(props: Props) {
     super(props);
-    (this as any).state = { hasError: false, error: null };
+    this.props = props;
+    this.state = { hasError: false, error: null };
   }
 
   static getDerivedStateFromError(error: Error) {
@@ -15,15 +22,14 @@ export class ErrorBoundary extends React.Component<any, any> {
   }
 
   render() {
-    const state = (this as any).state;
-    if (state.hasError) {
+    if (this.state.hasError) {
       let errorMessage = "Something went wrong. Please try again later.";
       try {
-        const parsed = JSON.parse(state.error?.message || '');
+        const parsed = JSON.parse(this.state.error?.message || '');
         if (parsed.error && parsed.operationType) {
           errorMessage = `Permission denied for ${parsed.operationType} on ${parsed.path}.`;
         }
-      } catch (e) {}
+      } catch (e) { /* silent catch */ }
 
       return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--color-beige)] p-6 text-center">
@@ -41,6 +47,6 @@ export class ErrorBoundary extends React.Component<any, any> {
       );
     }
 
-    return (this as any).props.children;
+    return this.props.children;
   }
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Product, Variant } from '../types';
+import { Product, Variant, SelectedCustomization } from '../types';
 import { useCart } from '../context/CartContext';
 import { X, Plus, Minus, Info, Share2, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,25 +15,44 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
   const { cart, addToCart, updateQuantity } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [selectedVariant, setSelectedVariant] = useState<Variant | undefined>(undefined);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string[]>>({});
   const [specialRequests, setSpecialRequests] = useState('');
+  const [showValidation, setShowValidation] = useState(false);
 
   React.useEffect(() => {
-    if (product && product.variants.length > 0) {
+    if (product) {
       setQuantity(1);
-      // If there's already an item in the cart for this product, pre-select its variant
-      const existingItem = cart.find(item => item.product.id === product.id);
-      setSelectedVariant(existingItem ? existingItem.variant : product.variants[0]);
+      setSelectedVariant(product.variants?.[0]);
       setSpecialRequests('');
+      setSelectedOptions({}); // Force user to manually pick to avoid mistakes
+      setShowValidation(false);
     }
   }, [product, cart]);
 
   if (!product) return null;
 
+  // Compute dynamic price from variants and add-ons
+  let addonsPrice = 0;
+  product.customizationGroups?.forEach(g => {
+    const selected = selectedOptions[g.id] || [];
+    g.options.forEach(o => { if (selected.includes(o.id)) addonsPrice += o.priceModifier; });
+  });
+  const currentPrice = (selectedVariant ? product.price + selectedVariant.priceModifier : product.price) + addonsPrice;
+
   // Find the specific item in the cart that matches the current selection
+  const mappedCustomizations: SelectedCustomization[] = [];
+  product.customizationGroups?.forEach(g => {
+    const selected = selectedOptions[g.id] || [];
+    g.options.forEach(o => {
+      if (selected.includes(o.id)) mappedCustomizations.push({ groupName: g.name, optionName: o.name, price: o.priceModifier });
+    });
+  });
+
   const cartItem = cart.find(item => 
     item.product.id === product.id && 
     item.variant.id === selectedVariant?.id &&
-    (item.specialRequest || '') === (specialRequests || '')
+    (item.specialRequest || '') === (specialRequests || '') &&
+    JSON.stringify(item.customizations || []) === JSON.stringify(mappedCustomizations)
   );
   const quantityInCart = cartItem?.quantity || 0;
 
@@ -43,12 +62,23 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
 
   const handleAddToCart = () => {
     if (outOfStock) return;
+    
+    // Validate Required Customizations
+    const missingRequired = product.customizationGroups?.find(
+      g => g.required && (!selectedOptions[g.id] || selectedOptions[g.id].length === 0)
+    );
+    if (missingRequired) {
+      setShowValidation(true);
+      toast.error(`Please select an option for ${missingRequired.name}`);
+      return;
+    }
+
     if (totalQuantityInCart + quantity > maxQuantity) {
       toast.error(`Only ${maxQuantity} available in stock.`);
       return;
     }
     if (selectedVariant) {
-      addToCart(product, quantity, selectedVariant, specialRequests);
+      addToCart(product, quantity, selectedVariant, specialRequests, mappedCustomizations);
     }
   };
 
@@ -68,8 +98,18 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
     }
   };
 
-
-  const currentPrice = selectedVariant ? product.price + selectedVariant.priceModifier : product.price;
+  const toggleOption = (groupId: string, optionId: string, selectionType: 'single' | 'multiple') => {
+    setShowValidation(false); // Clear errors when they make a choice
+    setSelectedOptions(prev => {
+      const current = prev[groupId] || [];
+      if (selectionType === 'single') {
+        return { ...prev, [groupId]: [optionId] };
+      } else {
+        if (current.includes(optionId)) return { ...prev, [groupId]: current.filter(id => id !== optionId) };
+        return { ...prev, [groupId]: [...current, optionId] };
+      }
+    });
+  };
 
   return (
     <AnimatePresence>
@@ -127,9 +167,9 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
                 <p className="text-sm text-gray-600 leading-relaxed">{product.description}</p>
               </div>
 
-              {product.variants.length > 0 && (
+              {product.variants && product.variants.length > 1 && (
                 <div className="mb-6">
-                  <h4 className="text-sm font-semibold mb-3">Select Size/Variant</h4>
+                  <h4 className="text-sm font-bold text-[var(--color-chocolate)] mb-3">Select Size</h4>
                   <div className="flex flex-wrap gap-2">
                     {product.variants.map((variant) => (
                       <button
@@ -141,12 +181,49 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
                             : 'bg-white text-gray-600 border-gray-200 hover:border-[var(--color-terracotta)]'
                         }`}
                       >
-                        {variant.weight} - {variant.flavor}
+                        {variant.weight} {variant.priceModifier > 0 && `(+₹${variant.priceModifier})`}
                       </button>
                     ))}
                   </div>
                 </div>
               )}
+
+              {product.customizationGroups?.map((group) => {
+                const hasError = showValidation && group.required && (!selectedOptions[group.id] || selectedOptions[group.id].length === 0);
+                return (
+                <div key={group.id} className={`mb-6 p-4 -mx-4 sm:mx-0 sm:rounded-2xl transition-colors duration-300 ${hasError ? 'bg-red-50 border-y sm:border border-red-200' : 'bg-transparent border-none'}`}>
+                  <div className="flex justify-between items-center mb-3">
+                    <h4 className={`text-sm font-bold ${hasError ? 'text-red-600' : 'text-[var(--color-chocolate)]'}`}>{group.name}</h4>
+                    {group.required && <span className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase ${hasError ? 'bg-red-100 text-red-600' : 'bg-orange-50 text-[var(--color-terracotta)]'}`}>Required</span>}
+                  </div>
+                  <div className="space-y-2">
+                    {group.options.map((option) => {
+                      const isSelected = (selectedOptions[group.id] || []).includes(option.id);
+                      return (
+                        <label 
+                          key={option.id} 
+                          onClick={() => toggleOption(group.id, option.id, group.selectionType)}
+                          className={`flex items-center justify-between p-3 border rounded-xl cursor-pointer transition-all ${isSelected ? 'border-[var(--color-terracotta)] bg-orange-50/30' : 'border-gray-100 bg-white hover:bg-gray-50 shadow-sm'}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-5 h-5 rounded${group.selectionType === 'single' ? '-full' : ''} border-2 flex items-center justify-center ${isSelected ? 'border-[var(--color-terracotta)] bg-[var(--color-terracotta)]' : 'border-gray-300'}`}>
+                               {isSelected && <div className={`bg-white ${group.selectionType === 'single' ? 'w-2 h-2 rounded-full' : 'w-2.5 h-2.5 rounded-sm'}`} />}
+                            </div>
+                            <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                              {option.name}
+                              {option.isBestSeller && (
+                                <span className="text-[9px] font-bold uppercase tracking-wider bg-orange-100 text-[var(--color-terracotta)] px-1.5 py-0.5 rounded-sm">Bestseller</span>
+                              )}
+                            </span>
+                          </div>
+                          {option.priceModifier > 0 && <span className="text-sm font-semibold text-gray-600">+₹{option.priceModifier}</span>}
+                        </label>
+                      )
+                    })}
+                  </div>
+                </div>
+                );
+              })}
 
               <div className="bg-[var(--color-beige)] rounded-2xl p-4 mb-6 space-y-3">
                 {product.bakeTime && (

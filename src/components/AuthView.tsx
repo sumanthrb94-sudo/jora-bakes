@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { User, Phone, Mail, ChevronLeft, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
 
@@ -33,7 +33,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
   const [phoneInput, setPhoneInput] = useState('');
   const [otp, setOtp] = useState('');
   const [showOtp, setShowOtp] = useState(false);
-  const [confirmationResult, setConfirmationResult] = useState<any>(null);
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -73,7 +73,8 @@ export const AuthView: React.FC<AuthViewProps> = ({
       setConfirmationResult(confirmation);
       setShowOtp(true);
       toast.success('OTP sent successfully!');
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err as any;
       console.error("OTP Error:", error);
       toast.error(`OTP Error: ${error.code || error.message}`);
     } finally {
@@ -91,7 +92,8 @@ export const AuthView: React.FC<AuthViewProps> = ({
     try {
       await confirmationResult.confirm(otp);
       toast.success('Logged in successfully!');
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err as any;
       console.error("Verify Error:", error);
       toast.error('Invalid OTP. Please check and try again.');
     } finally {
@@ -116,7 +118,8 @@ export const AuthView: React.FC<AuthViewProps> = ({
       } else {
         await loginEmail(email, password);
       }
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err as any;
       let msg = "Authentication failed";
       if (error.code === 'auth/invalid-credential') msg = "Invalid email or password";
       else if (error.code === 'auth/email-already-in-use') msg = "Email is already in use";
@@ -132,7 +135,8 @@ export const AuthView: React.FC<AuthViewProps> = ({
     setIsGoogleLoading(true);
     try {
       await login();
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err as any;
       console.error("Google login failed:", error);
       toast.error(`Google Login Error: ${error.code || error.message}`, { duration: 4000 });
     } finally {
