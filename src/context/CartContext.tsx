@@ -28,11 +28,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>(() => {
     const savedCart = localStorage.getItem('jora_cart');
     if (savedCart) {
-      const parsed = JSON.parse(savedCart);
-      return parsed.map((item: any) => ({
-        ...item,
-        deliveryDate: new Date(item.deliveryDate)
-      }));
+      try {
+        const parsed = JSON.parse(savedCart);
+        return parsed.map((item: any) => ({
+          ...item,
+          deliveryDate: new Date(item.deliveryDate)
+        }));
+      } catch (error) {
+        console.error('Corrupted cart data found, resetting to empty array', error);
+        return [];
+      }
     }
     return [];
   });

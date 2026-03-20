@@ -44,10 +44,10 @@ export const Home = () => {
               </div>
             </div>
             <Link to="/profile" className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-sm shrink-0">
-              {(profile?.photoURL || user.photoURL) ? (
-                <img src={profile?.photoURL || user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+              {(profile?.photoURL || user?.photoURL) ? (
+                <img src={profile?.photoURL || user?.photoURL} alt="Profile" className="w-full h-full object-cover" />
               ) : (
-                <span className="font-bold text-[var(--color-terracotta)]">{(user.displayName || profile?.name || 'G')[0].toUpperCase()}</span>
+                <span className="font-bold text-[var(--color-terracotta)]">{(user?.displayName || profile?.name || 'G')[0].toUpperCase()}</span>
               )}
             </Link>
           </div>

@@ -7,6 +7,7 @@ import { useCart } from '../context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ArrowLeft, Plus, Minus, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { LoadingScreen } from '../components/LoadingScreen';
 
 const CATEGORIES = ['All', 'Millet Brownies', 'Cheese Cakes', 'Burnt Basque', 'Cupcakes', 'Tiramisu'];
 
@@ -79,13 +80,7 @@ export const Shop = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--color-beige)]">
-        <div className="text-[var(--color-terracotta)] font-script text-2xl animate-pulse">
-          Baking your goodies...
-        </div>
-      </div>
-    );
+    return <LoadingScreen text="Baking your goodies..." />;
   }
 
   return (

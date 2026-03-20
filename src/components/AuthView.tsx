@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { User, Phone, Mail, ChevronLeft, X } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -139,9 +140,10 @@ export const AuthView: React.FC<AuthViewProps> = ({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[100] flex flex-col justify-end sm:justify-center p-0 sm:p-4 bg-[url('https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80')] bg-cover bg-center">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+  return createPortal(
+    <div className="fixed inset-0 z-[200] flex justify-center pointer-events-none selection:bg-[var(--color-terracotta)] selection:text-white">
+      <div className="w-full max-w-[428px] h-full relative pointer-events-auto flex flex-col justify-end sm:justify-center p-0 sm:p-4 overflow-hidden">
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-0"></div>
       <motion.div 
         initial={{ y: '100%', opacity: 0 }} 
         animate={{ y: 0, opacity: 1 }} 
@@ -345,6 +347,8 @@ export const AuthView: React.FC<AuthViewProps> = ({
           <div id="recaptcha-container" className="absolute bottom-0 opacity-0 pointer-events-none"></div>
         </div>
       </motion.div>
-    </div>
+      </div>
+    </div>,
+    document.body
   );
 };

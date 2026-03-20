@@ -23,7 +23,7 @@ export const Layout = () => {
             },
           }}
         />
-        <main className="flex-1 w-full pb-20 relative">
+        <main className="flex-1 w-full pb-20 relative flex flex-col">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
@@ -31,6 +31,7 @@ export const Layout = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
+              className="flex-1 w-full flex flex-col relative"
             >
               <Outlet />
             </motion.div>

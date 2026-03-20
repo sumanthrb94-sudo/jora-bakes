@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { User, MapPin, Package, Settings, LogOut, ChevronRight, Bell, ShieldCheck } from 'lucide-react';
 import { AuthView } from '../components/AuthView';
+import { LoadingScreen } from '../components/LoadingScreen';
  
 export const Profile = () => {
   const { user, profile, loading, logout, isAdmin } = useAuth();
@@ -32,42 +33,33 @@ export const Profile = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--color-beige)]">
-        <div className="text-[var(--color-terracotta)] font-script text-2xl animate-pulse">
-          Opening your profile...
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <AuthView title="Join JORA BAKES" subtitle="Log in to track orders, save addresses, and earn loyalty points!" />;
+    return <LoadingScreen text="Opening your profile..." />;
   }
 
   return (
     <div className="min-h-screen bg-[#f7f5f0] pb-32">
+      {!user && <AuthView title="Join JORA BAKES" subtitle="Log in to track orders, save addresses, and earn loyalty points!" />}
       {/* Swiggy Style Unified Header & User Banner */}
       <div className="bg-white pt-10 pb-6 px-5 rounded-b-[32px] shadow-sm mb-5">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-gray-100 rounded-full border-2 border-white shadow-sm overflow-hidden shrink-0">
-              {(profile?.photoURL || user.photoURL) ? (
-                <img src={profile?.photoURL || user.photoURL} alt={user.displayName || ''} className="w-full h-full object-cover" />
+              {(profile?.photoURL || user?.photoURL) ? (
+                <img src={profile?.photoURL || user?.photoURL} alt={user?.displayName || ''} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-[var(--color-terracotta)] text-white font-bold text-2xl">
-                  {(user.displayName || profile?.name || 'G')[0].toUpperCase()}
+                  {(user?.displayName || profile?.name || 'G')[0].toUpperCase()}
                 </div>
               )}
             </div>
             <div>
               <h2 className="text-xl font-black text-[var(--color-chocolate)] tracking-tight mb-0.5">
-                {user.displayName || profile?.name || 'Jora Guest'}
+                {user?.displayName || profile?.name || 'Jora Guest'}
               </h2>
               <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
-                {profile?.phone || user.phoneNumber || 'No phone added'}
+                {profile?.phone || user?.phoneNumber || 'No phone added'}
               </p>
-              <p className="text-xs font-medium text-gray-500">{user.email}</p>
+              <p className="text-xs font-medium text-gray-500">{user?.email || 'Login to manage your treats'}</p>
             </div>
           </div>
           <button 

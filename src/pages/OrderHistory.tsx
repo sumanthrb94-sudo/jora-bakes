@@ -6,6 +6,7 @@ import { subscribeToCollection } from '../services/firestore';
 import { Order } from '../types';
 import { Package, ChevronRight, Clock, CheckCircle2, Truck, MapPin, ArrowLeft } from 'lucide-react';
 import { where, orderBy } from 'firebase/firestore';
+import { LoadingScreen } from '../components/LoadingScreen';
 
 export const OrderHistory = () => {
   const { user } = useAuth();
@@ -60,13 +61,7 @@ export const OrderHistory = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--color-beige)]">
-        <div className="text-[var(--color-terracotta)] font-script text-2xl animate-pulse">
-          Fetching your orders...
-        </div>
-      </div>
-    );
+    return <LoadingScreen text="Fetching your orders..." />;
   }
 
   return (

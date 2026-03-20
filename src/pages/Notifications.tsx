@@ -6,6 +6,7 @@ import { subscribeToCollection, updateDocument } from '../services/firestore';
 import { Notification } from '../types';
 import { Bell, ChevronRight, ArrowLeft, Package, Clock, CheckCircle2, Truck, Trash2 } from 'lucide-react';
 import { where, orderBy } from 'firebase/firestore';
+import { LoadingScreen } from '../components/LoadingScreen';
 
 export const Notifications = () => {
   const { user } = useAuth();
@@ -46,13 +47,7 @@ export const Notifications = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--color-beige)]">
-        <div className="text-[var(--color-terracotta)] font-script text-2xl animate-pulse">
-          Loading your alerts...
-        </div>
-      </div>
-    );
+    return <LoadingScreen text="Loading your alerts..." />;
   }
 
   return (
