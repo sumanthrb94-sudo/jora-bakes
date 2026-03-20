@@ -15,16 +15,6 @@ export const Home = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const { user, profile } = useAuth();
 
-  // Swiggy-style: Force login screen on app start if unauthenticated
-  if (!user) {
-    return (
-      <AuthView 
-        title="Welcome to JORA BAKES" 
-        subtitle="Log in or sign up to explore artisanal treats" 
-      />
-    );
-  }
-
   const handleQuickView = (product: Product) => {
     setSelectedProduct(product);
     setIsModalOpen(true);

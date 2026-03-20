@@ -140,12 +140,13 @@ export const AuthView: React.FC<AuthViewProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col justify-end sm:justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4">
+    <div className="fixed inset-0 z-[100] flex flex-col justify-end sm:justify-center p-0 sm:p-4 bg-[url('https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80')] bg-cover bg-center">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
       <motion.div 
         initial={{ y: '100%', opacity: 0 }} 
         animate={{ y: 0, opacity: 1 }} 
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="w-full sm:max-w-md mx-auto bg-white rounded-t-[32px] sm:rounded-[32px] shadow-2xl relative max-h-[92vh] overflow-y-auto pb-safe flex flex-col"
+        className="w-full sm:max-w-md mx-auto bg-white rounded-t-[32px] sm:rounded-[32px] shadow-2xl relative max-h-[92vh] overflow-y-auto pb-safe flex flex-col z-10"
       >
         {/* Close Button */}
         <button 
