@@ -77,7 +77,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
       toast.success('OTP sent successfully!');
     } catch (error: any) {
       console.error("OTP Error:", error);
-      toast.error(error.message || 'Failed to send OTP. Please try again.');
+      toast.error(`OTP Error: ${error.code || error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -123,7 +123,8 @@ export const AuthView: React.FC<AuthViewProps> = ({
       if (error.code === 'auth/invalid-credential') msg = "Invalid email or password";
       else if (error.code === 'auth/email-already-in-use') msg = "Email is already in use";
       else if (error.code === 'auth/weak-password') msg = "Password should be at least 6 characters";
-      toast.error(msg);
+      else msg = `Firebase Error: ${error.code}`; // Force the real error to show!
+      toast.error(msg, { duration: 4000 });
     } finally {
       setIsLoading(false);
     }
