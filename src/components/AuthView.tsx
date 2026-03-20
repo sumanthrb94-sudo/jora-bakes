@@ -39,6 +39,13 @@ export const AuthView: React.FC<AuthViewProps> = ({
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   useEffect(() => {
+    // Pre-initialize recaptcha when the component mounts
+    if (!(window as any).recaptchaVerifier) {
+      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible'
+      });
+    }
+
     // Cleanup recaptcha on unmount
     return () => {
       if ((window as any).recaptchaVerifier) {
@@ -52,14 +59,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
     };
   }, []);
 
-  const initializeRecaptcha = () => {
-    if (!(window as any).recaptchaVerifier) {
-      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible'
-      });
-    }
-  };
-
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phoneInput || phoneInput.length < 10) {
@@ -68,7 +67,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
     }
     setIsLoading(true);
     try {
-      initializeRecaptcha();
       const formattedPhone = phoneInput.startsWith('+') ? phoneInput : `+91${phoneInput}`;
       const appVerifier = (window as any).recaptchaVerifier;
       const confirmation = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
@@ -142,24 +140,26 @@ export const AuthView: React.FC<AuthViewProps> = ({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[200] flex justify-center pointer-events-none selection:bg-[var(--color-terracotta)] selection:text-white">
-      <div className="w-full max-w-[428px] h-full relative pointer-events-auto flex flex-col justify-end sm:justify-center p-0 sm:p-4 overflow-hidden">
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-0"></div>
+    <div className="fixed inset-0 z-[200] flex justify-center bg-[#e5e5e5] sm:bg-black/50 sm:backdrop-blur-sm selection:bg-[var(--color-terracotta)] selection:text-white">
       <motion.div 
-        initial={{ y: '100%', opacity: 0 }} 
-        animate={{ y: 0, opacity: 1 }} 
-        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="w-full sm:max-w-md mx-auto bg-white rounded-t-[32px] sm:rounded-[32px] shadow-2xl relative max-h-[92vh] overflow-y-auto pb-safe flex flex-col z-10"
+        initial={{ opacity: 0, y: 20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="w-full max-w-[428px] h-[100dvh] bg-white shadow-2xl relative overflow-y-auto pb-safe flex flex-col z-10"
       >
-        {/* Close Button */}
-        <button 
-          onClick={() => window.history.length > 2 ? navigate(-1) : navigate('/')}
-          className="absolute top-6 right-6 w-8 h-8 bg-gray-50 hover:bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-[var(--color-terracotta)] transition-colors z-20"
-        >
-          <X size={18} />
-        </button>
+        {/* Premium Full-Screen Hero Image */}
+        <div className="h-[25vh] min-h-[200px] w-full relative bg-[url('https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80')] bg-cover bg-center shrink-0">
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/20 to-black/40"></div>
+          
+          <button 
+            onClick={() => window.history.length > 2 ? navigate(-1) : navigate('/')}
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 bg-white/20 backdrop-blur-md hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-colors z-20"
+          >
+            <X size={20} />
+          </button>
+        </div>
 
-        <div className="p-8 pt-10">
+        <div className="px-8 pb-8 pt-5 flex-1 flex flex-col relative z-10">
           {/* Dynamic Header Section */}
           <div className="flex justify-between items-start mb-10">
             <div>
@@ -348,7 +348,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
           <div id="recaptcha-container" className="absolute bottom-0 opacity-0 pointer-events-none"></div>
         </div>
       </motion.div>
-      </div>
     </div>,
     document.body
   );

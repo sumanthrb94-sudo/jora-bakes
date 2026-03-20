@@ -8,9 +8,9 @@ export const Layout = () => {
   const location = useLocation();
 
   return (
-    <div className="min-h-[100dvh] bg-[#e5e5e5] flex justify-center selection:bg-[var(--color-terracotta)] selection:text-white">
+    <div className="h-[100dvh] w-full overflow-hidden bg-[#e5e5e5] flex justify-center selection:bg-[var(--color-terracotta)] selection:text-white">
       {/* Swiggy-style Mobile Device Container */}
-      <div className="w-full max-w-[428px] bg-[#f7f5f0] min-h-[100dvh] relative shadow-2xl flex flex-col overflow-x-hidden">
+      <div className="w-full max-w-[428px] bg-[#f7f5f0] h-full relative shadow-2xl flex flex-col overflow-hidden">
         <Toaster 
           position="top-center"
           toastOptions={{
@@ -23,7 +23,7 @@ export const Layout = () => {
             },
           }}
         />
-        <main className="flex-1 w-full pb-20 relative flex flex-col">
+        <main id="main-scroll-container" className="flex-1 w-full pb-20 relative flex flex-col overflow-y-auto overflow-x-hidden overscroll-y-none">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
