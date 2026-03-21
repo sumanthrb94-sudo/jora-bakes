@@ -74,15 +74,11 @@ export const Settings = () => {
           <form onSubmit={handleSave} className="space-y-4">
             <div className="flex flex-col items-center mb-6">
               <div className="relative w-24 h-24 rounded-full bg-gray-100 border-4 border-white shadow-md flex items-center justify-center overflow-hidden">
-                {(imageFile || profile?.photoURL || user?.photoURL) ? (
-                  <img 
-                    src={imageFile ? URL.createObjectURL(imageFile) : (profile?.photoURL || user?.photoURL)} 
-                    alt="Profile" 
-                    className="w-full h-full object-cover" 
-                  />
-                ) : (
-                  <User size={40} className="text-gray-400" />
-                )}
+                <img 
+                  src={imageFile ? URL.createObjectURL(imageFile) : (profile?.photoURL || user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || user?.displayName || 'Guest')}&background=ea580c&color=fff`)} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover" 
+                />
                 <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer text-white">
                   <Camera size={24} />
                   <input 

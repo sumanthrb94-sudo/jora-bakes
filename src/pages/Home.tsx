@@ -44,11 +44,11 @@ export const Home = () => {
               </div>
             </div>
             <Link to="/profile" className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-sm shrink-0">
-              {(profile?.photoURL || user?.photoURL) ? (
-                <img src={profile?.photoURL || user?.photoURL} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <span className="font-bold text-[var(--color-terracotta)]">{(user?.displayName || profile?.name || 'G')[0].toUpperCase()}</span>
-              )}
+              <img 
+                src={profile?.photoURL || user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || user?.displayName || 'Guest')}&background=ea580c&color=fff`} 
+                alt="Profile" 
+                className="w-full h-full object-cover" 
+              />
             </Link>
           </div>
           
@@ -107,11 +107,11 @@ export const Home = () => {
         </div>
         <div className="flex gap-4 overflow-x-auto hide-scrollbar px-4 pb-2 snap-x">
           {[
-            { name: 'Brownies', category: 'millet_brownies', img: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&q=80&w=200' },
-            { name: 'Cheese Cakes', category: 'cheese_cakes', img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&q=80&w=200' },
-            { name: 'Basque', category: 'burnt_basque', img: 'https://images.unsplash.com/photo-1650302525164-32b0c1ecac6e?auto=format&fit=crop&q=80&w=200' },
-            { name: 'Cupcakes', category: 'cupcakes', img: 'https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?auto=format&fit=crop&q=80&w=200' },
-            { name: 'Tiramisu', category: 'tiramisu', img: 'https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&q=80&w=200' },
+            { name: 'Brownies', category: 'millet_brownies', img: '/images/brownie.png' },
+            { name: 'Cheese Cakes', category: 'cheese_cakes', img: '/images/cheesecake.png' },
+            { name: 'Basque', category: 'burnt_basque', img: '/images/basque.png' },
+            { name: 'Cupcakes', category: 'cupcakes', img: '/images/cupcakes.png' },
+            { name: 'Tiramisu', category: 'tiramisu', img: '/images/tiramisu.png' },
           ].map((cat, i) => (
             <Link 
               key={cat.name} 

@@ -130,7 +130,7 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
             className="fixed bottom-0 left-0 right-0 max-w-[428px] mx-auto bg-white rounded-t-3xl z-50 max-h-[90vh] overflow-y-auto hide-scrollbar pb-safe"
           >
             <div className="sticky top-0 bg-white/80 backdrop-blur-md z-10 px-4 py-3 flex justify-between items-center border-b border-gray-100">
-              <h3 className="font-script text-2xl text-[var(--color-terracotta)]">Zora Bakes</h3>
+              <h3 className="font-script text-2xl text-[var(--color-terracotta)]">Jora Bakes</h3>
               <div className="flex gap-2">
                 <button className="p-2 bg-gray-100 rounded-full text-gray-600">
                   <Share2 size={18} />
@@ -144,7 +144,7 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
             <div className="p-4">
               <div className="aspect-[4/3] rounded-2xl overflow-hidden mb-4 relative">
                 <img 
-                  src={product.images[0]} 
+                  src={product.images.length > 1 ? product.images[1] : product.images[0]} 
                   alt={product.name} 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"

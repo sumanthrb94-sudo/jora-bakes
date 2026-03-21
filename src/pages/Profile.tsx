@@ -44,13 +44,11 @@ export const Profile = () => {
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-gray-100 rounded-full border-2 border-white shadow-sm overflow-hidden shrink-0">
-              {(profile?.photoURL || user?.photoURL) ? (
-                <img src={profile?.photoURL || user?.photoURL} alt={user?.displayName || ''} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-[var(--color-terracotta)] text-white font-bold text-2xl">
-                  {(user?.displayName || profile?.name || 'G')[0].toUpperCase()}
-                </div>
-              )}
+              <img 
+                src={profile?.photoURL || user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || user?.displayName || 'Guest')}&background=ea580c&color=fff`} 
+                alt={user?.displayName || 'Profile'} 
+                className="w-full h-full object-cover" 
+              />
             </div>
             <div>
               <h2 className="text-xl font-black text-[var(--color-chocolate)] tracking-tight mb-0.5">

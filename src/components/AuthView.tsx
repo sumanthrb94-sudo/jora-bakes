@@ -38,27 +38,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  useEffect(() => {
-    // Pre-initialize recaptcha when the component mounts
-    if (!(window as any).recaptchaVerifier) {
-      (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible'
-      });
-    }
-
-    // Cleanup recaptcha on unmount
-    return () => {
-      if ((window as any).recaptchaVerifier) {
-        try {
-          (window as any).recaptchaVerifier.clear();
-        } catch(e) {
-          console.warn("Recaptcha teardown safely ignored", e);
-        }
-        (window as any).recaptchaVerifier = null;
-      }
-    };
-  }, []);
-
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phoneInput || phoneInput.length < 10) {
@@ -67,6 +46,11 @@ export const AuthView: React.FC<AuthViewProps> = ({
     }
     setIsLoading(true);
     try {
+      if (!(window as any).recaptchaVerifier) {
+        (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+          size: 'invisible'
+        });
+      }
       const formattedPhone = phoneInput.startsWith('+') ? phoneInput : `+91${phoneInput}`;
       const appVerifier = (window as any).recaptchaVerifier;
       const confirmation = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
@@ -146,25 +130,27 @@ export const AuthView: React.FC<AuthViewProps> = ({
 
   return createPortal(
     <div className="fixed inset-0 z-[200] flex justify-center bg-[#e5e5e5] sm:bg-black/50 sm:backdrop-blur-sm selection:bg-[var(--color-terracotta)] selection:text-white">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }} 
-        animate={{ opacity: 1, y: 0 }} 
-        transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="w-full max-w-[428px] h-[100dvh] bg-white shadow-2xl relative overflow-y-auto pb-safe flex flex-col z-10"
-      >
-        {/* Premium Full-Screen Hero Image */}
-        <div className="h-[25vh] min-h-[200px] w-full relative bg-[url('https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80')] bg-cover bg-center shrink-0">
-          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/20 to-black/40"></div>
-          
-          <button 
-            onClick={() => window.history.length > 2 ? navigate(-1) : navigate('/')}
-            className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 bg-white/20 backdrop-blur-md hover:bg-white/30 rounded-full flex items-center justify-center text-white transition-colors z-20"
+      <AnimatePresence mode="wait">
+          <motion.div 
+            key="auth-form"
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+            className="w-full max-w-[428px] h-[100dvh] bg-white shadow-2xl relative overflow-y-auto pb-safe flex flex-col z-10"
           >
-            <X size={20} />
-          </button>
-        </div>
+            {/* Header */}
+            <div className="h-[20vh] min-h-[160px] w-full relative bg-[var(--color-bg-primary)] flex items-center justify-center shrink-0 border-b border-[var(--color-border-subtle)]">
+              <h1 className="text-4xl font-black text-[var(--color-chocolate)] tracking-tighter">JORA BAKES</h1>
+              
+              <button 
+                onClick={() => window.history.length > 2 ? navigate(-1) : navigate('/')}
+                className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 bg-white hover:bg-[var(--color-border-subtle)] rounded-full flex items-center justify-center text-[var(--color-text-secondary)] transition-colors z-20 shadow-sm border border-[var(--color-border-subtle)]"
+              >
+                <X size={20} />
+              </button>
+            </div>
 
-        <div className="px-8 pb-8 pt-5 flex-1 flex flex-col relative z-10">
+            <div className="px-8 pb-8 pt-5 flex-1 flex flex-col relative z-10">
           {/* Dynamic Header Section */}
           <div className="flex justify-between items-start mb-10">
             <div>
@@ -349,10 +335,12 @@ export const AuthView: React.FC<AuthViewProps> = ({
             </div>
           )}
           
-          {/* Invisible Recaptcha Container for Firebase Phone Auth */}
-          <div id="recaptcha-container" className="absolute bottom-0 opacity-0 pointer-events-none"></div>
         </div>
-      </motion.div>
+          </motion.div>
+      </AnimatePresence>
+      
+      {/* Invisible Recaptcha Container for Firebase Phone Auth */}
+      <div id="recaptcha-container" className="absolute bottom-0 opacity-0 pointer-events-none"></div>
     </div>,
     document.body
   );
