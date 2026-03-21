@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useProducts } from '../context/ProductContext';
 import { ProductCard } from '../components/ProductCard';
 import { QuickViewModal } from '../components/QuickViewModal';
@@ -14,6 +14,7 @@ export const Home = () => {
   const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
 
   const handleQuickView = (product: Product) => {
     setSelectedProduct(product);
@@ -30,19 +31,22 @@ export const Home = () => {
       <div className="bg-white sticky top-0 z-30 pt-safe shadow-sm rounded-b-[24px] mb-4">
         <div className="px-4 pt-4 pb-4">
           <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-2 flex-1">
-              <div className="w-9 h-9 bg-orange-50 rounded-full flex items-center justify-center text-[var(--color-terracotta)] shrink-0">
+            <button 
+              onClick={() => navigate('/addresses')} 
+              className="flex items-center gap-2 flex-1 min-w-0 text-left hover:opacity-80 active:scale-[0.98] transition-all"
+            >
+              <div className="w-9 h-9 bg-[var(--color-bg-secondary)] rounded-full flex items-center justify-center text-[var(--color-terracotta)] shrink-0 shadow-sm border border-orange-100">
                 <MapPin size={20} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1 font-black text-[var(--color-chocolate)] text-sm">
-                  {profile?.addresses?.[0]?.label || 'Delivering to'} <ChevronDown size={16} className="text-[var(--color-terracotta)]" />
+                  {profile?.addresses?.[0]?.label || 'Delivering to'} <ChevronDown size={14} className="text-[var(--color-terracotta)]" />
                 </div>
                 <p className="text-[11px] text-gray-500 truncate font-medium mt-0.5">
-                  {profile?.addresses?.[0]?.street || 'Jains Carlton Creek, Manikonda'}
+                  {profile?.addresses?.[0]?.street || 'Tap to add delivery address'}
                 </p>
               </div>
-            </div>
+            </button>
             <Link to="/profile" className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-sm shrink-0">
               <img 
                 src={profile?.photoURL || user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || user?.displayName || 'Guest')}&background=ea580c&color=fff`} 
@@ -142,7 +146,7 @@ export const Home = () => {
         </div>
         <div className="flex gap-4 overflow-x-auto hide-scrollbar px-4 pb-4 snap-x">
           {bestSellers.map((product) => (
-            <div key={product.id} className="snap-start shrink-0 w-[260px]">
+            <div key={product.id} className="snap-start shrink-0 w-[170px]">
               <ProductCard product={product} onQuickView={handleQuickView} />
             </div>
           ))}

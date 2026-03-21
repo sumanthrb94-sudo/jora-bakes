@@ -23,9 +23,12 @@ export const Cart = () => {
 
   const deliveryFee = cartTotal > 999 ? 0 : 50;
   const giftWrapFee = giftWrap ? 100 : 0;
-  // Note: cartTotal already includes per-item gift wrap if set in context, 
-  // but we are using a global gift wrap here for simplicity in UI.
   const grandTotal = cartTotal + deliveryFee + giftWrapFee;
+
+  // Enforce 1-day prior ordering system
+  const minDateObj = new Date();
+  minDateObj.setDate(minDateObj.getDate() + 1);
+  const minDateStr = minDateObj.toISOString().split('T')[0];
 
   if (cart.length === 0) {
     return (
@@ -51,7 +54,7 @@ export const Cart = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-beige)] pb-32">
+    <div className="min-h-screen bg-[var(--color-beige)] pb-48">
       {/* Header */}
       <div className="bg-white sticky top-0 z-30 shadow-sm px-4 py-4 flex items-center gap-4">
         <button onClick={() => navigate(-1)} className="p-2 bg-gray-50 rounded-full text-[var(--color-chocolate)]">
@@ -183,7 +186,7 @@ export const Cart = () => {
               <input 
                 type="date" 
                 value={deliveryDate}
-                min={new Date().toISOString().split('T')[0]}
+                min={minDateStr}
                 onChange={(e) => setDeliveryDate(e.target.value)}
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-terracotta)]"
               />

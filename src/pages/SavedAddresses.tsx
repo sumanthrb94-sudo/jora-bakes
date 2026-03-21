@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { MapPin, Plus, Trash2, Home, Briefcase, Gift, ArrowLeft } from 'lucide-react';
+import { MapPin, Plus, Trash2, Home, Briefcase, Gift, ArrowLeft, Navigation } from 'lucide-react';
 import { Address } from '../types'; // Ensure Address is imported from types.ts
 import toast from 'react-hot-toast';
 
@@ -18,6 +18,45 @@ export const SavedAddresses = () => {
     pincode: '',
     instructions: ''
   });
+  const [isLocating, setIsLocating] = useState(false);
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      try {
+        const { latitude, longitude } = position.coords;
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+        if (!response.ok) throw new Error('Failed to fetch address');
+        const data = await response.json();
+        
+        const city = data.address?.city || data.address?.town || data.address?.village || data.address?.state_district || '';
+        const pincode = data.address?.postcode || '';
+        const streetName = data.address?.road || data.address?.suburb || (data.display_name ? data.display_name.split(',')[0] : '');
+        
+        setNewAddress(prev => ({
+          ...prev,
+          street: streetName,
+          city: city,
+          pincode: pincode
+        }));
+        toast.success("Location found!", { icon: '📍' });
+      } catch (error) {
+        console.error("Geocoding error:", error);
+        toast.error("Could not determine address from location.");
+      } finally {
+        setIsLocating(false);
+      }
+    }, (error) => {
+      console.error("Geolocation error:", error);
+      toast.error('Unable to retrieve location. Check permissions.');
+      setIsLocating(false);
+    }, { timeout: 10000, maximumAge: 0 });
+  };
 
   const addresses = profile?.addresses || [];
 
@@ -57,6 +96,19 @@ export const SavedAddresses = () => {
     const updatedAddresses = addresses.filter(addr => addr.id !== id);
     await updateProfile({ addresses: updatedAddresses });
     toast.success('Address removed');
+  };
+
+  const handleSelectAddress = async (id: string) => {
+    const selectedIdx = addresses.findIndex(addr => addr.id === id);
+    if (selectedIdx > 0) {
+      const updatedAddresses = [...addresses];
+      const selected = updatedAddresses.splice(selectedIdx, 1)[0];
+      updatedAddresses.unshift(selected); // Move to top to make it default
+      // Optionally show a loading spinner, but we want it to feel instant
+      updateProfile({ addresses: updatedAddresses }).catch(err => console.error("Failed to set default address", err));
+    }
+    // Navigate back to cart or profile immediately
+    navigate(-1);
   };
 
   const getLabelIcon = (label: string) => {
@@ -107,18 +159,26 @@ export const SavedAddresses = () => {
                 </div>
               ) : (
                 <>
-                  {addresses.map((addr) => (
+                  {addresses.map((addr, index) => (
                     <motion.div
                       key={addr.id}
                       layout
-                      className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex justify-between items-start cursor-pointer hover:border-[var(--color-terracotta)] transition-colors group"
+                      onClick={() => handleSelectAddress(addr.id)}
+                      className={`bg-white rounded-2xl p-4 shadow-sm border flex justify-between items-start cursor-pointer transition-colors group ${
+                        index === 0 ? 'border-[var(--color-terracotta)] ring-1 ring-[var(--color-terracotta)]' : 'border-gray-100 hover:border-[var(--color-terracotta)]'
+                      }`}
                     >
-                      <div className="flex gap-4">
-                        <div className="w-10 h-10 rounded-full bg-gray-50 group-hover:bg-orange-50 flex items-center justify-center text-gray-500 group-hover:text-[var(--color-terracotta)] shrink-0 transition-colors">
+                      <div className="flex gap-4 w-full">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                          index === 0 ? 'bg-orange-50 text-[var(--color-terracotta)]' : 'bg-gray-50 text-gray-500 group-hover:bg-orange-50 group-hover:text-[var(--color-terracotta)]'
+                        }`}>
                           {getLabelIcon(addr.label)}
                         </div>
-                        <div>
-                          <h4 className="font-bold text-sm text-[var(--color-chocolate)]">{addr.label}</h4>
+                        <div className="flex-1 pr-2">
+                          <h4 className="font-bold text-sm text-[var(--color-chocolate)] flex items-center gap-2">
+                            {addr.label}
+                            {index === 0 && <span className="bg-orange-50 text-[var(--color-terracotta)] text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider font-black">Default</span>}
+                          </h4>
                           <p className="text-xs text-gray-500 font-medium mt-1 leading-relaxed">{addr.street}</p>
                           <p className="text-[11px] font-bold text-gray-400 mt-1 uppercase tracking-wider">{addr.city} • {addr.pincode}</p>
                           {addr.instructions && (
@@ -127,8 +187,11 @@ export const SavedAddresses = () => {
                         </div>
                       </div>
                       <button 
-                        onClick={() => handleDeleteAddress(addr.id)}
-                        className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteAddress(addr.id);
+                        }}
+                        className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors shrink-0"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -152,6 +215,26 @@ export const SavedAddresses = () => {
               className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100"
             >
               <h3 className="text-sm font-black text-[var(--color-chocolate)] uppercase tracking-wider mb-5">Add New Address</h3>
+              
+              <button
+                type="button"
+                onClick={handleGetLocation}
+                disabled={isLocating}
+                className="w-full mb-6 bg-orange-50 text-[var(--color-terracotta)] py-3.5 rounded-xl font-bold text-sm border border-orange-100/50 hover:bg-orange-100 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-70 shadow-sm"
+              >
+                {isLocating ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-[var(--color-terracotta)] border-t-transparent rounded-full animate-spin" />
+                    Locating...
+                  </>
+                ) : (
+                  <>
+                    <Navigation size={18} />
+                    Use Current Location
+                  </>
+                )}
+              </button>
+
               <form onSubmit={handleAddAddress} className="space-y-4">
                 <div>
                   <label className="text-xs font-bold text-gray-500 mb-2 block">Save address as</label>
