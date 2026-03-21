@@ -66,7 +66,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
     >
       <div className="aspect-square rounded-2xl overflow-hidden bg-gray-50 relative mb-3">
         <img 
-          src={product.images[0]} 
+          src={product.images?.[0] || 'https://images.unsplash.com/photo-1542826438-bd32f43d626f?auto=format&fit=crop&q=80&w=800'} 
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           referrerPolicy="no-referrer"

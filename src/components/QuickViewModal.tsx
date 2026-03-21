@@ -144,7 +144,7 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
             <div className="p-4">
               <div className="aspect-[4/3] rounded-2xl overflow-hidden mb-4 relative">
                 <img 
-                  src={product.images.length > 1 ? product.images[1] : product.images[0]} 
+                  src={product.images?.length > 1 ? product.images[1] : (product.images?.[0] || 'https://images.unsplash.com/photo-1542826438-bd32f43d626f?auto=format&fit=crop&q=80&w=800')} 
                   alt={product.name} 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"

@@ -19,7 +19,7 @@ export const Profile = () => {
 
   // Subdued list for settings
   const listItems = [
-    { icon: Settings, label: 'Account Settings', desc: 'Password, notifications, preferences', path: '/settings' },
+    { icon: Settings, label: 'Account Settings', desc: 'Profile picture, name, and contact details', path: '/settings' },
     ...(isAdmin ? [{ icon: ShieldCheck, label: 'Admin Dashboard', desc: 'Manage orders, users, and products', path: '/admin' }] : []),
   ];
 
@@ -57,7 +57,9 @@ export const Profile = () => {
               <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">
                 {profile?.phone || user?.phoneNumber || 'No phone added'}
               </p>
-              <p className="text-xs font-medium text-gray-500">{user?.email || 'Login to manage your treats'}</p>
+              <p className="text-xs font-medium text-gray-500">
+                {user?.email || profile?.email || (user ? 'Phone User - Add email in Settings' : 'Login to manage your treats')}
+              </p>
             </div>
           </div>
           <button 

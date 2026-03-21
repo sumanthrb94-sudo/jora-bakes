@@ -58,7 +58,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       (item) => 
         item.product.id === product.id && 
         item.variant.id === variant.id &&
-        (item.specialRequest || '') === (specialRequest || '') &&
+        (item.specialRequest || '').trim().toLowerCase() === (specialRequest || '').trim().toLowerCase() &&
         JSON.stringify(item.customizations || []) === JSON.stringify(customizations || [])
     );
 
@@ -73,7 +73,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         (item) => 
           item.product.id === product.id && 
           item.variant.id === variant.id &&
-          (item.specialRequest || '') === (specialRequest || '') &&
+          (item.specialRequest || '').trim().toLowerCase() === (specialRequest || '').trim().toLowerCase() &&
           JSON.stringify(item.customizations || []) === JSON.stringify(customizations || [])
       );
 
@@ -91,7 +91,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           variant,
           quantity,
           customizations: customizations || [],
-          specialRequest: specialRequest || '',
+          specialRequest: (specialRequest || '').trim(),
           isGiftWrap: false,
           giftMessage: '',
           deliveryDate: new Date(),
