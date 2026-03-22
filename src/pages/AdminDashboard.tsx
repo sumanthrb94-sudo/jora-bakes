@@ -35,6 +35,7 @@ const DetailDrawer = ({ order, onClose, onUpdate, onDelete }: {
   onClose: () => void;
   onUpdate: (id: string, updates: any) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  key?: string;
 }) => {
   const [status, setStatus] = useState(order.status);
   const [rider, setRider] = useState(order.riderName || '');

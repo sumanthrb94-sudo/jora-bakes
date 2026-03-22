@@ -79,16 +79,17 @@ export interface UserProfile {
 export interface Order {
   id: string;
   userId: string;
-  items: OrderItem[]; // Changed to use OrderItem interface
+  items: OrderItem[]; 
   total: number;
-  status: 'received' | 'confirmed' | 'baking' | 'quality_check' | 'out_for_delivery' | 'delivered';
-  createdAt: string; // ISO string
-  deliveryDate: string; // Date string
+  status: 'received' | 'confirmed' | 'baking' | 'quality_check' | 'out_for_delivery' | 'delivered' | 'cancelled';
+  createdAt: string; 
+  deliveryDate: string; 
   deliverySlot: string;
   customer: { name: string; phone: string; email: string; };
   address: { street: string; instructions?: string; label?: string; };
   paymentMethod: string;
   giftWrap?: boolean;
+  riderName?: string;
 }
 
 export interface CartItem {
