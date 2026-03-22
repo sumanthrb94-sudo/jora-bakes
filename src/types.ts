@@ -36,6 +36,8 @@ export interface Product {
   name: string;
   description: string;
   price: number;
+  mrp?: number;
+  discountPercentage?: number;
   weight: string;
   isEggless: boolean; // Now always true
   isAvailable: boolean;

@@ -4,24 +4,30 @@ service cloud.firestore {
     
     // Helper function to check if the user is the admin by email
     function isAdmin() {
-      return request.auth != null && request.auth.token.email == 'sumanthbolla97@gmail.com';
+      return request.auth != null && (
+        request.auth.token.email == 'sumanthbolla97@gmail.com' ||
+        request.auth.token.email == 'sumanthrb94@gmail.com' ||
+        request.auth.token.email == 'newadmin@gmail.com'
+      );
     }
 
     // Users Collection
     match /users/{userId} {
       allow read, create: if request.auth != null && request.auth.uid == userId;
-      allow update: if request.auth != null && request.auth.uid == userId;
+      // Prevent users from escalating their own privileges
+      allow update: if request.auth != null && request.auth.uid == userId 
+                    && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'points', 'email']));
       allow read, write: if isAdmin();
     }
 
     // Orders Collection
     match /orders/{orderId} {
       allow create: if request.auth != null;
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow read, update, delete: if isAdmin();
+      allow read: if request.auth != null && (request.auth.uid == resource.data.userId || isAdmin());
+      allow update, delete: if isAdmin();
     }
 
-    // Products Collection (Fixes the delete error)
+    // Products Collection
     match /products/{productId} {
       allow read: if true; // Anyone can view the menu
       allow create, update, delete: if isAdmin(); // Only admins can add, edit, or delete items

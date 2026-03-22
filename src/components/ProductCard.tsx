@@ -60,79 +60,75 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
 
   return (
     <motion.div 
-      whileHover={{ y: -4, boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)' }}
+      whileHover={!outOfStock ? { y: -4, boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)' } : {}}
       onClick={() => onQuickView(product)}
-      className="bg-white rounded-3xl p-2 shadow-sm border border-gray-100 relative cursor-pointer flex flex-col h-full transition-all duration-300"
+      className={`bg-white rounded-[2rem] p-2 shadow-sm border border-gray-100 relative cursor-pointer flex flex-col h-full transition-all duration-300 ${outOfStock ? 'opacity-70 grayscale-[0.8]' : ''}`}
     >
-      <div className="aspect-square rounded-2xl overflow-hidden bg-gray-50 relative mb-3">
+      <div className="aspect-square rounded-[1.5rem] overflow-hidden bg-gray-50 relative mb-3">
         <img 
           src={product.images?.[0] || 'https://images.unsplash.com/photo-1542826438-bd32f43d626f?auto=format&fit=crop&q=80&w=800'} 
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           referrerPolicy="no-referrer"
         />
-      </div>
-
-      <div className="px-2 pb-3 flex flex-col flex-grow text-center">
-        <div className="flex items-center justify-center gap-1.5 mb-1.5">
-          {/* Pure Veg Indicator */}
-          {product.isEggless && (
-            <div className="w-3.5 h-3.5 border-2 border-green-600 rounded-sm flex items-center justify-center">
-              <div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
-            </div>
-          )}
-          {(hasCustomizations || product?.variants?.length > 1) && (
-            <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-1.5 py-0.5 rounded">Customizable</span>
-          )}
+        
+        {/* Badges */}
+        <div className="absolute top-2 left-2 z-10 flex gap-1 items-center">
+           {product.isEggless && (
+             <div className="w-3.5 h-3.5 border border-[#00B189] rounded-sm flex items-center justify-center bg-white/90 backdrop-blur-sm">
+                <div className="w-1.5 h-1.5 bg-[#00B189] rounded-full" />
+             </div>
+           )}
+           {(product.discountPercentage || 0) > 0 && (
+             <span className="bg-[#FF4B4B] text-white text-[7px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest">-{product.discountPercentage}%</span>
+           )}
         </div>
-        
-        <h3 className="font-bold text-[var(--color-chocolate)] text-sm line-clamp-1 mb-1">{product.name}</h3>
-        
-        {product.bakeTime && (
-          <div className="flex items-center justify-center gap-1 text-[9px] font-black text-[var(--color-terracotta)] uppercase tracking-wider mb-1.5 bg-orange-50 self-center px-2 py-0.5 rounded-full w-fit mx-auto">
-            <Clock size={10} strokeWidth={3} /> {product.bakeTime}
+
+        {outOfStock && (
+          <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
+             <span className="bg-[#FF4B4B] text-white text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded shadow-lg">SOLD OUT</span>
           </div>
         )}
+      </div>
+
+      <div className="px-2 pb-3 flex flex-col flex-grow">
+        <h3 className="font-black text-[#1C1C1C] text-sm line-clamp-1 mb-0.5 uppercase tracking-tight">{product.name}</h3>
+        <p className="text-[10px] text-gray-400 font-bold mb-2 uppercase tracking-wider">{product.category.replace('_', ' ')}</p>
         
-        <p className="text-[11px] text-gray-500 line-clamp-2 leading-relaxed flex-grow">{product.description}</p>
-        <div className="font-bold text-gray-700 text-sm mt-1.5 mb-3">₹{product.price}</div>
+        <p className="text-[11px] text-gray-500 line-clamp-2 leading-relaxed flex-grow font-medium">{product.description}</p>
         
-        {/* Functional Zomato-style Add Button */}
-        <div 
-          className="mx-auto"
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-        >
-          {outOfStock ? (
-            <button
-              disabled
-              className="bg-gray-100 text-gray-400 border border-gray-200 px-6 py-2 rounded-xl font-black text-xs shadow-sm cursor-not-allowed whitespace-nowrap"
-            >
-              OUT OF STOCK
-            </button>
-          ) : totalQuantityInCart === 0 ? (
-            <button
-              onClick={handleAdd}
-              className="bg-white text-[var(--color-terracotta)] border border-gray-200 px-8 py-2 rounded-xl font-black text-sm hover:border-[var(--color-terracotta)] transition-colors shadow-sm"
-            >
-              ADD
-            </button>
-          ) : (
-            <div className="bg-[var(--color-terracotta)] text-white flex items-center justify-between min-w-[100px] h-[38px] rounded-xl shadow-sm overflow-hidden">
-              <button 
-                onClick={handleDecrement}
-                className="w-8 h-full flex items-center justify-center hover:bg-black/10 transition-colors"
+        <div className="flex items-center justify-between mt-3 mb-3">
+          <div className="flex flex-col">
+             {product.mrp && product.mrp > product.price && (
+               <span className="text-[10px] text-gray-300 font-black line-through leading-none mb-0.5">₹{product.mrp}</span>
+             )}
+             <span className="text-base font-black text-[#1C1C1C] leading-none">₹{product.price}</span>
+          </div>
+          
+          <div 
+            className="shrink-0"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+          >
+            {outOfStock ? (
+              <div className="bg-[#FFEAEA] text-[#FF4B4B] px-3 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5 border border-[#FFD6D6]">
+                 <div className="w-1.5 h-1.5 bg-[#FF4B4B] rounded-full" />
+                 OUT
+              </div>
+            ) : totalQuantityInCart === 0 ? (
+              <button
+                onClick={handleAdd}
+                className="bg-white text-[#1C1C1C] border border-gray-200 px-6 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:border-[#1C1C1C] transition-all active:scale-95"
               >
-                <Minus size={16} strokeWidth={3} />
+                ADD
               </button>
-              <span className="font-bold text-sm px-1">{totalQuantityInCart}</span>
-              <button 
-                onClick={handleIncrement}
-                className="w-8 h-full flex items-center justify-center hover:bg-black/10 transition-colors"
-              >
-                <Plus size={16} strokeWidth={3} />
-              </button>
-            </div>
-          )}
+            ) : (
+              <div className="bg-[#1C1C1C] text-white flex items-center justify-between min-w-[80px] h-[32px] rounded-xl shadow-lg border border-white/10">
+                <button onClick={handleDecrement} className="w-7 h-full flex items-center justify-center hover:bg-white/10"><Minus size={14} strokeWidth={3} /></button>
+                <span className="font-black text-xs">{totalQuantityInCart}</span>
+                <button onClick={handleIncrement} className="w-7 h-full flex items-center justify-center hover:bg-white/10"><Plus size={14} strokeWidth={3} /></button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>

@@ -39,6 +39,21 @@
   --color-sage: var(--color-text-secondary);
   --color-gold: var(--color-action-hover);
 
+  /* Bakery Signature Theme (Cacao & Cream) */
+  --color-cacao: #1C1412;
+  --color-cream-shell: #FFF9F5;
+  --color-gold-warm: #D4AF37;
+  --color-cacao-light: #2D2422;
+  
+  /* Operational / Admin Theme (Branded) */
+  --color-admin-red: #E23744;
+  --color-admin-dark: var(--color-cacao);
+  --color-admin-slate: var(--color-cacao-light);
+  --color-admin-muted: #8B817E;
+  --color-admin-bg: var(--color-bg-primary);
+  --color-admin-border: #EFE9E4;
+  --color-admin-accent: var(--color-gold-warm);
+  
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
@@ -84,7 +99,7 @@ body {
   }
 
   /* Accents / Labels */
-  label, button, .uppercase, .tracking-wider, .text-xs, .text-[10px] {
+  label, button, .uppercase, .tracking-wider, .text-xs, .text-\[10px\] {
     font-family: var(--font-accent);
     font-weight: 500;
   }
@@ -97,4 +112,13 @@ body {
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
 }

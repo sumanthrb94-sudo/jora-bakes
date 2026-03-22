@@ -1,144 +1,136 @@
-// c:\Users\91779\OneDrive\Desktop\JORA-BAKES\jora-bakes\src\pages\AdminDashboard.tsx
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
-import { getDocuments } from './services/firestore'; // Corrected import path
-import { Order } from './types'; // Corrected import path
+import { subscribeToCollection } from './services/firestore';
+import { Order, Product } from './types';
 import { motion } from 'framer-motion';
-import { Package, Search, ExternalLink } from 'lucide-react';
+import { 
+  Zap, 
+  ShoppingBag, 
+  AlertCircle,
+  ChevronRight,
+  TrendingUp,
+  Clock
+} from 'lucide-react';
+
+const HubCard = ({ title, value, icon, onClick, color }: any) => (
+  <button 
+    onClick={onClick}
+    className="bg-white p-5 rounded-[2.5rem] border border-[var(--color-admin-border)] shadow-sm flex flex-col items-start gap-4 active:scale-95 transition-all w-full text-left"
+  >
+    <div className={`p-3 rounded-2xl ${color} bg-opacity-10 text-${color.split('-')[1]}-600`}>
+      {icon}
+    </div>
+    <div>
+      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{title}</p>
+      <p className="text-xl font-black text-[var(--color-admin-dark)] tracking-tighter">{value}</p>
+    </div>
+  </button>
+);
 
 export const AdminDashboard = () => {
-  const { isAdmin, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [ordersLoading, setOrdersLoading] = useState(true);
-  const [orderSearchTerm, setOrderSearchTerm] = useState('');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Redirect non-admins
   useEffect(() => {
-    if (!authLoading && !isAdmin) {
-      navigate('/');
-    }
-  }, [isAdmin, authLoading, navigate]);
-
-  // Fetch data if admin
-  useEffect(() => {
-    if (isAdmin) {
-      const fetchOrders = async () => {
-        setOrdersLoading(true);
-        try {
-          const fetchedOrders = await getDocuments<Order>('orders');
-          setOrders(fetchedOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
-        } catch (error) {
-          console.error("Failed to fetch orders for admin:", error);
-        } finally {
-          setOrdersLoading(false);
-        }
-      };
-
-      fetchOrders();
-    }
+    if (!isAdmin) return;
+    const unsubOrders = subscribeToCollection<Order>('orders', (data) => { setOrders(data); setLoading(false); });
+    const unsubProducts = subscribeToCollection<Product>('products', (data) => { setProducts(data); });
+    return () => { unsubOrders(); unsubProducts(); };
   }, [isAdmin]);
 
-  const filteredOrders = orders.filter(order =>
-    order.id.toLowerCase().includes(orderSearchTerm.toLowerCase()) ||
-    order.userId.toLowerCase().includes(orderSearchTerm.toLowerCase()) ||
-    order.status.toLowerCase().includes(orderSearchTerm.toLowerCase())
+  const activeOrders = orders.filter(o => !['delivered', 'cancelled'].includes(o.status));
+  const todayRevenue = orders
+    .filter(o => o.createdAt.startsWith(new Date().toISOString().split('T')[0]))
+    .reduce((sum, o) => sum + o.total, 0);
+
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <div className="w-10 h-10 border-4 border-[var(--color-admin-red)] border-t-transparent rounded-full animate-spin" />
+    </div>
   );
 
-  if (authLoading) { // Only show loading if authentication is still in progress
-    return (
-      <div className="min-h-screen bg-[var(--color-beige)] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[var(--color-terracotta)] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-[var(--color-beige)] pb-32">
-      {/* Header */}
-      <div className="bg-white sticky top-0 z-30 shadow-sm px-4 py-4">
-        <h1 className="font-script text-3xl text-[var(--color-terracotta)]">Admin Dashboard</h1>
-        <p className="text-sm text-gray-500">Manage orders and products.</p>
+    <div className="space-y-6 max-w-[428px] mx-auto">
+      <div className="flex items-center justify-between px-1">
+        <div>
+           <h1 className="text-2xl font-black text-[#1C1C1C] tracking-tight">Today's Pulse</h1>
+           <div className="flex items-center gap-1.5 mt-1">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">System Live</span>
+           </div>
+        </div>
+        <div className="bg-[#1C1C1C] text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-black/10">
+           ₹{todayRevenue}
+        </div>
       </div>
 
-      <div className="p-4 space-y-8">
-        {/* Orders Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-3xl p-6 shadow-sm"
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <Package size={24} className="text-[var(--color-terracotta)]" />
-            <h2 className="text-xl font-bold text-[var(--color-chocolate)]">Recent Orders</h2>
-          </div>
-          <div className="relative mb-4">
-            <input
-              type="text"
-              value={orderSearchTerm}
-              onChange={(e) => setOrderSearchTerm(e.target.value)}
-              placeholder="Search orders by ID, User ID, Status..."
-              className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[var(--color-terracotta)] pr-10"
-            />
-            <Search size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          </div>
-
-          {ordersLoading ? (
-            <div className="text-center py-6">
-              <div className="w-6 h-6 border-4 border-[var(--color-terracotta)] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-              <p className="text-gray-500 text-sm">Loading orders...</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {filteredOrders.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">No orders found.</p>
-              ) : (
-                filteredOrders.slice(0, 10).map(order => ( // Show top 10 for brevity
-                  <div key={order.id} className="flex items-center justify-between bg-[var(--color-beige)] p-3 rounded-xl">
-                    <div>
-                      <p className="font-semibold text-[var(--color-chocolate)] text-sm">#{order.id.slice(-6)}</p>
-                      <p className="text-xs text-gray-600">Status: <span className="font-medium capitalize">{order.status.replace('_', ' ')}</span></p>
-                      <p className="text-xs text-gray-500">Total: ₹{order.total}</p>
-                    </div>
-                    <button
-                      onClick={() => navigate(`/track?id=${order.id}`)}
-                      className="text-[var(--color-terracotta)] hover:text-[var(--color-chocolate)] transition-colors"
-                      title="View Order Details"
-                    >
-                      <ExternalLink size={18} />
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-          <button
-            onClick={() => navigate('/admin/orders')}
-            className="w-full mt-4 py-3 bg-[var(--color-terracotta)] text-white rounded-xl font-bold hover:bg-[var(--color-chocolate)] transition-colors"
-          >
-            View All Orders
-          </button>
-        </motion.div>
-
-        {/* Products Section - Placeholder */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white rounded-3xl p-6 shadow-sm text-center"
-        >
-          <h2 className="text-xl font-bold text-[var(--color-chocolate)] mb-4">Product Management</h2>
-          <p className="text-gray-600 mb-4">Add, edit, or remove products from your store.</p>
-          <button
-            onClick={() => navigate('/admin/products')} // Placeholder for a dedicated product management page
-            className="w-full py-3 bg-[var(--color-sage)] text-white rounded-xl font-bold hover:bg-[var(--color-chocolate)] transition-colors"
-          >
-            Manage Products
-          </button>
-        </motion.div>
+      <div className="grid grid-cols-2 gap-4">
+         <HubCard 
+           title="Active Orders" 
+           value={activeOrders.length} 
+           icon={<Zap size={24} />} 
+           color="bg-orange-500"
+           onClick={() => navigate('/admin/orders')}
+         />
+         <HubCard 
+           title="Products" 
+           value={products.length} 
+           icon={<ShoppingBag size={24} />} 
+           color="bg-blue-500"
+           onClick={() => navigate('/admin/products')}
+         />
       </div>
+
+      <div className="space-y-4">
+         <div className="flex items-center justify-between px-1">
+            <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Operational Alerts</h2>
+            <span className="text-[10px] font-bold text-[var(--color-admin-red)]">View System Log</span>
+         </div>
+         
+         <div className="space-y-3">
+            {activeOrders.length > 5 && (
+              <div className="bg-orange-50 p-4 rounded-3xl border border-orange-100 flex gap-3">
+                 <Clock className="text-orange-500 shrink-0" size={20} />
+                 <p className="text-xs font-bold text-orange-900 leading-tight">High volume detected ({activeOrders.length} orders). Consider pausing new orders if baking time exceeds 45 mins.</p>
+              </div>
+            )}
+            
+            {products.some(p => (p.stockQuantity || 0) < 5) && (
+              <div className="bg-red-50 p-4 rounded-3xl border border-red-100 flex gap-3">
+                 <AlertCircle className="text-red-500 shrink-0" size={20} />
+                 <p className="text-xs font-bold text-red-900 leading-tight">Some items are running low on stock. Check Menu section for sync.</p>
+              </div>
+            )}
+
+            <div className="bg-indigo-50 p-4 rounded-3xl border border-indigo-100 flex gap-3 items-center justify-between">
+                <div className="flex gap-3">
+                   <TrendingUp className="text-indigo-500 shrink-0" size={20} />
+                   <p className="text-xs font-bold text-indigo-900">Revenue up 12% from yesterday.</p>
+                </div>
+                <ChevronRight className="text-indigo-300" size={16} />
+            </div>
+         </div>
+      </div>
+
+      <button 
+        onClick={() => navigate('/admin/analytics')}
+        className="w-full bg-[var(--color-admin-dark)] p-6 rounded-[2.5rem] text-white flex items-center justify-between group active:scale-95 transition-all shadow-xl shadow-black/10"
+      >
+        <div className="flex items-center gap-4">
+           <div className="p-3 bg-white/10 rounded-2xl">
+              <TrendingUp size={24} className="text-[var(--color-admin-red)]" />
+           </div>
+           <div className="text-left">
+              <p className="text-sm font-black uppercase tracking-tight">Full Insights</p>
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Operational Analytics</p>
+           </div>
+        </div>
+        <ChevronRight size={20} className="text-gray-500 group-hover:translate-x-1 transition-transform" />
+      </button>
     </div>
   );
 };

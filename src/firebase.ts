@@ -5,14 +5,15 @@ import { getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
 // This configuration includes the project ID "gen-lang-client-0753950904"
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyC_ciJWsHoUvBHEkeUOUZ-Buq6wnX-tnGw",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "gen-lang-client-0753950904.firebaseapp.com",
   projectId: "gen-lang-client-0753950904",
   storageBucket: "gen-lang-client-0753950904.firebasestorage.app",
   messagingSenderId: "20483674637",
   appId: "1:20483674637:web:d75741d6023f8e517bbb44",
-  firestoreDatabaseId: "ai-studio-b35406e0-0fe9-4f0d-a34d-b78e3c5d10cf" // Retained from firebase-applet-config.json
+  firestoreDatabaseId: "ai-studio-b35406e0-0fe9-4f0d-a34d-b78e3c5d10cf"
 };
 
 const app = initializeApp(firebaseConfig);

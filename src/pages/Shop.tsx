@@ -146,21 +146,30 @@ export const Shop = () => {
                   return (
                     <div 
                       key={product.id} 
-                      className={`p-5 flex gap-4 cursor-pointer active:bg-gray-50 transition-colors ${!isLast ? 'border-b border-dashed border-gray-200' : ''}`}
+                      className={`p-5 flex gap-4 cursor-pointer active:bg-gray-50 transition-colors ${!isLast ? 'border-b border-dashed border-gray-200' : ''} ${outOfStock ? 'opacity-60' : ''}`}
                       onClick={() => handleQuickView(product)}
                     >
                       <div className="flex-1 min-w-0 pr-2">
                         {product.isEggless && (
-                          <div className="w-4 h-4 border-[1.5px] border-green-600 rounded flex items-center justify-center mb-1.5">
-                            <div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
+                          <div className="w-3.5 h-3.5 border border-[#00B189] rounded-sm flex items-center justify-center mb-1.5">
+                            <div className="w-1.5 h-1.5 bg-[#00B189] rounded-full"></div>
                           </div>
                         )}
                         <h3 className="font-bold text-[var(--color-chocolate)] text-base mb-1">{product.name}</h3>
-                        <p className="font-black text-gray-800 text-sm mb-2 tracking-tight">₹{product.price}</p>
+                        
+                        <div className="flex items-center gap-2 mb-2">
+                           {product.mrp && product.mrp > product.price && (
+                             <span className="text-xs text-gray-300 font-black line-through">₹{product.mrp}</span>
+                           )}
+                           <span className="font-black text-gray-800 text-sm tracking-tight">₹{product.price}</span>
+                           {(product.discountPercentage || 0) > 0 && (
+                             <span className="text-[9px] font-black text-[#FF4B4B] uppercase tracking-widest bg-red-50 px-1.5 py-0.5 rounded">-{product.discountPercentage}% OFF</span>
+                           )}
+                        </div>
                         
                         <div className="flex items-center gap-1 text-[11px] font-bold text-gray-500 mb-2">
-                          <Star size={12} className="text-[var(--color-gold)] fill-[var(--color-gold)]" /> 
-                          4.8 <span className="mx-1">•</span> Fresh Daily
+                           <Star size={12} className="text-[var(--color-gold)] fill-[var(--color-gold)]" /> 
+                           4.8 <span className="mx-1">•</span> Artisanal
                         </div>
                         
                         <p className="text-gray-500 text-xs line-clamp-2 leading-relaxed">{product.description}</p>
@@ -168,8 +177,13 @@ export const Shop = () => {
 
                       {/* Right Side Image & Add Button */}
                       <div className="relative w-[130px] shrink-0 flex flex-col items-center">
-                        <div className="w-[130px] h-[130px] rounded-2xl overflow-hidden shadow-sm bg-gray-50 border border-gray-100">
+                        <div className={`w-[130px] h-[130px] rounded-2xl overflow-hidden shadow-sm bg-gray-50 border border-gray-100 relative ${outOfStock ? 'grayscale-[0.8]' : ''}`}>
                           <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+                          {outOfStock && (
+                            <div className="absolute inset-0 bg-black/5 flex items-center justify-center">
+                               <span className="bg-white/90 backdrop-blur-sm text-[#1C1C1C] px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border border-gray-100">Sold Out</span>
+                            </div>
+                          )}
                         </div>
                         
                         {/* Floating Action Button */}

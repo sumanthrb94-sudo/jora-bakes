@@ -23,8 +23,11 @@ import { Notifications } from './pages/Notifications';
 import { AdminOrders } from './AdminOrders';
 import { SavedAddresses } from './pages/SavedAddresses';
 import { AdminDashboard } from './AdminDashboard'; // Import AdminDashboard
+import { AdminAnalytics } from './pages/AdminAnalytics';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { AdminLayout } from './components/AdminLayout';
 import { ScrollToTop } from './components/ScrollToTop';
+import { KitchenMode } from './pages/KitchenMode';
 
 export default function App() {
   return (
@@ -47,9 +50,16 @@ export default function App() {
                   <Route path="notifications" element={<Notifications />} />
                   <Route path="settings" element={<Settings />} />
                   <Route path="addresses" element={<SavedAddresses />} />
-                  <Route path="admin" element={<AdminDashboard />} />
-                  <Route path="admin/products" element={<AdminProducts />} />
-                  <Route path="admin/orders" element={<AdminOrders />} />
+                  
+                  {/* Admin Routes with Sidebar Layout */}
+                  <Route path="admin" element={<AdminLayout />}>
+                    <Route index element={<AdminDashboard />} />
+                    <Route path="products" element={<AdminProducts />} />
+                    <Route path="orders" element={<AdminOrders />} />
+                    <Route path="customers" element={<div className="p-8 text-center text-gray-500">Customer Management Coming Soon</div>} />
+                    <Route path="analytics" element={<AdminAnalytics />} />
+                    <Route path="kitchen" element={<KitchenMode />} />
+                  </Route>
                 </Route>
               </Routes>
             </Router>

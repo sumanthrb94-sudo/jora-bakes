@@ -22,8 +22,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Add any new admin email addresses to this list inside the quotes
-const ADMIN_EMAILS = ['sumanthbolla97@gmail.com', 'sumanthrb94@gmail.com', 'newadmin@gmail.com'];
+// Use environment variable for admin emails, fallback to hardcoded list if needed for dev
+const ENV_ADMINS = import.meta.env.VITE_ADMIN_EMAILS?.split(',') || [];
+const ADMIN_EMAILS = ENV_ADMINS.length > 0 ? ENV_ADMINS : ['sumanthbolla97@gmail.com', 'sumanthrb94@gmail.com', 'newadmin@gmail.com'];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
