@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { subscribeToCollection, updateDocument, bulkUpdateDocuments, deleteDocument } from '../services/firestore';
 import { Order, Product } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronRight, User, MapPin, Phone, X, Package, MessageCircle, Trash2, Filter, Clock, TrendingUp, Inbox } from 'lucide-react';
+import { Check, ChevronRight, User, MapPin, Phone, X, Package, MessageCircle, Trash2, Filter, Clock, TrendingUp, Inbox, LayoutGrid } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const STATUS_FLOW = ['received', 'confirmed', 'baking', 'out_for_delivery', 'delivered', 'cancelled'] as const;
@@ -55,9 +55,7 @@ const DetailDrawer = ({ order, onClose, onUpdate, onDelete }: {
   return createPortal(
     <div className="fixed inset-0 z-[9999] flex flex-col justify-end">
       <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
-        exit={{ opacity: 0 }}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="absolute inset-0 bg-black/10 backdrop-blur-[2px]" 
         onClick={onClose} 
       />
@@ -88,7 +86,7 @@ const DetailDrawer = ({ order, onClose, onUpdate, onDelete }: {
              </div>
              <div className="pt-4 border-t border-gray-100/60 flex items-start gap-3">
                <MapPin size={16} className="text-gray-300 shrink-0 mt-0.5" />
-               <p className="text-xs font-bold text-gray-600 leading-relaxed">{order.address?.street || 'No address provided'}</p>
+               <p className="text-xs font-bold text-gray-600 leading-relaxed">{order.address?.street}</p>
              </div>
           </div>
           <div className="space-y-3">
@@ -114,7 +112,7 @@ const DetailDrawer = ({ order, onClose, onUpdate, onDelete }: {
              <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest ml-1">Update Status</p>
              <div className="grid grid-cols-2 gap-2.5">
                {STATUS_FLOW.map(s => (
-                 <button key={s} onClick={() => setStatus(s)} className={`py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${status === s ? 'bg-gray-950 text-white border-gray-950 shadow-xl' : 'bg-white text-gray-400 border-gray-100'}`}>{STATUS_LABELS[s]}</button>
+                 <button key={s} onClick={() => setStatus(s)} className={`py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${status === s ? 'bg-gray-950 text-white border-gray-950 shadow-xl' : 'bg-white text-gray-400 border-gray-100 font-bold'}`}>{STATUS_LABELS[s]}</button>
                ))}
              </div>
           </div>
@@ -156,14 +154,6 @@ export const AdminDashboard = () => {
     return () => { unsubOrders(); unsubProducts(); };
   }, [isAdmin]);
 
-  const filteredOrders = useMemo(() => {
-    return orders.filter(o => {
-      const matchCat = categoryFilter === 'All' || o.items?.some(i => i.product?.category === categoryFilter);
-      const matchStatus = statusFilter === 'All' || o.status === statusFilter;
-      return matchCat && matchStatus;
-    });
-  }, [orders, categoryFilter, statusFilter]);
-
   const stats = useMemo(() => {
     try {
       const today = new Date().toISOString().split('T')[0];
@@ -174,6 +164,14 @@ export const AdminDashboard = () => {
       return { active, revenue };
     } catch { return { active: 0, revenue: 0 }; }
   }, [orders]);
+
+  const filteredOrders = useMemo(() => {
+    return orders.filter(o => {
+      const matchCat = categoryFilter === 'All' || o.items?.some(i => i.product?.category === categoryFilter);
+      const matchStatus = statusFilter === 'All' || o.status === statusFilter;
+      return matchCat && matchStatus;
+    });
+  }, [orders, categoryFilter, statusFilter]);
 
   const toggleSelect = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -197,134 +195,150 @@ export const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-[#F8F9FA] pb-44 font-sans">
       
-      {/* ── Blended Overview Cards ────────────────────────────────────────── */}
-      <div className="p-5 flex gap-4 overflow-x-auto no-scrollbar scroll-smooth">
-         {/* Revenue Card */}
-         <div className="min-w-[200px] bg-white rounded-[2rem] border border-gray-100 p-4 shadow-sm flex gap-3 group hover:border-indigo-100 transition-colors">
-            <div className="w-10 border-r border-gray-50 flex items-center justify-center bg-indigo-50/10 text-indigo-400 group-hover:text-indigo-600 transition-colors">
-               <TrendingUp size={18} />
-            </div>
-            <div className="flex-1 py-1">
-               <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest mb-1">Incoming</p>
-               <h3 className="text-lg font-black text-gray-950 tracking-tighter tabular-nums">₹{stats.revenue.toLocaleString('en-IN')}</h3>
-            </div>
-         </div>
+      {/* ── UNIFIED COMMAND CENTER ────────────────────────────────────────── */}
+      <div className="p-5 space-y-6 bg-white border-b border-gray-100 shadow-sm rounded-b-[3rem]">
+        {/* KPI Streamer Cards */}
+        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+           {/* Revenue Card */}
+           <div className="min-w-[200px] bg-[#F8F9FA] rounded-[2rem] p-4 flex gap-3 border border-gray-50 group hover:border-indigo-100 transition-colors">
+              <div className="w-10 border-r border-gray-200 flex items-center justify-center text-indigo-500"><TrendingUp size={18} /></div>
+              <div className="flex-1 py-1">
+                 <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest mb-1">Revenue Today</p>
+                 <h3 className="text-xl font-black text-gray-950 tracking-tighter tabular-nums">₹{stats.revenue.toLocaleString()}</h3>
+              </div>
+           </div>
+           {/* Queue Card */}
+           <div className="min-w-[160px] bg-[#F8F9FA] rounded-[2rem] p-4 flex gap-3 border border-gray-50 group hover:border-orange-100 transition-colors">
+              <div className="w-10 border-r border-gray-200 flex items-center justify-center text-orange-500"><Clock size={16} /></div>
+              <div className="flex-1 py-1">
+                 <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest mb-1">In Queue</p>
+                 <h3 className="text-xl font-black text-gray-950 tabular-nums">{stats.active}</h3>
+              </div>
+           </div>
+           {/* Product Count Card */}
+           <div className="min-w-[160px] bg-[#F8F9FA] rounded-[2rem] p-4 flex gap-3 border border-gray-50 group hover:border-emerald-100 transition-colors">
+              <div className="w-10 border-r border-gray-200 flex items-center justify-center text-emerald-500"><LayoutGrid size={16} /></div>
+              <div className="flex-1 py-1">
+                 <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest mb-1">Catalog</p>
+                 <h3 className="text-xl font-black text-gray-950 tabular-nums">{products.length}</h3>
+              </div>
+           </div>
+        </div>
 
-         {/* Queue Card */}
-         <div className="min-w-[160px] bg-white rounded-[2rem] border border-gray-100 p-4 shadow-sm flex gap-3 group hover:border-orange-100 transition-colors">
-            <div className="w-10 border-r border-gray-50 flex items-center justify-center bg-orange-50/10 text-orange-400 group-hover:text-orange-600 transition-colors">
-               <Clock size={18} />
-            </div>
-            <div className="flex-1 py-1">
-               <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest mb-1">In Queue</p>
-               <h3 className="text-xl font-black text-gray-950 tracking-tighter tabular-nums">{stats.active}</h3>
-            </div>
-         </div>
-
-         {/* Product Count Card */}
-         <div className="min-w-[160px] bg-white rounded-[2rem] border border-gray-100 p-4 shadow-sm flex gap-3 group hover:border-emerald-100 transition-colors">
-            <div className="w-10 border-r border-gray-50 flex items-center justify-center bg-emerald-50/10 text-emerald-400 group-hover:text-emerald-600 transition-colors">
-               <Package size={18} />
-            </div>
-            <div className="flex-1 py-1">
-               <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest mb-1">Products</p>
-               <h3 className="text-lg font-black text-gray-950 tracking-tighter tabular-nums">{products.length}</h3>
-            </div>
-         </div>
-      </div>
-
-      {/* ── Integrated Filter & Feed ────────────────────────────────────────── */}
-      <div className="px-5 space-y-4 sticky top-0 z-40 py-2 bg-[#F8F9FA]/80 backdrop-blur-xl">
-        <div className="flex items-center gap-3 overflow-x-auto pb-1 no-scrollbar">
-          <div className="p-2.5 bg-gray-950 rounded-2xl text-white shrink-0 shadow-lg shadow-gray-400/20"><Filter size={14}/></div>
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat}
-              onClick={() => { setCategoryFilter(cat); setSelectedIds([]); }}
-              className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border-2 ${
-                categoryFilter === cat ? 'bg-gray-950 text-white border-gray-950 shadow-md' : 'bg-white text-gray-400 border-gray-100'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        {/* Integrated Management Filters */}
+        <div className="space-y-4">
+           <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-gray-950 rounded-2xl text-white shrink-0"><Filter size={14}/></div>
+              <div className="flex gap-2 item-center overflow-x-auto no-scrollbar scroll-smooth">
+                 {CATEGORIES.map(cat => (
+                   <button
+                     key={cat}
+                     onClick={() => { setCategoryFilter(cat); setSelectedIds([]); }}
+                     className={`px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border-2 ${
+                       categoryFilter === cat ? 'bg-gray-950 text-white border-gray-950 shadow-md' : 'bg-white text-gray-400 border-gray-100'
+                     }`}
+                   >
+                     {cat}
+                   </button>
+                 ))}
+              </div>
+           </div>
+           
+           <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+              {['All', ...STATUS_FLOW].map(s => (
+                <button
+                  key={s}
+                  onClick={() => { setStatusFilter(s); setSelectedIds([]); }}
+                  className={`px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest whitespace-nowrap transition-all border-2 ${
+                    statusFilter === s ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-200' : 'bg-white text-gray-400 border-gray-100'
+                  }`}
+                >
+                  {s === 'All' ? 'Every Stage' : STATUS_LABELS[s]}
+                </button>
+              ))}
+           </div>
         </div>
       </div>
 
-      {/* Live Feed Header */}
-      <div className="flex items-center justify-between px-7 mt-8 mb-4">
-         <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em]">Live Stream • {filteredOrders.length}</p>
-         <button 
-           onClick={() => setSelectedIds(selectedIds.length === filteredOrders.length ? [] : filteredOrders.map(o => o.id))} 
-           className="text-[9px] font-black uppercase tracking-widest text-gray-400 px-3 py-1.5 rounded-lg border border-gray-100"
-         >
-           Select All Result
-         </button>
-      </div>
+      {/* ── LIVE FEED SECTION ──────────────────────────────────────────────── */}
+      <div className="px-5 mt-10">
+        <div className="flex items-center justify-between px-2 mb-6">
+           <div className="flex items-center gap-2">
+             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
+             <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em]">Integrated Feed • {filteredOrders.length}</p>
+           </div>
+           <button 
+             onClick={() => setSelectedIds(selectedIds.length === filteredOrders.length ? [] : filteredOrders.map(o => o.id))} 
+             className="text-[9px] font-black uppercase tracking-widest text-gray-400 px-3 py-1.5 rounded-xl border border-gray-100 bg-white shadow-sm"
+           >
+             Select Output Result
+           </button>
+        </div>
 
-      {/* Order Stream Tiles */}
-      <div className="px-5 space-y-4">
-        {filteredOrders.length === 0 ? (
-          <div className="py-24 text-center opacity-20 flex flex-col items-center gap-4">
-             <Inbox size={48}/>
-             <p className="text-[10px] font-black uppercase tracking-widest">No matching orders in stream</p>
-          </div>
-        ) : (
-          filteredOrders.map(order => {
-            const isSelected = selectedIds.includes(order.id);
-            const ss = STATUS_STYLE[order.status] ?? STATUS_STYLE['received'];
-            
-            return (
-              <div 
-                key={order.id}
-                className={`bg-white rounded-[2rem] border transition-all flex overflow-hidden cursor-pointer group ${isSelected ? 'border-gray-950 ring-1 ring-gray-950 shadow-xl scale-[1.01]' : 'border-gray-100 shadow-sm'}`}
-                onClick={() => setSelectedOrder(order)}
-              >
+        {/* Order Stream Cards */}
+        <div className="space-y-4">
+          {filteredOrders.length === 0 ? (
+            <div className="py-24 text-center opacity-20 flex flex-col items-center gap-4">
+               <Inbox size={48}/>
+               <p className="text-[10px] font-black uppercase tracking-widest">No matching orders in stream</p>
+            </div>
+          ) : (
+            filteredOrders.map(order => {
+              const isSelected = selectedIds.includes(order.id);
+              const ss = STATUS_STYLE[order.status] ?? STATUS_STYLE['received'];
+              
+              return (
                 <div 
-                  className={`w-14 border-r flex items-center justify-center transition-colors ${isSelected ? 'bg-gray-950 text-white' : 'bg-gray-50/10 border-gray-50'}`}
-                  onClick={e => { e.stopPropagation(); toggleSelect(order.id, e); }}
+                  key={order.id}
+                  className={`bg-white rounded-[2rem] border transition-all flex overflow-hidden cursor-pointer group ${isSelected ? 'border-gray-950 ring-1 ring-gray-950 shadow-xl scale-[1.01]' : 'border-gray-100 shadow-sm'}`}
+                  onClick={() => setSelectedOrder(order)}
                 >
-                   <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center ${isSelected ? 'bg-white border-white text-gray-950' : 'bg-white border-gray-100'}`}>
-                      {isSelected && <Check size={14} strokeWidth={4} />}
-                   </div>
+                  <div 
+                    className={`w-14 border-r flex items-center justify-center transition-colors ${isSelected ? 'bg-gray-950 text-white' : 'bg-gray-50/10 border-gray-50'}`}
+                    onClick={e => { e.stopPropagation(); toggleSelect(order.id, e); }}
+                  >
+                     <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center ${isSelected ? 'bg-white border-white text-gray-950' : 'bg-white border-gray-100'}`}>
+                        {isSelected && <Check size={14} strokeWidth={4} />}
+                     </div>
+                  </div>
+                  
+                  <div className="p-5 flex-1 flex flex-col gap-4">
+                     <div className="flex items-center gap-4">
+                        <span className="text-[10px] font-black text-gray-200 tracking-widest font-mono">#{order.id.slice(-4).toUpperCase()}</span>
+                        <span className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-wider ${ss}`}>
+                          {STATUS_LABELS[order.status] || order.status}
+                        </span>
+                     </div>
+                     
+                     <div className="flex justify-between items-end">
+                        <div className="min-w-0 flex-1">
+                           <h3 className="text-base font-black text-gray-950 tracking-tight truncate">{order.customer?.name || 'Guest User'}</h3>
+                           <div className="flex items-center gap-2 mt-2">
+                             <MapPin size={12} className="text-gray-300 shrink-0" />
+                             <p className="text-[11px] font-bold text-gray-400 tracking-tight truncate max-w-[200px]">{order.address?.street}</p>
+                           </div>
+                        </div>
+                        <div className="text-right shrink-0 pl-4">
+                           <div className="flex items-center justify-end gap-1 mb-2">
+                              <Clock size={12} className="text-gray-300" />
+                              <span className="text-base font-black text-gray-950 tabular-nums">₹{order.total}</span>
+                           </div>
+                           <p className="text-[10px] font-black text-gray-200 uppercase tracking-widest">{order.items?.length || 0} SKUs</p>
+                        </div>
+                     </div>
+                  </div>
+                  
+                  <div className="w-12 border-l border-gray-50 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-all">
+                     <ChevronRight size={18} />
+                  </div>
                 </div>
-                
-                <div className="p-5 flex-1 flex flex-col gap-4">
-                   <div className="flex items-center gap-4">
-                      <span className="text-[10px] font-black text-gray-200 tracking-widest font-mono">#{order.id.slice(-4).toUpperCase()}</span>
-                      <span className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-wider ${ss}`}>
-                        {STATUS_LABELS[order.status] || order.status}
-                      </span>
-                   </div>
-                   
-                   <div className="flex justify-between items-end">
-                      <div className="min-w-0 flex-1">
-                         <h3 className="text-base font-black text-gray-950 tracking-tight truncate">{order.customer?.name || 'Guest User'}</h3>
-                         <div className="flex items-center gap-2 mt-2">
-                           <MapPin size={12} className="text-gray-300 shrink-0" />
-                           <p className="text-[11px] font-bold text-gray-400 tracking-tight truncate max-w-[200px]">{order.address?.street}</p>
-                         </div>
-                      </div>
-                      <div className="text-right shrink-0 pl-4">
-                         <div className="flex items-center justify-end gap-1 mb-2">
-                            <Clock size={12} className="text-gray-300" />
-                            <span className="text-base font-black text-gray-950 tabular-nums">₹{order.total}</span>
-                         </div>
-                         <p className="text-[10px] font-black text-gray-200 uppercase tracking-widest">{order.items?.length || 0} SKUs</p>
-                      </div>
-                   </div>
-                </div>
-                
-                <div className="w-12 border-l border-gray-50 flex items-center justify-center group-hover:bg-gray-900 group-hover:text-white transition-all">
-                   <ChevronRight size={18} />
-                </div>
-              </div>
-            );
-          })
-        )}
+              );
+            })
+          )}
+        </div>
       </div>
 
-      {/* Bulk Commando Sidebar */}
+      {/* Bulk Status Float Bar */}
       <AnimatePresence>
         {selectedIds.length > 0 && (
           <motion.div
@@ -333,17 +347,17 @@ export const AdminDashboard = () => {
           >
             <div className="px-2 shrink-0">
                <p className="text-xl font-black text-white leading-none">{selectedIds.length}</p>
-               <p className="text-[8px] font-black text-gray-500 uppercase mt-1">Selection</p>
+               <p className="text-[8px] font-black text-gray-500 uppercase mt-1">Batch</p>
             </div>
             <select
               value={bulkStatus}
               onChange={e => setBulkStatus(e.target.value)}
-              className="flex-1 bg-white/5 border border-white/10 rounded-xl text-white text-[10px] font-black uppercase tracking-widest px-4 py-3 focus:outline-none appearance-none"
+              className="flex-1 bg-white/5 border border-white/10 rounded-xl text-white text-[10px] font-black uppercase tracking-widest px-4 py-3 appearance-none focus:outline-none"
             >
-               <option value="" className="bg-gray-950">Update Workflow Stage...</option>
-               {STATUS_FLOW.map(s => <option key={s} value={s} className="bg-gray-950">{STATUS_LABELS[s]}</option>)}
+               <option value="" className="bg-gray-950 text-white">Select Workflow Update...</option>
+               {STATUS_FLOW.map(s => <option key={s} value={s} className="bg-gray-950 text-white">{STATUS_LABELS[s]}</option>)}
             </select>
-            <button onClick={handleBulkUpdate} disabled={!bulkStatus} className="bg-white text-gray-950 text-[10px] font-black px-6 py-3 rounded-xl disabled:opacity-20 uppercase tracking-widest">Apply</button>
+            <button onClick={handleBulkUpdate} disabled={!bulkStatus} className="bg-white text-gray-950 text-[10px] font-black px-6 py-3 rounded-xl disabled:opacity-20 uppercase tracking-widest transition-all">Apply</button>
             <button onClick={() => setSelectedIds([])} className="text-gray-500 hover:text-white transition-colors"><X size={20}/></button>
           </motion.div>
         )}
