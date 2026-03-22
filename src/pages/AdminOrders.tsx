@@ -19,15 +19,15 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const STATUS_STEPS = ['received', 'confirmed', 'baking', 'out_for_delivery', 'delivered', 'cancelled'];
+const STATUS_STEPS = ['pending', 'proving', 'oven', 'cooling', 'ready_for_collection', 'out_for_delivery', 'delivered', 'cancelled'];
 
 const Badge = ({ children, variant = 'default' }: { children: React.ReactNode, variant?: 'success' | 'info' | 'default' | 'error' | 'warning' }) => {
   const styles = {
-    success: 'bg-[#E6F4EA] text-[#1E8E3E]',
-    info: 'bg-[#E8F0FE] text-[#1967D2]',
-    error: 'bg-[#FCE8E6] text-[#D93025]',
-    warning: 'bg-[#FEF7E0] text-[#B06000]',
-    default: 'bg-gray-100 text-gray-600'
+    success: 'bg-emerald-50 text-emerald-600',
+    info: 'bg-blue-50 text-blue-600',
+    error: 'bg-red-50 text-red-600',
+    warning: 'bg-orange-50 text-orange-600',
+    default: 'bg-gray-100 text-gray-400'
   };
   return (
     <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ${styles[variant]}`}>
@@ -56,7 +56,7 @@ const OrderDetailsModal = ({ order, onClose, onUpdateStatus }: { order: Order | 
            <div className="p-8 border-b border-gray-50 flex items-center justify-between bg-white sticky top-0 z-10">
               <div>
                  <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] mb-1">Order Details</p>
-                 <h2 className="text-2xl font-black text-[var(--color-admin-dark)] uppercase tracking-tight">#{order.id.slice(-6).toUpperCase()}</h2>
+                 <h2 className="text-2xl font-black text-[#1D1D1F] uppercase tracking-tight italic">#{order.id.slice(-6).toUpperCase()}</h2>
               </div>
               <button onClick={onClose} className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 border border-gray-100/50">
                  <X size={20} />
@@ -120,7 +120,7 @@ const OrderDetailsModal = ({ order, onClose, onUpdateStatus }: { order: Order | 
                         onClick={() => onUpdateStatus(order.id, step)}
                         className={`p-4 rounded-2xl flex flex-col gap-2 border transition-all ${
                           order.status === step 
-                            ? 'bg-[var(--color-admin-dark)] border-[var(--color-admin-dark)] text-white shadow-xl shadow-black/10' 
+                            ? 'bg-[#1D1D1F] border-[#1D1D1F] text-white shadow-xl shadow-black/10' 
                             : 'bg-white border-gray-100 text-gray-400 hover:border-gray-200'
                         }`}
                       >
@@ -224,10 +224,11 @@ export const AdminOrders = () => {
 
   const counts = {
     ALL: orders.length,
-    PENDING: orders.filter(o => o.status === 'received').length,
-    PREPARING: orders.filter(o => o.status === 'baking').length,
-    OUT_FOR_DELIVERY: orders.filter(o => o.status === 'out_for_delivery').length,
-    DELIVERED: orders.filter(o => o.status === 'delivered').length,
+    PENDING: orders.filter(o => o.status === 'pending').length,
+    PROVING: orders.filter(o => o.status === 'proving').length,
+    OVEN: orders.filter(o => o.status === 'oven').length,
+    READY: orders.filter(o => o.status === 'ready_for_collection').length,
+    TRANSIT: orders.filter(o => o.status === 'out_for_delivery').length,
   };
 
   const filteredOrders = orders.filter(o => {
@@ -238,10 +239,11 @@ export const AdminOrders = () => {
                          (o.customer?.phone || '').includes(searchTerm);
     if (!matchesSearch) return false;
     if (filter === 'ALL') return true;
-    if (filter === 'PENDING') return o.status === 'received';
-    if (filter === 'PREPARING') return o.status === 'baking';
-    if (filter === 'OUT_FOR_DELIVERY') return o.status === 'out_for_delivery';
-    if (filter === 'DELIVERED') return o.status === 'delivered';
+    if (filter === 'PENDING') return o.status === 'pending';
+    if (filter === 'PROVING') return o.status === 'proving';
+    if (filter === 'OVEN') return o.status === 'oven';
+    if (filter === 'READY') return o.status === 'ready_for_collection';
+    if (filter === 'TRANSIT') return o.status === 'out_for_delivery';
     return true;
   });
 
@@ -268,7 +270,7 @@ export const AdminOrders = () => {
               key={key} 
               onClick={() => setFilter(key)}
               className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap text-[10px] font-black tracking-widest transition-all ${
-                filter === key ? 'bg-[var(--color-admin-dark)] text-white' : 'bg-white border border-gray-100 text-gray-400'
+                filter === key ? 'bg-[#1D1D1F] text-white shadow-xl shadow-black/10' : 'bg-white border border-black/5 text-gray-400'
               }`}
             >
               {key} <span className="opacity-60">{count}</span>
@@ -322,7 +324,7 @@ export const AdminOrders = () => {
                   <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
                     selectedIds.includes(order.id) ? 'bg-white border-white' : 'bg-white border-gray-200'
                   }`}>
-                    {selectedIds.includes(order.id) && <Check size={14} className="text-[var(--color-admin-dark)]" />}
+                    {selectedIds.includes(order.id) && <Check size={14} className="text-[#1D1D1F]" />}
                   </div>
                 </div>
 
@@ -332,7 +334,7 @@ export const AdminOrders = () => {
                       <Badge variant={
                         order.status === 'delivered' ? 'success' : 
                         order.status === 'cancelled' ? 'error' : 
-                        order.status === 'received' ? 'info' : 'warning'
+                        order.status === 'pending' ? 'info' : 'warning'
                       }>
                         {order.status.replace('_', ' ')}
                       </Badge>
@@ -376,7 +378,7 @@ export const AdminOrders = () => {
             exit={{ y: 100, opacity: 0 }}
             className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] z-[100]"
           >
-             <div className="bg-[var(--color-admin-dark)] rounded-[2.5rem] shadow-2xl p-4 border border-white/10 backdrop-blur-xl">
+             <div className="bg-[#1D1D1F] rounded-[2.5rem] shadow-2xl p-4 border border-white/10 backdrop-blur-xl">
                 <div className="flex items-center justify-between mb-4 px-4">
                    <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-white/10 rounded-2xl flex items-center justify-center text-white font-black">{selectedIds.length}</div>
@@ -385,24 +387,17 @@ export const AdminOrders = () => {
                    <button onClick={() => setSelectedIds([])} className="text-[10px] font-black text-white/40 uppercase hover:text-white transition-colors">Deselect All</button>
                 </div>
                 
-                <div className="grid grid-cols-3 gap-2">
-                   {['confirmed', 'baking', 'out_for_delivery'].map((status) => (
+                <div className="grid grid-cols-2 gap-2">
+                   {['pending', 'proving', 'oven', 'cooling', 'ready_for_collection', 'out_for_delivery', 'delivered', 'cancelled'].map((status) => (
                      <button
                         key={status}
                         onClick={() => handleBulkStatusChange(status)}
-                        className="py-3 bg-white/10 hover:bg-white/20 text-white text-[8px] font-black uppercase tracking-widest rounded-2xl border border-white/5 transition-all text-center"
+                        className={`py-3 text-[8px] font-black uppercase tracking-widest rounded-2xl border border-white/5 transition-all text-center ${
+                          ['delivered', 'cancelled'].includes(status) ? 'bg-black/20 text-white/70' : 'bg-white/10 text-white'
+                        }`}
                      >
                         {status.replace('_', ' ')}
                      </button>
-                   ))}
-                   {['delivered', 'received', 'cancelled'].map((status) => (
-                      <button
-                        key={status}
-                        onClick={() => handleBulkStatusChange(status)}
-                        className="py-3 bg-black/20 hover:bg-black/40 text-white/70 hover:text-white text-[8px] font-black uppercase tracking-widest rounded-2xl border border-white/5 transition-all text-center"
-                      >
-                         {status.replace('_', ' ')}
-                      </button>
                    ))}
                 </div>
              </div>

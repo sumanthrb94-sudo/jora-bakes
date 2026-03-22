@@ -7,7 +7,6 @@ import {
   LogOut,
   LayoutDashboard,
   ArrowLeft,
-  Activity,
   Command
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -33,30 +32,19 @@ export const AdminLayout: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  useEffect(() => {
-    const unsub = subscribeToCollection<Order>('orders', (data) => {
-      const pending = data.filter(o => o.status === 'received').length;
-      setPendingCount(pending);
-    });
-    return () => unsub();
-  }, []);
+  // Removed pendingCount logic
 
   const handleLogout = async () => {
     await logout();
     navigate('/');
   };
 
-  const navItems = [
-    { icon: <Activity size={18} />, label: 'Overview', path: '/admin' },
-    { icon: <ShoppingBag size={18} />, label: 'Orders', path: '/admin/orders' },
-    { icon: <Package size={18} />, label: 'Menu', path: '/admin/products' },
-    { icon: <BarChart3 size={18} />, label: 'Stats', path: '/admin/analytics' },
-  ];
+  const navItems: any[] = [];
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col font-sans max-w-[428px] mx-auto shadow-2xl relative overflow-hidden selection:bg-[var(--color-admin-dark)] selection:text-white">
-      {/* Top Header - Pro Ops Logic */}
-      <header className="bg-white border-b border-gray-100 flex flex-col sticky top-0 z-50 shrink-0">
+    <div className="min-h-screen bg-[#F5F5F7] flex flex-col font-sans relative overflow-x-hidden selection:bg-[#1D1D1F] selection:text-white">
+      {/* Top Header */}
+      <header className="bg-white/80 backdrop-blur-md border-b border-black/5 sticky top-0 z-50 shrink-0">
         <div className="h-14 flex items-center justify-between px-5">
            <motion.div 
              whileTap={{ scale: 0.95 }}
@@ -67,11 +55,7 @@ export const AdminLayout: React.FC = () => {
                 <ArrowLeft size={16} />
               </div>
               <div className="flex flex-col">
-                 <span className="text-[11px] font-black text-[var(--color-admin-dark)] uppercase tracking-tighter leading-none">Ops Pulse</span>
-                 <div className="flex items-center gap-1 mt-0.5">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                    <span className="text-[8px] font-black text-gray-300 uppercase tracking-widest">Live Sync</span>
-                 </div>
+                 <span className="text-[12px] font-black text-[#1D1D1F] uppercase tracking-widest leading-none">Jora Admin</span>
               </div>
            </motion.div>
            
@@ -91,27 +75,21 @@ export const AdminLayout: React.FC = () => {
                      to={item.path}
                      end={item.path === '/admin'}
                      className={({ isActive }) => `
-                       px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all
-                       ${isActive ? 'bg-white text-[var(--color-admin-dark)] shadow-sm' : 'text-gray-400'}
+                       px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
+                       ${isActive ? 'bg-[#1D1D1F] text-white shadow-xl shadow-black/10' : 'text-gray-400 hover:text-[#1D1D1F]'}
                      `}
                    >
                      {item.label}
                    </NavLink>
                  ))}
               </div>
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setIsCommandOpen(true)}
-                className="w-8 h-8 bg-[#F2F4F7] rounded-xl flex items-center justify-center text-gray-400 border border-gray-100/50"
-              >
-                 <Command size={14} />
-              </motion.button>
+              {/* Removed Command Button */}
            </div>
         </div>
       </header>
 
       {/* Main Dynamic Workspace */}
-      <main className="flex-1 overflow-y-auto bg-[#F8F9FA] p-4 pb-12">
+      <main className="flex-1 overflow-y-auto bg-[#F5F5F7] pb-12">
         <motion.div
            key={window.location.pathname}
            initial={{ opacity: 0, y: 5 }}

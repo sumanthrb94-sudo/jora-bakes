@@ -67,7 +67,7 @@ export const OrderTracking = () => {
   const handleNextStatus = async () => {
     if (!order || !order.id) return;
     
-    const statuses = ['received', 'confirmed', 'baking', 'quality_check', 'out_for_delivery', 'delivered'];
+    const statuses = ['pending', 'proving', 'oven', 'cooling', 'ready_for_collection', 'out_for_delivery', 'delivered'];
     const currentIndex = statuses.indexOf(order.status);
     
     if (currentIndex < statuses.length - 1) {
@@ -95,15 +95,16 @@ export const OrderTracking = () => {
   };
 
   const getStatusIndex = (status: string) => {
-    const statuses = ['received', 'confirmed', 'baking', 'quality_check', 'out_for_delivery', 'delivered'];
+    const statuses = ['pending', 'proving', 'oven', 'cooling', 'ready_for_collection', 'out_for_delivery', 'delivered'];
     return statuses.indexOf(status);
   };
 
   const steps = [
-    { label: 'Order Received', icon: Package, key: 'received' },
-    { label: 'Confirmed', icon: CheckCircle2, key: 'confirmed' },
-    { label: 'Baking', icon: Clock, key: 'baking' },
-    { label: 'Quality Check', icon: CheckCircle2, key: 'quality_check' },
+    { label: 'Order Received', icon: Package, key: 'pending' },
+    { label: 'Proving', icon: Clock, key: 'proving' },
+    { label: 'In the Oven', icon: RefreshCw, key: 'oven' },
+    { label: 'Cooling & Packaging', icon: Package, key: 'cooling' },
+    { label: 'Ready for Collection', icon: CheckCircle2, key: 'ready_for_collection' },
     { label: 'Out for Delivery', icon: Truck, key: 'out_for_delivery' },
     { label: 'Delivered', icon: MapPin, key: 'delivered' }
   ];

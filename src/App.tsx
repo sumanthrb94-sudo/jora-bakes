@@ -28,6 +28,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminLayout } from './components/AdminLayout';
 import { ScrollToTop } from './components/ScrollToTop';
 import { KitchenMode } from './pages/KitchenMode';
+import { MasterBakersDashboard } from './pages/MasterBakersDashboard';
 
 export default function App() {
   return (
@@ -55,10 +56,6 @@ export default function App() {
                   <Route path="admin" element={<AdminLayout />}>
                     <Route index element={<AdminDashboard />} />
                     <Route path="products" element={<AdminProducts />} />
-                    <Route path="orders" element={<AdminOrders />} />
-                    <Route path="customers" element={<div className="p-8 text-center text-gray-500">Customer Management Coming Soon</div>} />
-                    <Route path="analytics" element={<AdminAnalytics />} />
-                    <Route path="kitchen" element={<KitchenMode />} />
                   </Route>
                 </Route>
               </Routes>

@@ -1,6 +1,32 @@
-// c:\Users\91779\OneDrive\Desktop\JORA-BAKES\jora-bakes\src\types.ts
+export type ProductionStatus = 
+  | 'pending' 
+  | 'proving' 
+  | 'oven' 
+  | 'cooling' 
+  | 'ready_for_collection' 
+  | 'out_for_delivery' 
+  | 'awaiting_pickup' 
+  | 'delivered' 
+  | 'cancelled';
 
-// Assuming this structure from firebase-blueprint.json
+export interface AuditLog {
+  id: string;
+  timestamp: string;
+  userId: string;
+  userName: string;
+  fromStatus: ProductionStatus;
+  toStatus: ProductionStatus;
+  action: string;
+}
+
+export interface Ingredient {
+  id: string;
+  name: string;
+  currentStock: number;
+  unit: string;
+  threshold: number;
+  isCustomSource?: boolean;
+}
 
 export interface CustomizationOption {
   id: string;
@@ -30,6 +56,11 @@ export interface Variant {
   weight: string;
 }
 
+export interface IngredientRequirement {
+  ingredientId: string;
+  quantity: number;
+}
+
 export interface Product {
   id: string;
   category: string;
@@ -39,13 +70,14 @@ export interface Product {
   mrp?: number;
   discountPercentage?: number;
   weight: string;
-  isEggless: boolean; // Now always true
+  isEggless: boolean; 
   isAvailable: boolean;
   stockQuantity?: number;
   bakeTime?: string;
   allergens?: string[];
   images?: string[];
-  ingredients?: string[];
+  ingredients?: string[]; // Names for display
+  ingredientRequirements?: IngredientRequirement[]; // For inventory tracking
   shelfLife?: string;
   storage?: string;
   pairings?: string[];
@@ -53,6 +85,7 @@ export interface Product {
   isNew?: boolean;
   variants?: Variant[];
   customizationGroups?: CustomizationGroup[];
+  isSeasonal?: boolean;
 }
 
 export interface Address {
@@ -68,9 +101,9 @@ export interface UserProfile {
   uid: string;
   email: string;
   name: string;
-  role: 'admin' | 'customer';
+  role: 'admin' | 'customer' | 'baker';
   points: number;
-  createdAt: string; // ISO string
+  createdAt: string; 
   addresses?: Address[];
   phone?: string;
   photoURL?: string;
@@ -81,7 +114,8 @@ export interface Order {
   userId: string;
   items: OrderItem[]; 
   total: number;
-  status: 'received' | 'confirmed' | 'baking' | 'quality_check' | 'out_for_delivery' | 'delivered' | 'cancelled';
+  status: ProductionStatus;
+  auditTrail?: AuditLog[];
   createdAt: string; 
   deliveryDate: string; 
   deliverySlot: string;
@@ -107,14 +141,14 @@ export interface CartItem {
 
 export interface OrderItem {
   id: string;
-  product: Product; // Full product details at the time of order
+  product: Product; 
   variant: Variant;
   quantity: number;
   customizations?: SelectedCustomization[];
   specialRequest?: string;
   isGiftWrap?: boolean;
   giftMessage?: string;
-  deliveryDate?: string; // ISO string
+  deliveryDate?: string; 
   deliverySlot?: string;
 }
 
@@ -123,8 +157,8 @@ export interface Notification {
   userId: string;
   title: string;
   message: string;
-  type: 'order_status' | 'promotion' | 'system';
+  type: 'order_status' | 'promotion' | 'system' | 'inventory_alert';
   read: boolean;
-  createdAt: string; // ISO string
+  createdAt: string; 
   orderId?: string;
 }
