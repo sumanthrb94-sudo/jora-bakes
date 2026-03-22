@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
-import { subscribeToCollection } from './services/firestore';
-import { Order, Product } from './types';
+import { useAuth } from '../context/AuthContext';
+import { subscribeToCollection } from '../services/firestore';
+import { Order, Product } from '../types';
 import { motion } from 'framer-motion';
 import { 
   Zap, 

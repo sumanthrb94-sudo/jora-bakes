@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { subscribeToCollection, updateDocument } from './services/firestore';
-import { Order } from './types';
+import { subscribeToCollection, updateDocument } from '../services/firestore';
+import { Order } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, 

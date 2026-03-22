@@ -20,9 +20,9 @@ import { OrderHistory } from './pages/OrderHistory';
 import { Settings } from './pages/Settings';
 import { AdminProducts } from './pages/AdminProducts';
 import { Notifications } from './pages/Notifications';
-import { AdminOrders } from './AdminOrders';
+import { AdminOrders } from './pages/AdminOrders';
 import { SavedAddresses } from './pages/SavedAddresses';
-import { AdminDashboard } from './AdminDashboard'; // Import AdminDashboard
+import { AdminDashboard } from './pages/AdminDashboard'; // Import AdminDashboard
 import { AdminAnalytics } from './pages/AdminAnalytics';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminLayout } from './components/AdminLayout';

@@ -7,7 +7,7 @@ import { getStorage } from 'firebase/storage';
 // This configuration includes the project ID "gen-lang-client-0753950904"
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  apiKey: "AIzaSyC_ciJWsHoUvBHEkeUOUZ-Buq6wnX-tnGw",
   authDomain: "gen-lang-client-0753950904.firebaseapp.com",
   projectId: "gen-lang-client-0753950904",
   storageBucket: "gen-lang-client-0753950904.firebasestorage.app",
