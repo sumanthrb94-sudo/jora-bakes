@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { subscribeToCollection, updateDocument } from '../services/firestore';
+import { subscribeToCollection, updateDocument, bulkUpdateDocuments } from '../services/firestore';
 import { Order } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -9,20 +9,24 @@ import {
   X,
   Phone,
   MapPin,
-  Clock as ClockIcon,
-  CheckCircle2,
+  Check,
   Package,
-  AlertCircle
+  AlertCircle,
+  Clock,
+  LayoutGrid,
+  Filter,
+  Users
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const STATUS_STEPS = ['received', 'confirmed', 'baking', 'out_for_delivery', 'delivered', 'cancelled'];
 
-const Badge = ({ children, variant = 'default' }: { children: React.ReactNode, variant?: 'success' | 'info' | 'default' | 'error' }) => {
+const Badge = ({ children, variant = 'default' }: { children: React.ReactNode, variant?: 'success' | 'info' | 'default' | 'error' | 'warning' }) => {
   const styles = {
     success: 'bg-[#E6F4EA] text-[#1E8E3E]',
     info: 'bg-[#E8F0FE] text-[#1967D2]',
     error: 'bg-[#FCE8E6] text-[#D93025]',
+    warning: 'bg-[#FEF7E0] text-[#B06000]',
     default: 'bg-gray-100 text-gray-600'
   };
   return (
@@ -160,30 +164,62 @@ const OrderDetailsModal = ({ order, onClose, onUpdateStatus }: { order: Order | 
 export const AdminOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('ALL');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isBulkActionVisible, setIsBulkActionVisible] = useState(false);
 
   useEffect(() => {
     const unsubscribe = subscribeToCollection<Order>('orders', (data) => {
       const sorted = data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       setOrders(sorted);
-      if (selectedOrder) {
-         const updated = sorted.find(o => o.id === selectedOrder.id);
-         if (updated) setSelectedOrder(updated);
-      }
+      setLoading(false);
+      setError(null);
+    }, (err) => {
+      console.error("Order sync error:", err);
+      setError("Unable to sync live orders. Please check permissions.");
       setLoading(false);
     });
     return () => unsubscribe();
-  }, [selectedOrder]);
+  }, []);
+
+  // Update selected order details if data changes
+  useEffect(() => {
+    if (selectedOrder) {
+      const updated = orders.find(o => o.id === selectedOrder.id);
+      if (updated && JSON.stringify(updated) !== JSON.stringify(selectedOrder)) {
+        setSelectedOrder(updated);
+      }
+    }
+  }, [orders, selectedOrder]);
 
   const handleUpdateStatus = async (id: string, status: string) => {
     try {
       await updateDocument('orders', id, { status });
-      toast.success(`Order status updated to ${status.replace('_', ' ')}`);
+      toast.success(`Order #${id.slice(-4)} ${status}`);
     } catch (err) {
-      toast.error('Failed to update status');
+      toast.error('Update failed');
     }
+  };
+
+  const handleBulkStatusChange = async (status: string) => {
+    if (selectedIds.length === 0) return;
+    try {
+      const loadingToast = toast.loading(`Updating ${selectedIds.length} orders...`);
+      await bulkUpdateDocuments('orders', selectedIds, { status });
+      toast.dismiss(loadingToast);
+      toast.success(`Bulk updated ${selectedIds.length} orders to ${status}`);
+      setSelectedIds([]);
+    } catch (err) {
+      toast.error('Bulk update failed');
+    }
+  };
+
+  const toggleSelect = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
   const counts = {
@@ -195,9 +231,11 @@ export const AdminOrders = () => {
   };
 
   const filteredOrders = orders.filter(o => {
-    const matchesSearch = o.id.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         (o.address?.street || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (o.customer?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const searchLow = searchTerm.toLowerCase();
+    const matchesSearch = o.id.toLowerCase().includes(searchLow) || 
+                         (o.address?.street || '').toLowerCase().includes(searchLow) ||
+                         (o.customer?.name || '').toLowerCase().includes(searchLow) ||
+                         (o.customer?.phone || '').includes(searchTerm);
     if (!matchesSearch) return false;
     if (filter === 'ALL') return true;
     if (filter === 'PENDING') return o.status === 'received';
@@ -208,13 +246,13 @@ export const AdminOrders = () => {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-32 min-h-screen">
       {/* Search Bar */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1">
           <input 
             type="text" 
-            placeholder="Search address, name, or order ID..." 
+            placeholder="Search name, phone, or order ID..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-white border border-gray-100 rounded-xl px-12 py-3.5 text-sm font-medium shadow-sm focus:ring-0 outline-none"
@@ -230,7 +268,7 @@ export const AdminOrders = () => {
               key={key} 
               onClick={() => setFilter(key)}
               className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap text-[10px] font-black tracking-widest transition-all ${
-                filter === key ? 'bg-[var(--color-admin-dark)] text-white' : 'bg-white border border-gray-50 text-gray-400'
+                filter === key ? 'bg-[var(--color-admin-dark)] text-white' : 'bg-white border border-gray-100 text-gray-400'
               }`}
             >
               {key} <span className="opacity-60">{count}</span>
@@ -238,10 +276,29 @@ export const AdminOrders = () => {
          ))}
       </div>
 
-      {/* Orders List */}
+      {/* Orders List / Empty States */}
       <div className="space-y-3">
         {loading ? (
-          <div className="py-20 flex justify-center"><div className="w-8 h-8 border-2 border-gray-200 border-t-black rounded-full animate-spin" /></div>
+          <div className="py-20 flex flex-col items-center gap-4">
+             <div className="w-10 h-10 border-2 border-gray-100 border-t-[var(--color-admin-dark)] rounded-full animate-spin" />
+             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Initialising Fleet Hub</p>
+          </div>
+        ) : error ? (
+           <div className="py-20 flex flex-col items-center gap-4 px-10 text-center">
+              <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center">
+                 <AlertCircle size={32} />
+              </div>
+              <h3 className="text-sm font-black text-[var(--color-admin-dark)] uppercase">Permission Rejected</h3>
+              <p className="text-xs text-gray-400 font-bold leading-relaxed">{error}</p>
+           </div>
+        ) : filteredOrders.length === 0 ? (
+           <div className="py-24 flex flex-col items-center justify-center gap-6 opacity-40">
+              <Package size={64} className="text-gray-300" />
+              <div className="text-center">
+                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">No active logs</p>
+                 <p className="text-xs font-bold text-gray-300 mt-1">Orders matching this criteria appear here</p>
+              </div>
+           </div>
         ) : (
           <AnimatePresence mode="popLayout">
             {filteredOrders.map((order) => (
@@ -250,33 +307,108 @@ export const AdminOrders = () => {
                 initial={{ opacity: 0, y: 10 }} 
                 animate={{ opacity: 1, y: 0 }} 
                 key={order.id}
-                whileTap={{ scale: 0.98 }}
                 onClick={() => setSelectedOrder(order)}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm flex overflow-hidden cursor-pointer hover:border-gray-200 transition-all"
+                className={`bg-white rounded-2xl border transition-all flex overflow-hidden cursor-pointer group ${
+                  selectedIds.includes(order.id) ? 'border-[var(--color-admin-dark)] ring-1 ring-[var(--color-admin-dark)]' : 'border-gray-100 hover:border-gray-200 shadow-sm'
+                }`}
               >
+                {/* Multi-Select Toggle */}
+                <div 
+                  onClick={(e) => toggleSelect(order.id, e)}
+                  className={`w-12 border-r flex items-center justify-center transition-colors ${
+                    selectedIds.includes(order.id) ? 'bg-[var(--color-admin-dark)] border-[var(--color-admin-dark)]' : 'border-gray-50 bg-gray-50/10'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
+                    selectedIds.includes(order.id) ? 'bg-white border-white' : 'bg-white border-gray-200'
+                  }`}>
+                    {selectedIds.includes(order.id) && <Check size={14} className="text-[var(--color-admin-dark)]" />}
+                  </div>
+                </div>
+
                 <div className="p-4 flex-1 flex flex-col gap-3">
                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-bold text-gray-300">#{(order.id || '').toUpperCase().slice(-4)}</span>
-                      <Badge variant={order.status === 'delivered' ? 'success' : 'info'}>{order.status}</Badge>
-                      <Badge variant="success">PAID</Badge>
+                      <span className="text-[10px] font-bold text-gray-300 tracking-widest">#{order.id.slice(-4).toUpperCase()}</span>
+                      <Badge variant={
+                        order.status === 'delivered' ? 'success' : 
+                        order.status === 'cancelled' ? 'error' : 
+                        order.status === 'received' ? 'info' : 'warning'
+                      }>
+                        {order.status.replace('_', ' ')}
+                      </Badge>
                    </div>
                    
-                   <div>
-                      <h3 className="text-sm font-bold text-[var(--color-admin-dark)]">{order.customer?.name || `Customer #${order.userId.slice(-6)}`}</h3>
-                      <p className="text-[10px] font-bold text-gray-400 tracking-tight line-clamp-1">
-                         {order.address?.street} • {order.items.length} items • ₹{order.total}
-                      </p>
+                   <div className="flex justify-between items-end">
+                      <div>
+                         <h3 className="text-sm font-black text-[var(--color-admin-dark)]">{order.customer?.name || `Guest #${order.userId.slice(-6)}`}</h3>
+                         <div className="flex items-center gap-2 mt-1">
+                            <MapPin size={10} className="text-gray-300" />
+                            <p className="text-[10px] font-bold text-gray-400 tracking-tight line-clamp-1">
+                               {order.address?.street}
+                            </p>
+                         </div>
+                      </div>
+                      <div className="text-right">
+                         <div className="flex items-center justify-end gap-1 mb-1">
+                            <Clock size={10} className="text-gray-300" />
+                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">₹{order.total}</span>
+                         </div>
+                         <p className="text-[10px] font-bold text-gray-300 uppercase">{order.items.length} SKUs</p>
+                      </div>
                    </div>
                 </div>
 
-                <div className="w-20 border-l border-gray-50 flex flex-col items-center justify-center bg-gray-50/20">
-                    <ChevronRight size={16} className="text-gray-300" />
+                <div className="w-12 border-l border-gray-50 flex items-center justify-center group-hover:bg-gray-50/50 transition-colors">
+                    <ChevronRight size={16} className="text-gray-200" />
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
         )}
       </div>
+
+      {/* Floating Bulk Action Bar */}
+      <AnimatePresence>
+        {selectedIds.length > 0 && (
+          <motion.div 
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] z-[100]"
+          >
+             <div className="bg-[var(--color-admin-dark)] rounded-[2.5rem] shadow-2xl p-4 border border-white/10 backdrop-blur-xl">
+                <div className="flex items-center justify-between mb-4 px-4">
+                   <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-white/10 rounded-2xl flex items-center justify-center text-white font-black">{selectedIds.length}</div>
+                      <span className="text-[10px] font-black text-white uppercase tracking-widest">Active Selections</span>
+                   </div>
+                   <button onClick={() => setSelectedIds([])} className="text-[10px] font-black text-white/40 uppercase hover:text-white transition-colors">Deselect All</button>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-2">
+                   {['confirmed', 'baking', 'out_for_delivery'].map((status) => (
+                     <button
+                        key={status}
+                        onClick={() => handleBulkStatusChange(status)}
+                        className="py-3 bg-white/10 hover:bg-white/20 text-white text-[8px] font-black uppercase tracking-widest rounded-2xl border border-white/5 transition-all text-center"
+                     >
+                        {status.replace('_', ' ')}
+                     </button>
+                   ))}
+                   {['delivered', 'received', 'cancelled'].map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => handleBulkStatusChange(status)}
+                        className="py-3 bg-black/20 hover:bg-black/40 text-white/70 hover:text-white text-[8px] font-black uppercase tracking-widest rounded-2xl border border-white/5 transition-all text-center"
+                      >
+                         {status.replace('_', ' ')}
+                      </button>
+                   ))}
+                </div>
+             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <OrderDetailsModal 
         order={selectedOrder} 

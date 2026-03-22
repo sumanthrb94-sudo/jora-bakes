@@ -47,7 +47,7 @@ export const AdminLayout: React.FC = () => {
   };
 
   const navItems = [
-    { icon: <LayoutDashboard size={18} />, label: 'Hub', path: '/admin' },
+    { icon: <Activity size={18} />, label: 'Overview', path: '/admin' },
     { icon: <ShoppingBag size={18} />, label: 'Orders', path: '/admin/orders' },
     { icon: <Package size={18} />, label: 'Menu', path: '/admin/products' },
     { icon: <BarChart3 size={18} />, label: 'Stats', path: '/admin/analytics' },

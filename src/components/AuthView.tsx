@@ -324,6 +324,19 @@ export const AuthView: React.FC<AuthViewProps> = ({
               </div>
 
               <button
+                type="button"
+                onClick={handleGoogleLogin}
+                disabled={isLoading || isGoogleLoading}
+                className="w-full bg-white text-gray-700 border-2 border-gray-100 py-4 rounded-2xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-[0.98] flex items-center justify-center gap-2 h-[56px] mb-3"
+              >
+                {isGoogleLoading ? (
+                  <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <><img src="https://www.google.com/favicon.ico" alt="Google" className="w-4 h-4" /> Continue with Google</>
+                )}
+              </button>
+
+              <button
                 onClick={() => {
                   setAuthMode('phone');
                   setIsSignUp(false);

@@ -11,6 +11,7 @@ import {
   onSnapshot,
   query,
   where,
+  writeBatch,
   QueryConstraint
 } from 'firebase/firestore';
 
@@ -155,4 +156,21 @@ export const subscribeToCollection = <T>(
       handleFirestoreError(error, OperationType.LIST, collectionPath);
     }
   });
+};
+export const bulkUpdateDocuments = async <T extends object>(
+  collectionPath: string,
+  docIds: string[],
+  data: Partial<T>
+): Promise<void> => {
+  try {
+    const batch = writeBatch(db);
+    docIds.forEach(id => {
+      const docRef = doc(db, collectionPath, id);
+      batch.update(docRef, data as any);
+    });
+    await withTimeout(batch.commit());
+  } catch (error) {
+    console.error(`Error in bulk update for ${collectionPath}:`, error);
+    handleFirestoreError(error, OperationType.UPDATE, collectionPath);
+  }
 };
