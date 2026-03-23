@@ -74,7 +74,7 @@ export const Checkout = () => {
             label: checkoutState.selectedAddress?.label || 'Delivery'
           },
           total: Number(checkoutState.grandTotal || (cartTotal + 50)),
-          status: paymentMethod === 'razorpay' ? 'confirmed' : 'received',
+          status: 'pending',
           paymentMethod: paymentMethod,
           createdAt: new Date().toISOString(),
           deliveryDate: checkoutState.deliveryDate instanceof Date 
