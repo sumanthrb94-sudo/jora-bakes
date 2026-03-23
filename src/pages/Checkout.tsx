@@ -107,7 +107,7 @@ export const Checkout = () => {
         // 2. WhatsApp Redirection Flow
         if (paymentMethod === 'whatsapp') {
           const waNumber = "917799934943"; // Jora Bakes business number
-          const text = `Hello JORA BAKES! 🍰\n\nI just placed an order on the app and want to confirm it via WhatsApp.\n\n*Order ID:* #${newOrderId}\n*Total:* ₹${checkoutState.grandTotal}\n*Delivery Date:* ${checkoutState.deliveryDate}\n\nPlease confirm my order!`;
+          const text = `Hello JORA BAKES! 🍰\n\nI just placed an order on the app and want to confirm it via WhatsApp.\n\n*Order ID:* #${newOrderId}\n*Total:* Rs. ${checkoutState.grandTotal}\n*Delivery Date:* ${checkoutState.deliveryDate}\n\nPlease confirm my order!`;
           const encodedText = encodeURIComponent(text);
           window.open(`https://wa.me/${waNumber}?text=${encodedText}`, '_blank');
         }
@@ -181,7 +181,7 @@ export const Checkout = () => {
               </div>
               <div className="text-right shrink-0">
                 <p className="text-[10px] text-[var(--color-tertiary)] uppercase font-bold tracking-wider mb-1.5">Total Paid</p>
-                <p className="font-bold text-[var(--color-accent)] text-xl sm:text-2xl">₹{checkoutState.grandTotal || (cartTotal + 50)}</p>
+                <p className="font-bold text-[var(--color-accent)] text-xl sm:text-2xl">Rs. {checkoutState.grandTotal || (cartTotal + 50)}</p>
               </div>
             </div>
             
@@ -320,7 +320,7 @@ export const Checkout = () => {
           {isProcessing ? (
             <div className="w-6 h-6 border-2 border-[var(--color-cream)] border-t-transparent rounded-full animate-spin" />
           ) : (
-            paymentMethod === 'whatsapp' ? `Send Order to WhatsApp • ₹${checkoutState.grandTotal}` : `Pay ₹${checkoutState.grandTotal}`
+            paymentMethod === 'whatsapp' ? `Send Order to WhatsApp • Rs. ${checkoutState.grandTotal}` : `Pay Rs. ${checkoutState.grandTotal}`
           )}
         </button>
       </div>

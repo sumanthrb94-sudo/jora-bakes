@@ -275,7 +275,7 @@ export const OrderTracking = () => {
                 </div>
                 <div className="flex justify-between font-bold">
                   <span className="text-[var(--color-chocolate)]">Total Amount</span>
-                  <span className="text-[var(--color-terracotta)]">₹{order.total}</span>
+                  <span className="text-[var(--color-terracotta)]">Rs. {order.total}</span>
                 </div>
                 <div className="pt-3 mt-3 border-t border-gray-100 flex justify-between items-start">
                   <span className="text-gray-500">Delivering to</span>

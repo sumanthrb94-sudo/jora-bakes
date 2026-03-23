@@ -38,6 +38,7 @@ export const Layout = () => {
           </AnimatePresence>
         </main>
         <BottomNav />
+        <div id="modal-root" className="absolute inset-0 z-[99999] pointer-events-none empty:hidden" />
       </div>
     </div>
   );

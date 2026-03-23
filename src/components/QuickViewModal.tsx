@@ -161,7 +161,7 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
                 <div className="flex justify-between items-start mb-2">
                   <h2 className="text-xl font-bold text-[var(--color-chocolate)] pr-4">{product.name}</h2>
                   <div className="text-xl font-bold text-[var(--color-terracotta)] whitespace-nowrap">
-                    ₹{currentPrice}
+                    Rs. {currentPrice}
                   </div>
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed">{product.description}</p>
@@ -181,7 +181,7 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
                             : 'bg-white text-gray-600 border-gray-200 hover:border-[var(--color-terracotta)]'
                         }`}
                       >
-                        {variant.weight} {variant.priceModifier > 0 && `(+₹${variant.priceModifier})`}
+                        {variant.weight} {variant.priceModifier > 0 && `(+Rs. ${variant.priceModifier})`}
                       </button>
                     ))}
                   </div>
@@ -216,7 +216,7 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
                               )}
                             </span>
                           </div>
-                          {option.priceModifier > 0 && <span className="text-sm font-semibold text-gray-600">+₹{option.priceModifier}</span>}
+                          {option.priceModifier > 0 && <span className="text-sm font-semibold text-gray-600">+Rs. {option.priceModifier}</span>}
                         </label>
                       )
                     })}
@@ -279,7 +279,7 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
                     </button>
                   </div>
                   <button onClick={handleAddToCart} className="flex-1 bg-[var(--color-chocolate)] text-[var(--color-cream)] py-4 rounded-2xl font-bold text-lg shadow-lg hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2">
-                    Add to Box • ₹{currentPrice * quantity}
+                    Add to Box • Rs. {currentPrice * quantity}
                   </button>
                 </div>
               ) : (

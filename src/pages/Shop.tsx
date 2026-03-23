@@ -159,9 +159,9 @@ export const Shop = () => {
                         
                         <div className="flex items-center gap-2 mb-2">
                            {product.mrp && product.mrp > product.price && (
-                             <span className="text-xs text-gray-300 font-black line-through">₹{product.mrp}</span>
+                             <span className="text-xs text-gray-300 font-black line-through">Rs. {product.mrp}</span>
                            )}
-                           <span className="font-black text-gray-800 text-sm tracking-tight">₹{product.price}</span>
+                           <span className="font-black text-gray-800 text-sm tracking-tight">Rs. {product.price}</span>
                            {(product.discountPercentage || 0) > 0 && (
                              <span className="text-[9px] font-black text-[#FF4B4B] uppercase tracking-widest bg-red-50 px-1.5 py-0.5 rounded">-{product.discountPercentage}% OFF</span>
                            )}

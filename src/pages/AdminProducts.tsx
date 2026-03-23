@@ -92,9 +92,9 @@ const GridCard: React.FC<GridCardProps> = ({ product, onEdit }) => {
          <div className="mt-auto flex items-end justify-between">
             <div className="flex flex-col">
                {product.mrp && product.mrp > product.price && (
-                 <span className="text-[10px] text-gray-300 font-black line-through leading-none mb-0.5">₹{product.mrp}</span>
+                 <span className="text-[10px] text-gray-300 font-black line-through leading-none mb-0.5">Rs. {product.mrp}</span>
                )}
-               <span className="text-base font-black text-[var(--color-admin-dark)] leading-none">₹{product.price}</span>
+               <span className="text-base font-black text-[var(--color-admin-dark)] leading-none">Rs. {product.price}</span>
             </div>
             {isOutOfStock ? (
               <div className="bg-[#FFEAEA] text-[#FF4B4B] px-3 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5 border border-[#FFD6D6]">
@@ -212,15 +212,18 @@ export const AdminProducts = () => {
             key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="space-y-6"
           >
-             {/* Sticky Header */}
-             <div className="flex items-center justify-between gap-4 sticky top-0 z-20 bg-[#F8F9FA] pb-2 pt-1">
-                <h1 className="text-xl font-black text-[var(--color-admin-dark)] tracking-tight uppercase px-1">Inventory Flow</h1>
-                <motion.button 
+           {/* Page Header */}
+             <div className="flex items-end justify-between sticky top-0 z-20 bg-[#F5F5F7] pb-3 pt-1">
+                <div>
+                  <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] leading-none mb-1.5">Product Management</p>
+                  <h1 className="text-3xl font-black text-[#1D1D1F] tracking-tighter leading-none italic">Products.</h1>
+                </div>
+                <motion.button
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => handleOpenForm()} 
-                  className="bg-[var(--color-admin-dark)] text-white px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-black/10 flex items-center gap-2 active:scale-95 transition-all"
+                  onClick={() => handleOpenForm()}
+                  className="bg-[#1D1D1F] text-white px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-black/10 flex items-center gap-2"
                 >
-                  <Plus size={16} /> New Asset
+                  <Plus size={16} /> New SKU
                 </motion.button>
              </div>
 
@@ -297,7 +300,7 @@ export const AdminProducts = () => {
 
                       <div className="grid grid-cols-2 gap-4">
                          <div className="bg-gray-50 p-6 rounded-3xl space-y-3">
-                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">MRP (₹)</label>
+                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">MRP (Rs. )</label>
                             <input type="number" required value={formData.mrp || ''} onChange={e => updatePricing('mrp', Number(e.target.value))} 
                               className="w-full bg-transparent border-none p-0 text-xl font-black text-[var(--color-admin-dark)] focus:ring-0" />
                          </div>
@@ -313,7 +316,7 @@ export const AdminProducts = () => {
 
                       <div className="bg-gray-50 p-6 rounded-3xl flex items-center justify-between">
                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest tracking-[0.2em]">Final Price</label>
-                         <span className="text-2xl font-black text-[#00B189]">₹{formData.price}</span>
+                         <span className="text-2xl font-black text-[#00B189]">Rs. {formData.price}</span>
                       </div>
                    </div>
                 </div>

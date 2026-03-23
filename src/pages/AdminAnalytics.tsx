@@ -84,7 +84,7 @@ export const AdminAnalytics = () => {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <MetricCard title="Today's Rev" value={`₹${todayRevenue}`} detail="14%" trend="up" icon={<TrendingUp size={20} />} color="bg-blue-500" />
+        <MetricCard title="Today's Rev" value={`Rs. ${todayRevenue}`} detail="14%" trend="up" icon={<TrendingUp size={20} />} color="bg-blue-500" />
         <MetricCard title="Active Flux" value={orders.filter(o => !['delivered', 'cancelled'].includes(o.status)).length} detail="2 New" trend="up" icon={<ShoppingBag size={20} />} color="bg-orange-500" />
         <MetricCard title="Unique Reach" value={new Set(orders.map(o => o.userId)).size} detail="3" trend="up" icon={<Users size={20} />} color="bg-purple-500" />
         <MetricCard title="Ops Velocity" value="98%" detail="1%" trend="down" icon={<Zap size={20} />} color="bg-red-500" />

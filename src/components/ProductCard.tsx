@@ -100,9 +100,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
         <div className="flex items-center justify-between mt-3 mb-3">
           <div className="flex flex-col">
              {product.mrp && product.mrp > product.price && (
-               <span className="text-[10px] text-gray-300 font-black line-through leading-none mb-0.5">₹{product.mrp}</span>
+               <span className="text-[10px] text-gray-300 font-black line-through leading-none mb-0.5">Rs. {product.mrp}</span>
              )}
-             <span className="text-base font-black text-[#1C1C1C] leading-none">₹{product.price}</span>
+             <span className="text-base font-black text-[#1C1C1C] leading-none">Rs. {product.price}</span>
           </div>
           
           <div 

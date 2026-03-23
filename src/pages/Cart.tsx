@@ -102,7 +102,7 @@ export const Cart = () => {
                   {item.customizations && item.customizations.length > 0 && (
                     <div className="text-[11px] text-gray-400 font-medium mb-1.5 space-y-0.5">
                       {item.customizations.map((c, i) => (
-                        <div key={i}>{c.groupName}: {c.optionName} {c.price > 0 ? `(+₹${c.price})` : ''}</div>
+                        <div key={i}>{c.groupName}: {c.optionName} {c.price > 0 ? `(+Rs. ${c.price})` : ''}</div>
                       ))}
                     </div>
                   )}
@@ -115,7 +115,7 @@ export const Cart = () => {
 
                   <div className="mt-auto flex items-center justify-between">
                     <div className="font-bold text-[var(--color-chocolate)]">
-                      ₹{(item.product.price + item.variant.priceModifier) * item.quantity}
+                      Rs. {(item.product.price + item.variant.priceModifier) * item.quantity}
                     </div>
                     
                     <div className="flex items-center bg-[var(--color-beige)] rounded-full px-2 py-1">
@@ -232,7 +232,7 @@ export const Cart = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-sm font-bold text-[var(--color-chocolate)]">+₹100</span>
+            <span className="text-sm font-bold text-[var(--color-chocolate)]">+Rs. 100</span>
             <input 
               type="checkbox" 
               checked={giftWrap}
@@ -248,26 +248,26 @@ export const Cart = () => {
           
           <div className="flex justify-between text-sm text-gray-600">
             <span>Subtotal</span>
-            <span className="font-medium text-[var(--color-chocolate)]">₹{cartTotal}</span>
+            <span className="font-medium text-[var(--color-chocolate)]">Rs. {cartTotal}</span>
           </div>
           
           <div className="flex justify-between text-sm text-gray-600">
             <span>Delivery Fee</span>
             <span className="font-medium text-[var(--color-chocolate)]">
-              {deliveryFee === 0 ? <span className="text-green-600">Free</span> : `₹${deliveryFee}`}
+              {deliveryFee === 0 ? <span className="text-green-600">Free</span> : `Rs. ${deliveryFee}`}
             </span>
           </div>
           
           {giftWrap && (
             <div className="flex justify-between text-sm text-gray-600">
               <span>Gift Wrap</span>
-              <span className="font-medium text-[var(--color-chocolate)]">₹100</span>
+              <span className="font-medium text-[var(--color-chocolate)]">Rs. 100</span>
             </div>
           )}
           
           <div className="border-t border-gray-100 pt-3 mt-2 flex justify-between items-center">
             <span className="font-bold text-[var(--color-chocolate)]">Grand Total</span>
-            <span className="font-bold text-xl text-[var(--color-terracotta)]">₹{grandTotal}</span>
+            <span className="font-bold text-xl text-[var(--color-terracotta)]">Rs. {grandTotal}</span>
           </div>
         </div>
       </div>

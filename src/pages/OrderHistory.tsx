@@ -117,7 +117,7 @@ export const OrderHistory = () => {
                   </p>
                 </div>
                 <div className="text-right">
-                  <div className="font-bold text-[var(--color-chocolate)]">₹{order.total}</div>
+                  <div className="font-bold text-[var(--color-chocolate)]">Rs. {order.total}</div>
                   <div className="text-[10px] text-gray-400">{order.items.length} items</div>
                 </div>
               </div>

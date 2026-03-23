@@ -22,8 +22,7 @@ import { AdminProducts } from './pages/AdminProducts';
 import { Notifications } from './pages/Notifications';
 import { AdminOrders } from './pages/AdminOrders';
 import { SavedAddresses } from './pages/SavedAddresses';
-import { AdminDashboard } from './pages/AdminDashboard'; // Import AdminDashboard
-import { AdminAnalytics } from './pages/AdminAnalytics';
+import { AdminDashboard } from './pages/AdminDashboard';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminLayout } from './components/AdminLayout';
 import { ScrollToTop } from './components/ScrollToTop';
@@ -55,6 +54,7 @@ export default function App() {
                   {/* Admin Routes with Sidebar Layout */}
                   <Route path="admin" element={<AdminLayout />}>
                     <Route index element={<AdminDashboard />} />
+                    <Route path="orders" element={<AdminOrders />} />
                     <Route path="products" element={<AdminProducts />} />
                   </Route>
                 </Route>

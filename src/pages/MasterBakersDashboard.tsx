@@ -315,7 +315,7 @@ const DispatchLogistics = ({ orders }: { orders: Order[] }) => {
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-lg font-black tracking-tighter">₹{order.total}</p>
+                <p className="text-lg font-black tracking-tighter">Rs. {order.total}</p>
                 <div className={`flex items-center justify-end gap-1.5 mt-1 ${selectedIds.includes(order.id) ? 'opacity-70' : 'text-[#D4AF37]'}`}>
                    <Truck size={12} />
                    <span className="text-[10px] font-black uppercase tracking-widest">{order.deliverySlot}</span>
