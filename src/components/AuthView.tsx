@@ -11,11 +11,13 @@ import { useNavigate } from 'react-router-dom';
 interface AuthViewProps {
   title?: string;
   subtitle?: string;
+  onClose?: () => void;
 }
 
 export const AuthView: React.FC<AuthViewProps> = ({ 
   title = "Welcome to JORA BAKES", 
-  subtitle = "Log in or sign up to explore artisanal treats" 
+  subtitle = "Log in or sign up to explore artisanal treats",
+  onClose
 }) => {
   const { login, loginEmail, registerEmail } = useAuth();
   const navigate = useNavigate();
@@ -128,6 +130,14 @@ export const AuthView: React.FC<AuthViewProps> = ({
     }
   };
 
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate('/', { replace: true });
+    }
+  };
+
   return createPortal(
     <div className="fixed inset-0 z-[200] flex justify-center bg-[#e5e5e5] sm:bg-black/50 sm:backdrop-blur-sm selection:bg-[var(--color-terracotta)] selection:text-white">
       <AnimatePresence mode="wait">
@@ -143,7 +153,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
               <h1 className="text-4xl font-black text-[var(--color-chocolate)] tracking-tighter">JORA BAKES</h1>
               
               <button 
-                onClick={() => window.history.length > 2 ? navigate(-1) : navigate('/')}
+                onClick={handleClose}
                 className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 bg-white hover:bg-[var(--color-border-subtle)] rounded-full flex items-center justify-center text-[var(--color-text-secondary)] transition-colors z-20 shadow-sm border border-[var(--color-border-subtle)]"
               >
                 <X size={20} />
