@@ -37,28 +37,34 @@ export default function App() {
           <CartProvider>
             <Router>
               <ScrollToTop />
-              <Routes>
-                {/* Entire app requires login on startup */}
-                <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-                  <Route index element={<Home />} />
-                  <Route path="shop" element={<Shop />} />
-                  <Route path="cart" element={<Cart />} />
-                  <Route path="track" element={<OrderTracking />} />
-                  <Route path="profile" element={<Profile />} />
-                  <Route path="checkout" element={<Checkout />} />
-                  <Route path="orders" element={<OrderHistory />} />
-                  <Route path="notifications" element={<Notifications />} />
-                  <Route path="settings" element={<Settings />} />
-                  <Route path="addresses" element={<SavedAddresses />} />
-                  
-                  {/* Admin Routes with Sidebar Layout */}
-                  <Route path="admin" element={<AdminLayout />}>
-                    <Route index element={<AdminDashboard />} />
-                    <Route path="orders" element={<AdminOrders />} />
-                    <Route path="products" element={<AdminProducts />} />
-                  </Route>
-                </Route>
-              </Routes>
+        <Routes>
+          {/* Main Layout containing both public and protected routes */}
+          <Route path="/" element={<Layout />}>
+            {/* Public Routes */}
+            <Route index element={<Home />} />
+            <Route path="shop" element={<Shop />} />
+            
+            {/* Protected Customer Routes */}
+            <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+            <Route path="track" element={<ProtectedRoute><OrderTracking /></ProtectedRoute>} />
+            <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+            <Route path="orders" element={<ProtectedRoute><OrderHistory /></ProtectedRoute>} />
+            <Route path="notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+            <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            <Route path="addresses" element={<ProtectedRoute><SavedAddresses /></ProtectedRoute>} />
+            
+            {/* Admin Routes with Sidebar Layout */}
+            <Route path="admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="products" element={<AdminProducts />} />
+            </Route>
+          </Route>
+          
+          <Route path="/kitchen" element={<ProtectedRoute><KitchenMode /></ProtectedRoute>} />
+          <Route path="/master-baker" element={<ProtectedRoute><MasterBakersDashboard /></ProtectedRoute>} />
+        </Routes>
             </Router>
           </CartProvider>
         </ProductProvider>
