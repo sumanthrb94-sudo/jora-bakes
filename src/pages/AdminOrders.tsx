@@ -39,7 +39,19 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-const OrderDetailsModal = ({ order, onClose, onUpdateStatus, onDelete }: { order: Order | null, onClose: () => void, onUpdateStatus: (id: string, s: string) => void, onDelete: (id: string) => void }) => {
+const OrderDetailsModal = ({ 
+  order, 
+  onClose, 
+  onUpdateStatus, 
+  onUpdatePaymentStatus,
+  onDelete 
+}: { 
+  order: Order | null, 
+  onClose: () => void, 
+  onUpdateStatus: (id: string, s: string) => void, 
+  onUpdatePaymentStatus: (id: string, s: 'pending' | 'paid' | 'failed') => void,
+  onDelete: (id: string) => void 
+}) => {
   if (!order) return null;
 
   const getPortalTarget = () => document.getElementById('modal-root') || document.body;
@@ -162,7 +174,28 @@ const OrderDetailsModal = ({ order, onClose, onUpdateStatus, onDelete }: { order
                     {order.paymentMethod || 'CASH'}
                   </span>
                </div>
-               
+
+                <div className="space-y-2">
+                   <p className="text-[9px] font-black text-gray-300 uppercase tracking-[0.2em] ml-1">Update Payment Status</p>
+                   <div className="grid grid-cols-3 gap-2">
+                      {(['pending', 'paid', 'failed'] as const).map(pstatus => (
+                         <button
+                            key={pstatus}
+                            onClick={() => onUpdatePaymentStatus(order.id, pstatus)}
+                            className={`py-2 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all ${
+                               order.paymentStatus === pstatus
+                                  ? pstatus === 'paid' ? 'bg-green-600 border-green-600 text-white' :
+                                    pstatus === 'failed' ? 'bg-red-600 border-red-600 text-white' :
+                                    'bg-amber-500 border-amber-500 text-white'
+                                  : 'bg-white border-gray-100 text-gray-400'
+                            }`}
+                         >
+                            {pstatus}
+                         </button>
+                      ))}
+                   </div>
+                </div>
+
                <div className="flex justify-between text-xs font-bold text-gray-500">
                   <span>Subtotal</span>
                   <span>Rs. {order.total}</span>
@@ -171,20 +204,20 @@ const OrderDetailsModal = ({ order, onClose, onUpdateStatus, onDelete }: { order
                   <span>Delivery</span>
                   <span className="text-green-600 font-black tracking-wide uppercase text-[10px]">Free</span>
                </div>
-               
+
                <div className="border-t border-dashed border-gray-300 my-2 pt-3 flex justify-between items-center">
                   <span className="text-xs font-black text-[#1D1D1F] uppercase tracking-widest">Grand Total</span>
                   <span className="text-lg font-black text-[#1D1D1F] tracking-tighter">Rs. {order.total}</span>
                </div>
             </div>
             <div className="flex gap-3">
-               <button 
-                  onClick={onClose} 
+               <button
+                  onClick={onClose}
                   className="flex-1 py-4 bg-[#1D1D1F] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-opacity"
                >
                   Dismiss Details
                </button>
-               <button 
+               <button
                   onClick={() => onDelete(order.id)}
                   className="px-6 py-4 bg-red-50 text-red-600 border border-red-100 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-red-100 transition-colors"
                >
@@ -233,12 +266,21 @@ export const AdminOrders = () => {
     }
   }, [orders, selectedOrder]);
 
-  const handleUpdateStatus = async (id: string, status: string) => {
+  const handleStatusUpdate = async (orderId: string, newStatus: string) => {
     try {
-      await updateDocument('orders', id, { status });
-      toast.success(`Order #${id.slice(-4)} ${status}`);
+      await updateDocument('orders', orderId, { status: newStatus });
+      toast.success(`Order #${orderId.slice(-6)} updated to ${newStatus}`);
     } catch (err) {
-      toast.error('Update failed');
+      toast.error('Failed to update status');
+    }
+  };
+
+  const handlePaymentStatusUpdate = async (orderId: string, pStatus: 'pending' | 'paid' | 'failed') => {
+    try {
+      await updateDocument('orders', orderId, { paymentStatus: pStatus });
+      toast.success(`Payment status updated to ${pStatus}`);
+    } catch (err) {
+      toast.error('Failed to update payment status');
     }
   };
 
@@ -297,7 +339,7 @@ export const AdminOrders = () => {
   return (
     <div className="space-y-5 pb-32 min-h-screen">
 
-      {/* â”€â”€â”€ Page Header â”€â”€â”€ */}
+      {/* --- Page Header --- */}
       <div className="flex items-end justify-between">
         <div>
           <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] leading-none mb-1.5">Order Management</p>
@@ -309,11 +351,11 @@ export const AdminOrders = () => {
         </div>
       </div>
 
-      {/* â”€â”€â”€ Search Bar â”€â”€â”€ */}
+      {/* --- Search Bar --- */}
       <div className="relative">
         <input
           type="text"
-          placeholder="Search name, phone, or order IDâ€¦"
+          placeholder="Search name, phone, or order ID..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full bg-white border border-gray-100 rounded-2xl px-12 py-4 text-sm font-medium shadow-sm focus:ring-0 outline-none focus:border-gray-200 transition-colors"
@@ -343,7 +385,7 @@ export const AdminOrders = () => {
       {/* Orders List / Empty States */}
       {!loading && !error && filteredOrders.length > 0 && (
         <div className="flex items-center justify-between px-1 mb-1 mt-4">
-          <button 
+          <button
             onClick={() => {
               if (selectedIds.length === filteredOrders.length) {
                 setSelectedIds([]);
@@ -355,14 +397,14 @@ export const AdminOrders = () => {
           >
             <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
               selectedIds.length === filteredOrders.length && filteredOrders.length > 0
-                ? 'bg-[#1D1D1F] border-[#1D1D1F]' 
+                ? 'bg-[#1D1D1F] border-[#1D1D1F]'
                 : 'bg-white border-gray-300'
             }`}>
               {selectedIds.length === filteredOrders.length && filteredOrders.length > 0 && <Check size={10} className="text-white" />}
             </div>
             {selectedIds.length === filteredOrders.length && filteredOrders.length > 0 ? 'Deselect All' : 'Select All'}
           </button>
-          
+
           {selectedIds.length > 0 && (
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
               {selectedIds.length} Selected
@@ -395,10 +437,10 @@ export const AdminOrders = () => {
         ) : (
           <AnimatePresence mode="popLayout">
             {filteredOrders.map((order) => (
-              <motion.div 
-                layout 
-                initial={{ opacity: 0, y: 10 }} 
-                animate={{ opacity: 1, y: 0 }} 
+              <motion.div
+                layout
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
                 key={order.id}
                 onClick={() => setSelectedOrder(order)}
                 className={`bg-white rounded-2xl border transition-all flex overflow-hidden cursor-pointer group ${
@@ -406,7 +448,7 @@ export const AdminOrders = () => {
                 }`}
               >
                 {/* Multi-Select Toggle */}
-                <div 
+                <div
                   onClick={(e) => toggleSelect(order.id, e)}
                   className={`w-12 border-r flex items-center justify-center transition-colors ${
                     selectedIds.includes(order.id) ? 'bg-[var(--color-admin-dark)] border-[var(--color-admin-dark)]' : 'border-gray-50 bg-gray-50/10'
@@ -438,9 +480,9 @@ export const AdminOrders = () => {
                       )}
                     </div>
                     <div className="text-right shrink-0 ml-3">
-                      <p className="text-sm font-black text-[#1D1D1F]">Rs. {order.total}</p>
-                      <p className="text-[9px] font-bold text-gray-300">{order.items.length} item{order.items.length > 1 ? 's' : ''}</p>
-                    </div>
+                    <p className="text-sm font-black text-[#1D1D1F]">Rs. {order.total}</p>
+                    <p className="text-[9px] font-bold text-gray-300">{order.items.length} item{order.items.length > 1 ? 's' : ''}</p>
+                  </div>
                   </div>
                 </div>
 
@@ -456,7 +498,7 @@ export const AdminOrders = () => {
       {/* Floating Bulk Action Bar */}
       <AnimatePresence>
         {selectedIds.length > 0 && (
-          <motion.div 
+          <motion.div
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
@@ -470,7 +512,7 @@ export const AdminOrders = () => {
                    </div>
                    <button onClick={() => setSelectedIds([])} className="text-[10px] font-black text-white/40 uppercase hover:text-white transition-colors">Deselect All</button>
                 </div>
-                
+
                  <div className="grid grid-cols-2 gap-2">
                     {STATUS_STEPS.map((status) => {
                       const meta = STATUS_META[status];
@@ -492,10 +534,11 @@ export const AdminOrders = () => {
          )}
        </AnimatePresence>
 
-      <OrderDetailsModal 
-        order={selectedOrder} 
-        onClose={() => setSelectedOrder(null)} 
-        onUpdateStatus={handleUpdateStatus}
+      <OrderDetailsModal
+        order={selectedOrder}
+        onClose={() => setSelectedOrder(null)}
+        onUpdateStatus={handleStatusUpdate}
+        onUpdatePaymentStatus={handlePaymentStatusUpdate}
         onDelete={handleDeleteOrder}
       />
     </div>

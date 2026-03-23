@@ -427,12 +427,12 @@ export const AdminProducts = () => {
 
                       <div className="grid grid-cols-2 gap-4">
                          <div className="bg-gray-50 p-6 rounded-3xl space-y-3">
-                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">MRP (Rs. )</label>
-                            <input type="number" required value={formData.mrp || ''} onChange={e => updatePricing('mrp', Number(e.target.value))} 
-                              className="w-full bg-transparent border-none p-0 text-xl font-black text-[var(--color-admin-dark)] focus:ring-0" />
+                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Pricing (Rs. )</label>
+                            <input type="number" value={formData.mrp} onChange={e => updatePricing('mrp', Number(e.target.value))} 
+                              className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 text-xs font-bold focus:ring-2 focus:ring-[#1D1D1F]/5 outline-none transition-all" />
                          </div>
-                         <div className="bg-gray-50 p-6 rounded-3xl space-y-3">
-                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Discount %</label>
+                         <div className="flex flex-col gap-2">
+                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Offer (Rs. )</label>
                             <div className="flex items-center">
                                <input type="number" value={formData.discountPercentage || ''} onChange={e => updatePricing('discount', Number(e.target.value))} 
                                  className="w-full bg-transparent border-none p-0 text-xl font-black text-[var(--color-admin-dark)] focus:ring-0" />

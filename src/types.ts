@@ -123,6 +123,7 @@ export interface Order {
   customer: { name: string; phone: string; email: string; };
   address: { street: string; instructions?: string; label?: string; };
   paymentMethod: string;
+  paymentStatus: 'pending' | 'paid' | 'failed';
   giftWrap?: boolean;
   riderName?: string;
 }
