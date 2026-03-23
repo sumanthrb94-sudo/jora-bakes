@@ -80,7 +80,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Initialize Notifications
         try {
           NotificationService.requestPermission();
-          const isAdminUser = userProfile?.role === 'admin' || ADMIN_EMAILS.includes(firebaseUser.email || '');
+          const isAdminUser = ADMIN_EMAILS.includes(firebaseUser.email || '');
+          
+          // Auto-demote legacy admins not in the current list
+          if (userProfile?.role === 'admin' && !isAdminUser) {
+            console.log("Demoting retired admin:", firebaseUser.email);
+            await updateDocument('users', firebaseUser.uid, { role: 'customer' });
+            userProfile.role = 'customer';
+            setProfile({ ...userProfile });
+          }
+
           notificationUnsubscribe = NotificationService.listenToOrderUpdates(firebaseUser.uid, isAdminUser);
         } catch (err) {
           console.warn("Notification service failed to initialize:", err);
@@ -140,7 +149,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setProfile(prev => prev ? { ...prev, ...data } : null);
   };
 
-  const isAdmin = profile?.role === 'admin' || ADMIN_EMAILS.includes(user?.email || '');
+  const isAdmin = ADMIN_EMAILS.includes(user?.email || '');
 
   const value = useMemo(() => ({
     user,
