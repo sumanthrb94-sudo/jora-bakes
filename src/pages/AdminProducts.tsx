@@ -30,11 +30,10 @@ const CATEGORIES = ['All', 'Millet Brownies', 'Cheese Cakes', 'Burnt Basque', 'C
 interface GridCardProps {
   product: Product;
   onEdit: (p?: Product) => void;
-  isSelected?: boolean;
-  onSelect?: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
-const GridCard: React.FC<GridCardProps> = ({ product, onEdit, isSelected, onSelect }) => {
+const GridCard: React.FC<GridCardProps> = ({ product, onEdit, onDelete }) => {
   const isOutOfStock = (product.stockQuantity || 0) <= 0;
   const isSoldOut = !product.isAvailable || isOutOfStock;
   
@@ -43,28 +42,22 @@ const GridCard: React.FC<GridCardProps> = ({ product, onEdit, isSelected, onSele
       layout
       whileHover={{ y: -8, boxShadow: '0 30px 40px -15px rgba(0, 0, 0, 0.12)' }}
       whileTap={{ scale: 0.98 }}
-      className={`bg-white rounded-[2.5rem] border overflow-hidden shadow-sm flex flex-col relative group cursor-pointer transition-all duration-500 ${
-        isSelected ? 'border-[var(--color-admin-dark)] ring-4 ring-[var(--color-admin-dark)]/5 shadow-xl' : 'border-gray-100 hover:border-gray-200'
-      }`}
+      className={`bg-white rounded-[2.5rem] border border-gray-100 hover:border-gray-200 overflow-hidden shadow-sm flex flex-col relative group cursor-pointer transition-all duration-500`}
       onClick={(e) => {
-        if ((e.target as HTMLElement).closest('.select-zone')) return;
+        if ((e.target as HTMLElement).closest('.action-zone')) return;
         onEdit(product);
       }}
     >
-      {/* Selection Checkbox */}
+      {/* Delete Action */}
       <div 
-        className="select-zone absolute top-4 right-4 z-20 w-8 h-8 rounded-xl flex items-center justify-center transition-all"
+        className="action-zone absolute top-4 right-4 z-20 w-8 h-8 rounded-xl flex items-center justify-center transition-all"
         onClick={(e) => {
            e.stopPropagation();
-           onSelect?.(product.id);
+           onDelete(product.id);
         }}
       >
-         <div className={`w-6 h-6 rounded-lg flex items-center justify-center border-2 transition-all duration-300 ${
-           isSelected 
-             ? 'bg-[var(--color-admin-dark)] border-[var(--color-admin-dark)] text-white scale-110 shadow-lg' 
-             : 'bg-white/60 backdrop-blur-md border-white/40 text-gray-400 opacity-0 group-hover:opacity-100'
-         }`}>
-            {isSelected ? <CheckSquare size={14} /> : <Square size={14} />}
+         <div className="w-6 h-6 rounded-lg flex items-center justify-center border-2 border-white/40 bg-white/60 backdrop-blur-md text-red-500 opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:border-red-200 transition-all duration-300 shadow-sm">
+            <Trash2 size={14} />
          </div>
       </div>
 
@@ -84,7 +77,7 @@ const GridCard: React.FC<GridCardProps> = ({ product, onEdit, isSelected, onSele
               animate={{ scale: 1, opacity: 1 }}
               className="text-[10px] font-black text-[#1D1D1F] uppercase tracking-[0.25em] bg-white/90 px-5 py-3 rounded-full shadow-2xl border border-white/20"
             >
-              Inactive SKU
+              Inactive Product
             </motion.span>
           </div>
         )}
@@ -140,8 +133,6 @@ export const AdminProducts = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [isBulkLoading, setIsBulkLoading] = useState(false);
   
   // Form State - Reflecting the Reference Image
   const [showForm, setShowForm] = useState(false);
@@ -174,37 +165,14 @@ export const AdminProducts = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const toggleSelect = (id: string) => {
-    setSelectedIds(prev => 
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    );
-  };
-
-  const toggleSelectAll = () => {
-    if (selectedIds.length === filteredProducts.length) {
-      setSelectedIds([]);
-    } else {
-      setSelectedIds(filteredProducts.map(p => p.id));
-    }
-  };
-
-  const handleBulkCategoryChange = async (category: string) => {
-    if (selectedIds.length === 0 || isBulkLoading) return;
-    if (!window.confirm(`Update ${selectedIds.length} products to category: ${category.replace('_', ' ')}?`)) return;
-    
-    setIsBulkLoading(true);
-    const loadingToast = toast.loading(`Updating ${selectedIds.length} items...`);
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to permanently delete this product?')) return;
     
     try {
-      const updates = selectedIds.map(id => updateDocument('products', id, { category: category.toLowerCase().replace(/\s+/g, '_') }));
-      await Promise.all(updates);
-      toast.success(`Successfully updated ${selectedIds.length} products`);
-      setSelectedIds([]);
+      await deleteDocument('products', id);
+      toast.success('Product deleted successfully');
     } catch (err) {
-      toast.error('Bulk update failed');
-    } finally {
-      setIsBulkLoading(false);
-      toast.dismiss(loadingToast);
+      toast.error('Failed to delete product');
     }
   };
 
@@ -272,22 +240,9 @@ export const AdminProducts = () => {
           >
               <div className="flex items-end justify-between sticky top-0 z-20 bg-[#F5F5F7] pb-3 pt-1">
                 <div className="flex items-center gap-4">
-                   <div 
-                      className="w-10 h-10 bg-white border border-gray-100 rounded-xl flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
-                      onClick={toggleSelectAll}
-                   >
-                      <div className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-colors ${
-                        selectedIds.length === filteredProducts.length && filteredProducts.length > 0
-                          ? 'bg-[var(--color-admin-dark)] border-[var(--color-admin-dark)] text-white'
-                          : 'border-gray-200 text-transparent'
-                      }`}>
-                         <Check size={12} strokeWidth={4} />
-                      </div>
-                   </div>
                    <div className="flex flex-col">
                      <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] leading-none mb-1.5 flex items-center gap-2">
                         Product Management
-                        {selectedIds.length > 0 && <span className="bg-[var(--color-admin-dark)] text-white px-2 py-0.5 rounded-full text-[8px] animate-in zoom-in">{selectedIds.length} SELECTED</span>}
                      </p>
                      <h1 className="text-3xl font-black text-[#1D1D1F] tracking-tighter leading-none italic">Products.</h1>
                    </div>
@@ -295,9 +250,9 @@ export const AdminProducts = () => {
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleOpenForm()}
-                  className="bg-[#1D1D1F] text-white px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-black/10 flex items-center gap-2"
+                  className="bg-[#1D1D1F] text-white px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-black/10 flex items-center justify-center"
                 >
-                  <Plus size={16} /> New SKU
+                  New Product
                 </motion.button>
              </div>
 
@@ -330,55 +285,11 @@ export const AdminProducts = () => {
                     key={p.id} 
                     product={p} 
                     onEdit={handleOpenForm}
-                    isSelected={selectedIds.includes(p.id)}
-                    onSelect={toggleSelect}
+                    onDelete={handleDelete}
                   />
                 ))}
              </div>
 
-             {/* Bulk Action Bar */}
-             <AnimatePresence>
-                {selectedIds.length > 0 && (
-                   <motion.div
-                      initial={{ y: 100, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: 100, opacity: 0 }}
-                      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md"
-                   >
-                      <div className="bg-[#1D1D1F] rounded-[2.5rem] p-4 shadow-2xl border border-white/10 backdrop-blur-xl">
-                         <div className="flex items-center justify-between mb-4 px-2">
-                            <div className="flex items-center gap-2">
-                               <div className="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center text-white">
-                                  <Filter size={16} />
-                               </div>
-                               <div>
-                                  <p className="text-[8px] font-black text-white/40 uppercase tracking-widest leading-none mb-1">Bulk Action</p>
-                                  <p className="text-xs font-black text-white tracking-tight">Move to Category</p>
-                               </div>
-                            </div>
-                            <button 
-                               onClick={() => setSelectedIds([])}
-                               className="w-8 h-8 flex items-center justify-center text-white/40 hover:text-white transition-colors"
-                            >
-                               <X size={18} />
-                            </button>
-                         </div>
-
-                         <div className="grid grid-cols-3 gap-2">
-                            {CATEGORIES.filter(c => c !== 'All').map(cat => (
-                               <button
-                                  key={cat}
-                                  onClick={() => handleBulkCategoryChange(cat)}
-                                  className="py-3 px-1 bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl text-[8px] font-black text-white uppercase tracking-widest transition-all text-center leading-tight h-12 flex items-center justify-center"
-                               >
-                                  {cat}
-                               </button>
-                            ))}
-                         </div>
-                      </div>
-                   </motion.div>
-                )}
-             </AnimatePresence>
           </motion.div>
         ) : (
           <motion.div 
@@ -389,7 +300,7 @@ export const AdminProducts = () => {
                 <button onClick={() => setShowForm(false)} className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full text-gray-400">
                    <ArrowRight className="rotate-180" size={20} />
                 </button>
-                <h2 className="text-xl font-black text-[var(--color-admin-dark)] uppercase tracking-tight">Sync SKU: {formData.name || 'New Item'}</h2>
+                <h2 className="text-xl font-black text-[var(--color-admin-dark)] uppercase tracking-tight">Sync Product: {formData.name || 'New Item'}</h2>
                 <div className="w-10" />
              </div>
 

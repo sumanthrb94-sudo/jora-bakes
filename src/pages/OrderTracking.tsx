@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Clock, Package, Truck, MapPin, Phone, MessageCircle, Search, RefreshCw } from 'lucide-react';
+import { CheckCircle2, Clock, Package, Truck, MapPin, Phone, MessageCircle, Search, RefreshCw, ShoppingBag } from 'lucide-react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { doc, onSnapshot, updateDoc, collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import { Order, OrderItem } from '../types';
+import { Order, OrderItem, Product } from '../types';
+import { subscribeToCollection } from '../services/firestore';
+import { useCart } from '../context/CartContext';
 
 export const OrderTracking = () => {
   const { isAdmin, user } = useAuth();
@@ -18,6 +20,37 @@ export const OrderTracking = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [pastOrders, setPastOrders] = useState<Order[]>([]);
+  const { addToCart } = useCart();
+
+  useEffect(() => {
+    const unsub = subscribeToCollection<Product>('products', (data) => setProducts(data));
+    return () => unsub();
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    const pastOrdersQuery = query(
+      collection(db, 'orders'),
+      where('userId', '==', user.uid),
+      orderBy('createdAt', 'desc'),
+      limit(10)
+    );
+    const unsubscribe = onSnapshot(pastOrdersQuery, (snapshot) => {
+      const ordersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+      setPastOrders(ordersData);
+    });
+    return () => unsubscribe();
+  }, [user]);
+
+  const handleReorder = (pastOrder: Order) => {
+    pastOrder.items.forEach(item => {
+      addToCart(item.product, item.quantity, item.variant, item.specialRequest, item.customizations);
+    });
+    toast.success("Items added to your box!");
+    navigate('/cart');
+  };
 
   useEffect(() => {
     if (orderIdParam) {
@@ -64,26 +97,7 @@ export const OrderTracking = () => {
     }
   }, [orderIdParam, user, navigate]);
 
-  const handleNextStatus = async () => {
-    if (!order || !order.id) return;
-    
-    const statuses = ['pending', 'proving', 'oven', 'cooling', 'ready_for_collection', 'out_for_delivery', 'delivered'];
-    const currentIndex = statuses.indexOf(order.status);
-    
-    if (currentIndex < statuses.length - 1) {
-      setUpdating(true);
-      try {
-        await updateDoc(doc(db, 'orders', order.id), {
-          status: statuses[currentIndex + 1]
-        });
-      } catch (err) {
-        console.error("Error updating status:", err);
-        toast.error("Failed to update status");
-      } finally {
-        setUpdating(false);
-      }
-    }
-  };
+
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,16 +109,13 @@ export const OrderTracking = () => {
   };
 
   const getStatusIndex = (status: string) => {
-    const statuses = ['pending', 'proving', 'oven', 'cooling', 'ready_for_collection', 'out_for_delivery', 'delivered'];
+    const statuses = ['pending', 'preparing', 'out_for_delivery', 'delivered'];
     return statuses.indexOf(status);
   };
 
   const steps = [
-    { label: 'Order Received', icon: Package, key: 'pending' },
-    { label: 'Proving', icon: Clock, key: 'proving' },
-    { label: 'In the Oven', icon: RefreshCw, key: 'oven' },
-    { label: 'Cooling & Packaging', icon: Package, key: 'cooling' },
-    { label: 'Ready for Collection', icon: CheckCircle2, key: 'ready_for_collection' },
+    { label: 'Pending', icon: Package, key: 'pending' },
+    { label: 'Order Confirmed', icon: CheckCircle2, key: 'preparing' },
     { label: 'Out for Delivery', icon: Truck, key: 'out_for_delivery' },
     { label: 'Delivered', icon: MapPin, key: 'delivered' }
   ];
@@ -164,16 +175,7 @@ export const OrderTracking = () => {
                   </p>
                   <p className="text-sm text-gray-500 mt-1">Slot: {order.deliverySlot}</p>
                 </div>
-                {isAdmin && (
-                  <button 
-                    onClick={handleNextStatus}
-                    disabled={updating || currentStatusIndex === steps.length - 1}
-                    className="flex items-center gap-1 text-[10px] font-bold text-[var(--color-terracotta)] bg-[var(--color-beige)] px-3 py-1.5 rounded-full hover:bg-[var(--color-cream)] transition-colors disabled:opacity-50"
-                  >
-                    <RefreshCw size={12} className={updating ? 'animate-spin' : ''} />
-                    Update Status
-                  </button>
-                )}
+
               </div>
               
               <div className="relative pl-4">
@@ -230,22 +232,26 @@ export const OrderTracking = () => {
               >
                 <h3 className="text-sm font-bold text-gray-800 mb-4">Package Details</h3>
                 <div className="space-y-4">
-                  {order.items.map((item: OrderItem, index: number) => (
-                    <div key={index} className="flex gap-4 items-center">
-                      <div className="w-16 h-16 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0">
-                        {item.product?.images?.[0] ? (
-                          <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <Package className="w-6 h-6 m-5 text-gray-300" />
-                        )}
+                  {order.items.map((item: OrderItem, index: number) => {
+                    const liveProduct = products.find(p => p.id === item.product?.id);
+                    const imageUrl = liveProduct?.images?.[0] || item.product?.images?.[0];
+                    return (
+                      <div key={index} className="flex gap-4 items-center">
+                        <div className="w-16 h-16 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shrink-0">
+                          {imageUrl ? (
+                            <img src={imageUrl} alt={item.product.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <Package className="w-6 h-6 m-5 text-gray-300" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm text-[var(--color-chocolate)] line-clamp-1">{item.product.name}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">Qty: {item.quantity} • {item.variant.flavor}</p>
+                          {item.isGiftWrap && <p className="text-[10px] text-[var(--color-terracotta)] font-medium mt-1">🎁 Gift Wrapped</p>}
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-sm text-[var(--color-chocolate)] line-clamp-1">{item.product.name}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">Qty: {item.quantity} • {item.variant.flavor}</p>
-                        {item.isGiftWrap && <p className="text-[10px] text-[var(--color-terracotta)] font-medium mt-1">🎁 Gift Wrapped</p>}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </motion.div>
             )}
@@ -295,6 +301,44 @@ export const OrderTracking = () => {
             </div>
             <h3 className="text-xl font-bold text-[var(--color-chocolate)] mb-2">Where are your treats?</h3>
             <p className="text-gray-500 text-sm">Enter your order ID from your confirmation WhatsApp to see real-time updates from JORA BAKES 's kitchen.</p>
+          </div>
+        )}
+
+        {/* Previous Orders Section */}
+        {pastOrders.filter(po => po.id !== order?.id && po.status === 'delivered').length > 0 && (
+          <div className="mt-8 space-y-4">
+             <h2 className="text-xl font-bold text-[var(--color-chocolate)]">Previous Orders</h2>
+             <div className="space-y-4">
+                {pastOrders.filter(po => po.id !== order?.id && po.status === 'delivered').map(po => (
+                   <motion.div 
+                      key={po.id} 
+                      className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex flex-col gap-4"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                   >
+                      <div className="flex justify-between items-start">
+                         <div className="flex-1 pr-4">
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                               Delivered • {new Date(po.createdAt).toLocaleDateString()}
+                            </p>
+                            <h3 className="font-bold text-[var(--color-chocolate)] mt-1">Order #{po.id.slice(-6).toUpperCase()}</h3>
+                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                               {po.items.map(i => `${i.quantity}x ${i.product.name}`).join(', ')}
+                            </p>
+                         </div>
+                         <div className="text-right">
+                            <p className="font-black text-[var(--color-terracotta)]">Rs. {po.total}</p>
+                         </div>
+                      </div>
+                      <button 
+                         onClick={() => handleReorder(po)}
+                         className="w-full py-3 bg-[var(--color-beige)] text-[var(--color-terracotta)] text-xs font-bold uppercase tracking-widest rounded-2xl hover:bg-[var(--color-terracotta)] hover:text-white transition-colors flex items-center justify-center gap-2"
+                      >
+                         <ShoppingBag size={16} /> Reorder Items
+                      </button>
+                   </motion.div>
+                ))}
+             </div>
           </div>
         )}
 

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { subscribeToCollection } from '../services/firestore';
+import { subscribeToCollection, updateDocument } from '../services/firestore';
 import { Order, Product } from '../types';
+import toast from 'react-hot-toast';
+import { OrderDetailsModal } from '../components/OrderDetailsModal';
 import {
   ShoppingBag,
   Package,
@@ -84,6 +86,7 @@ const QuickAction = ({ label, icon, onClick, color }: {
 export const AdminDashboard = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -115,6 +118,24 @@ export const AdminDashboard = () => {
     .slice(0, 3);
 
   const recentOrders = orders.slice(0, 5);
+
+  const handleStatusUpdate = async (orderId: string, newStatus: string) => {
+    try {
+      await updateDocument('orders', orderId, { status: newStatus });
+      toast.success(`Order #${orderId.slice(-6)} updated to ${newStatus}`);
+    } catch (err) {
+      toast.error('Failed to update status');
+    }
+  };
+
+  const handlePaymentStatusUpdate = async (orderId: string, pStatus: 'pending' | 'paid' | 'failed') => {
+    try {
+      await updateDocument('orders', orderId, { paymentStatus: pStatus });
+      toast.success(`Payment status updated to ${pStatus}`);
+    } catch (err) {
+      toast.error('Failed to update payment status');
+    }
+  };
 
   if (loading) {
     return (
@@ -191,7 +212,7 @@ export const AdminDashboard = () => {
           delay={0.05}
         />
         <StatCard
-          label="Live SKUs"
+          label="Live Products"
           value={products.filter(p => p.isAvailable).length}
           sub={`${products.length} total listed`}
           icon={<Package size={18} />}
@@ -224,12 +245,6 @@ export const AdminDashboard = () => {
             onClick={() => navigate('/admin/products')}
             color="bg-[#1D1D1F] border-[#1D1D1F] text-white"
           />
-          <QuickAction
-            label="View Analytics"
-            icon={<Activity size={18} className="text-violet-600" />}
-            onClick={() => navigate('/admin/analytics')}
-            color="bg-violet-50 border-violet-100 text-violet-700 hover:bg-violet-100/70"
-          />
         </div>
       </div>
 
@@ -254,7 +269,7 @@ export const AdminDashboard = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: idx * 0.04 }}
-                  onClick={() => navigate('/admin/orders')}
+                  onClick={() => setSelectedOrder(order)}
                   className={`flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50/80 transition-colors ${
                     idx !== recentOrders.length - 1 ? 'border-b border-gray-50' : ''
                   }`}
@@ -328,7 +343,7 @@ export const AdminDashboard = () => {
             </div>
             <div>
               <p className="text-[11px] font-black text-red-700 uppercase tracking-wider">Stock Alert</p>
-              <p className="text-[10px] font-bold text-red-400">{lowStockProducts.length} SKU{lowStockProducts.length > 1 ? 's' : ''} critically low</p>
+              <p className="text-[10px] font-bold text-red-400">{lowStockProducts.length} Product{lowStockProducts.length > 1 ? 's' : ''} critically low</p>
             </div>
             <ChevronRight size={16} className="text-red-300 ml-auto" />
           </div>
@@ -353,6 +368,15 @@ export const AdminDashboard = () => {
           </div>
         </div>
       )}
+
+
+      {/* ── Order Details Modal ── */}
+      <OrderDetailsModal
+        order={selectedOrder}
+        onClose={() => setSelectedOrder(null)}
+        onUpdateStatus={handleStatusUpdate}
+        onUpdatePaymentStatus={handlePaymentStatusUpdate}
+      />
     </div>
   );
 };

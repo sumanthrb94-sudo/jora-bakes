@@ -139,15 +139,7 @@ export const AdminLayout: React.FC = () => {
             ))}
           </div>
 
-          {/* Right: Command Palette Trigger */}
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            onClick={() => setIsCommandOpen(true)}
-            className="shrink-0 flex items-center gap-1.5 px-3 py-2 bg-gray-100 rounded-xl text-gray-400 hover:text-[#1D1D1F] hover:bg-gray-200 transition-all"
-          >
-            <Command size={14} />
-            <span className="text-[9px] font-black uppercase tracking-widest hidden sm:block">⌘K</span>
-          </motion.button>
+
         </div>
       </header>
 

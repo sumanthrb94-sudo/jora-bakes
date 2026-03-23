@@ -56,7 +56,7 @@ export const AdminAnalytics = () => {
   
   const itemCounts: Record<string, number> = {};
   orders.forEach(o => o.items.forEach(i => {
-      const name = i.product?.name || 'Unknown SKU';
+      const name = i.product?.name || 'Unknown Product';
       itemCounts[name] = (itemCounts[name] || 0) + i.quantity;
   }));
   const bestsellers = Object.entries(itemCounts)
@@ -124,7 +124,7 @@ export const AdminAnalytics = () => {
          </div>
          <div className="relative z-10 flex flex-col gap-2">
             <h3 className="text-xl font-black uppercase tracking-tight">Ops Predictor</h3>
-            <p className="text-xs text-gray-400 font-medium leading-relaxed max-w-[80%]">Peak intensity expected between 6PM - 8PM. Suggest pre-baking 20% high-volume SKUs.</p>
+            <p className="text-xs text-gray-400 font-medium leading-relaxed max-w-[80%]">Peak intensity expected between 6PM - 8PM. Suggest pre-baking 20% high-volume Products.</p>
             <button className="w-full mt-6 py-5 bg-white text-[var(--color-admin-dark)] rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all">
                Optimise Preparation Queue
             </button>
