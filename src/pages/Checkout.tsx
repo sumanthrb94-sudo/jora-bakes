@@ -76,13 +76,14 @@ export const Checkout = () => {
           total: Number(checkoutState.grandTotal || (cartTotal + 50)),
           status: 'pending',
           paymentMethod: paymentMethod,
+          paymentStatus: paymentMethod === 'razorpay' ? 'paid' : 'pending',
           createdAt: new Date().toISOString(),
           deliveryDate: checkoutState.deliveryDate instanceof Date 
             ? checkoutState.deliveryDate.toISOString() 
             : (checkoutState.deliveryDate || new Date(Date.now() + 86400000).toISOString()),
           deliverySlot: checkoutState.deliveryTime || '10 AM - 1 PM',
           giftWrap: checkoutState.giftWrap || false
-        };
+        } as Order;
 
         console.log('Attempting to save order to database...');
         

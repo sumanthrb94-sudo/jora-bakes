@@ -41,10 +41,10 @@ const GridCard: React.FC<GridCardProps> = ({ product, onEdit, isSelected, onSele
   return (
     <motion.div 
       layout
-      whileHover={{ y: -4, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)' }}
+      whileHover={{ y: -8, boxShadow: '0 30px 40px -15px rgba(0, 0, 0, 0.12)' }}
       whileTap={{ scale: 0.98 }}
-      className={`bg-white rounded-[2rem] border overflow-hidden shadow-sm flex flex-col relative group cursor-pointer transition-all ${
-        isSelected ? 'border-[var(--color-admin-dark)] ring-2 ring-[var(--color-admin-dark)]/10' : 'border-gray-100'
+      className={`bg-white rounded-[2.5rem] border overflow-hidden shadow-sm flex flex-col relative group cursor-pointer transition-all duration-500 ${
+        isSelected ? 'border-[var(--color-admin-dark)] ring-4 ring-[var(--color-admin-dark)]/5 shadow-xl' : 'border-gray-100 hover:border-gray-200'
       }`}
       onClick={(e) => {
         if ((e.target as HTMLElement).closest('.select-zone')) return;
@@ -53,85 +53,82 @@ const GridCard: React.FC<GridCardProps> = ({ product, onEdit, isSelected, onSele
     >
       {/* Selection Checkbox */}
       <div 
-        className="select-zone absolute top-3 right-3 z-20 w-8 h-8 rounded-xl flex items-center justify-center transition-all"
+        className="select-zone absolute top-4 right-4 z-20 w-8 h-8 rounded-xl flex items-center justify-center transition-all"
         onClick={(e) => {
            e.stopPropagation();
            onSelect?.(product.id);
         }}
       >
-         <div className={`w-6 h-6 rounded-lg flex items-center justify-center border-2 transition-all ${
+         <div className={`w-6 h-6 rounded-lg flex items-center justify-center border-2 transition-all duration-300 ${
            isSelected 
-             ? 'bg-[var(--color-admin-dark)] border-[var(--color-admin-dark)] text-white' 
-             : 'bg-white/80 border-gray-200 text-gray-400 opacity-0 group-hover:opacity-100'
+             ? 'bg-[var(--color-admin-dark)] border-[var(--color-admin-dark)] text-white scale-110 shadow-lg' 
+             : 'bg-white/60 backdrop-blur-md border-white/40 text-gray-400 opacity-0 group-hover:opacity-100'
          }`}>
             {isSelected ? <CheckSquare size={14} /> : <Square size={14} />}
          </div>
       </div>
-      {/* Badges */}
-      <div className="absolute top-3 left-3 z-10 flex gap-1.5 items-center">
-         {/* Green Veg Dot (Eggless Indicator) */}
-         <div className="w-4 h-4 border-2 border-[#00B189] rounded-sm flex items-center justify-center bg-white/80 backdrop-blur-sm">
-            <div className="w-2 h-2 bg-[#00B189] rounded-full" />
-         </div>
-         
-         {(product.discountPercentage || 0) > 0 && (
-           <span className="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest bg-[#FF4B4B] text-white">
-             -{product.discountPercentage}%
-           </span>
-         )}
-      </div>
 
-      {/* Stock Critical Banner */}
-      {isOutOfStock && (
-        <div className="absolute top-10 left-3 z-10">
-           <span className="px-2 py-0.5 rounded text-[7px] font-black uppercase tracking-widest bg-[#FF4B4B] text-white border border-white/20">
-             CRITICAL: STOCK OUT
-           </span>
-        </div>
-      )}
+      {/* Hero Asset */}
+      <div className="aspect-[4/5] relative overflow-hidden bg-gray-50">
+        <img 
+          src={product.images?.[0] || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=500&auto=format&fit=crop'} 
+          alt={product.name} 
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2000ms] ease-out" 
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        
+        {isSoldOut && (
+          <div className="absolute inset-0 bg-[#1C1412]/40 backdrop-blur-[6px] flex items-center justify-center p-6 text-center">
+            <motion.span 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="text-[10px] font-black text-[#1D1D1F] uppercase tracking-[0.25em] bg-white/90 px-5 py-3 rounded-full shadow-2xl border border-white/20"
+            >
+              Inactive SKU
+            </motion.span>
+          </div>
+        )}
 
-      {/* Product Image */}
-      <div className={`aspect-[4/3] relative overflow-hidden bg-gray-50 ${isSoldOut ? 'grayscale-70' : ''}`}>
-         {product.images?.[0] ? (
-           <img src={product.images[0]} alt="" className="w-full h-full object-cover" />
-         ) : (
-           <div className="w-full h-full flex items-center justify-center text-gray-200"><ImageIcon size={32} /></div>
-         )}
-         {isSoldOut && (
-           <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
-              <span className="bg-[#FF4B4B] text-white text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded shadow-lg">SOLD OUT</span>
+        {/* Dynamic Badges */}
+        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+           <div className="bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/40 shadow-sm flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#00B189] border-2 border-white shadow-sm" />
+              <span className="text-[9px] font-black text-gray-800 uppercase tracking-widest leading-none pt-0.5">Premium</span>
            </div>
-         )}
+           {(product.discountPercentage || 0) > 0 && (
+             <div className="bg-[#FF4B4B] text-white px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20 w-fit">
+               -{product.discountPercentage}% OFF
+             </div>
+           )}
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="p-4 flex-1 flex flex-col">
-         <div className="flex justify-between items-start mb-1">
-            <h3 className="text-sm font-black text-[var(--color-admin-dark)] truncate flex-1">{product.name}</h3>
-            <span className="text-[9px] font-black text-gray-300 tracking-widest bg-gray-50 px-1.5 py-0.5 rounded">V.1.0</span>
+      {/* Card Detail */}
+      <div className="p-5 flex-1 flex flex-col">
+         <div className="flex justify-between items-start gap-4 mb-2">
+            <h3 className="text-[13px] font-black text-[#1D1D1F] tracking-tight leading-snug line-clamp-2 uppercase italic">{product.name}</h3>
+            <span className="shrink-0 text-[10px] font-black text-gray-200 italic tracking-tighter">#0{product.id.slice(-3)}</span>
          </div>
-         <p className="text-[10px] text-gray-400 font-bold mb-4 uppercase tracking-wider line-clamp-1">
-            {product.category.replace('_', ' ')}
-         </p>
          
-         <div className="mt-auto flex items-end justify-between">
+         <div className="mt-auto pt-5 flex items-end justify-between border-t border-gray-50/50">
             <div className="flex flex-col">
                {product.mrp && product.mrp > product.price && (
-                 <span className="text-[10px] text-gray-300 font-black line-through leading-none mb-0.5">Rs. {product.mrp}</span>
+                 <span className="text-[11px] text-gray-300 font-bold line-through leading-none mb-1.5 opacity-50">Rs. {product.mrp}</span>
                )}
-               <span className="text-base font-black text-[var(--color-admin-dark)] leading-none">Rs. {product.price}</span>
+               <div className="flex items-baseline gap-1">
+                 <span className="text-[10px] font-black text-gray-400">Rs.</span>
+                 <span className="text-xl font-black text-[#1D1D1F] tracking-tighter leading-none">{product.price}</span>
+               </div>
             </div>
-            {isOutOfStock ? (
-              <div className="bg-[#FFEAEA] text-[#FF4B4B] px-3 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5 border border-[#FFD6D6]">
-                 <div className="w-1.5 h-1.5 bg-[#FF4B4B] rounded-full" />
-                 OUT OF STOCK
-              </div>
-            ) : (
-              <div className="bg-[#E6F4EA] text-[#1E8E3E] px-3 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5 border border-[#D1F2DB]">
-                 <div className="w-1.5 h-1.5 bg-[#1E8E3E] rounded-full" />
-                 IN STOCK
-              </div>
-            )}
+            
+            <div className={`px-3 py-1.5 rounded-2xl text-[8px] font-black uppercase tracking-[0.1em] flex items-center gap-2 border transition-all ${
+              isOutOfStock 
+                ? 'bg-red-50/50 text-red-500 border-red-100/50' 
+                : 'bg-emerald-50/50 text-emerald-600 border-emerald-100/50'
+            }`}>
+               <div className={`w-1.5 h-1.5 rounded-full ${isOutOfStock ? 'bg-red-500 animate-pulse' : 'bg-emerald-500'}`} />
+               {isOutOfStock ? 'Stock Out' : 'Active'}
+            </div>
          </div>
       </div>
     </motion.div>
@@ -426,17 +423,17 @@ export const AdminProducts = () => {
                       </select>
 
                       <div className="grid grid-cols-2 gap-4">
-                         <div className="bg-gray-50 p-6 rounded-3xl space-y-3">
-                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Pricing (Rs. )</label>
+                         <div className="bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100/50 space-y-3">
+                            <label className="text-[9px] font-black text-gray-300 uppercase tracking-widest">Pricing (Rs. )</label>
                             <input type="number" value={formData.mrp} onChange={e => updatePricing('mrp', Number(e.target.value))} 
-                              className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 text-xs font-bold focus:ring-2 focus:ring-[#1D1D1F]/5 outline-none transition-all" />
+                              className="w-full bg-transparent border-none p-0 text-xl font-black text-[#1D1D1F] focus:ring-0" />
                          </div>
-                         <div className="flex flex-col gap-2">
-                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Offer (Rs. )</label>
-                            <div className="flex items-center">
+                         <div className="bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100/50 space-y-3">
+                            <label className="text-[9px] font-black text-gray-300 uppercase tracking-widest">Offer (%)</label>
+                            <div className="flex items-center gap-2">
                                <input type="number" value={formData.discountPercentage || ''} onChange={e => updatePricing('discount', Number(e.target.value))} 
-                                 className="w-full bg-transparent border-none p-0 text-xl font-black text-[var(--color-admin-dark)] focus:ring-0" />
-                               <span className="text-gray-400 font-black text-base">%</span>
+                                 className="w-full bg-transparent border-none p-0 text-xl font-black text-[#1D1D1F] focus:ring-0" />
+                               <span className="text-gray-300 font-black text-lg">%</span>
                             </div>
                          </div>
                       </div>

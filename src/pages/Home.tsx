@@ -101,40 +101,6 @@ export const Home = () => {
         </motion.div>
       </div>
 
-      {/* Quick Categories "What's on your mind?" */}
-      <section className="mb-6">
-        <div className="flex items-center justify-between px-4 mb-4">
-          <h2 className="text-sm font-black text-gray-800 uppercase tracking-wider flex items-center gap-2">
-            <div className="w-1 h-4 bg-[var(--color-terracotta)] rounded-full" />
-            What's on your mind?
-          </h2>
-        </div>
-        <div className="flex gap-4 overflow-x-auto hide-scrollbar px-4 pb-2 snap-x">
-          {[
-            { name: 'Brownies', category: 'millet_brownies', img: '/images/brownie.png' },
-            { name: 'Cheese Cakes', category: 'cheese_cakes', img: '/images/cheesecake.png' },
-            { name: 'Basque', category: 'burnt_basque', img: '/images/basque.png' },
-            { name: 'Cupcakes', category: 'cupcakes', img: '/images/cupcakes.png' },
-            { name: 'Tiramisu', category: 'tiramisu', img: '/images/tiramisu.png' },
-          ].map((cat, i) => (
-            <Link 
-              key={cat.name} 
-              to={`/shop?category=${cat.category}`}
-              className="snap-start shrink-0 flex flex-col items-center gap-3"
-            >
-              <div className="w-20 h-20 rounded-full bg-white shadow-sm flex items-center justify-center overflow-hidden border border-gray-100 p-0.5">
-                <img 
-                  src={cat.img} 
-                  alt={cat.name}
-                  className="w-full h-full object-cover rounded-full"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <span className="text-xs font-bold text-gray-700">{cat.name}</span>
-            </Link>
-          ))}
-        </div>
-      </section>
 
       {/* Trending / Recommended (Horizontal Scroll) */}
       <section className="mb-8">
