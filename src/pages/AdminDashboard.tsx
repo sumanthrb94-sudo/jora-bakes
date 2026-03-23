@@ -32,6 +32,7 @@ const getStatusColor = (status: string) => {
     case 'out_for_delivery': return { bg: 'bg-violet-50', text: 'text-violet-600', dot: 'bg-violet-500' };
     case 'delivered': return { bg: 'bg-green-50', text: 'text-green-600', dot: 'bg-green-500' };
     case 'cancelled': return { bg: 'bg-red-50', text: 'text-red-500', dot: 'bg-red-400' };
+    case 'cancelled_and_refunded': return { bg: 'bg-gray-100', text: 'text-gray-500', dot: 'bg-gray-400' };
     default: return { bg: 'bg-gray-50', text: 'text-gray-400', dot: 'bg-gray-300' };
   }
 };
@@ -99,7 +100,7 @@ export const AdminDashboard = () => {
   const today = new Date().toISOString().split('T')[0];
   const todayOrders = orders.filter(o => o.createdAt?.startsWith(today));
   const todayRevenue = todayOrders.reduce((s, o) => s + (o.total || 0), 0);
-  const activeOrders = orders.filter(o => !['delivered', 'cancelled'].includes(o.status));
+  const activeOrders = orders.filter(o => !['delivered', 'cancelled', 'cancelled_and_refunded'].includes(o.status));
   const pendingOrders = orders.filter(o => o.status === 'pending');
   const lowStockProducts = products.filter(p => (p.stockQuantity || 0) < 3 && p.isAvailable);
 

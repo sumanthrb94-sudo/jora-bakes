@@ -7,7 +7,8 @@ export type ProductionStatus =
   | 'out_for_delivery' 
   | 'awaiting_pickup' 
   | 'delivered' 
-  | 'cancelled';
+  | 'cancelled'
+  | 'cancelled_and_refunded';
 
 export interface AuditLog {
   id: string;

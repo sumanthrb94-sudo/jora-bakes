@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { subscribeToCollection, updateDocument, bulkUpdateDocuments } from '../services/firestore';
+import { subscribeToCollection, updateDocument, bulkUpdateDocuments, deleteDocument } from '../services/firestore';
 import { Order } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -19,13 +19,15 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const STATUS_STEPS = ['pending', 'preparing', 'out_for_delivery', 'delivered'];
+const STATUS_STEPS = ['pending', 'preparing', 'out_for_delivery', 'delivered', 'cancelled', 'cancelled_and_refunded'];
 
 const STATUS_META: Record<string, { label: string; color: string }> = {
   pending:          { label: 'Pending',          color: 'bg-amber-50 text-amber-600 border-amber-100' },
   preparing:        { label: 'Preparing',        color: 'bg-blue-50 text-blue-600 border-blue-100' },
   out_for_delivery: { label: 'Out for Delivery', color: 'bg-violet-50 text-violet-600 border-violet-100' },
   delivered:        { label: 'Delivered',        color: 'bg-green-50 text-green-700 border-green-100' },
+  cancelled:        { label: 'Cancelled',        color: 'bg-red-50 text-red-600 border-red-100' },
+  cancelled_and_refunded: { label: 'Refunded',   color: 'bg-gray-100 text-gray-500 border-gray-200 line-through' },
 };
 
 const StatusBadge = ({ status }: { status: string }) => {
@@ -37,7 +39,7 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-const OrderDetailsModal = ({ order, onClose, onUpdateStatus }: { order: Order | null, onClose: () => void, onUpdateStatus: (id: string, s: string) => void }) => {
+const OrderDetailsModal = ({ order, onClose, onUpdateStatus, onDelete }: { order: Order | null, onClose: () => void, onUpdateStatus: (id: string, s: string) => void, onDelete: (id: string) => void }) => {
   if (!order) return null;
 
   const getPortalTarget = () => document.getElementById('modal-root') || document.body;
@@ -175,13 +177,20 @@ const OrderDetailsModal = ({ order, onClose, onUpdateStatus }: { order: Order | 
                   <span className="text-lg font-black text-[#1D1D1F] tracking-tighter">Rs. {order.total}</span>
                </div>
             </div>
-            
-            <button 
-               onClick={onClose} 
-               className="w-full py-4 bg-[#1D1D1F] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-opacity"
-            >
-               Dismiss Details
-            </button>
+            <div className="flex gap-3">
+               <button 
+                  onClick={onClose} 
+                  className="flex-1 py-4 bg-[#1D1D1F] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-opacity"
+               >
+                  Dismiss Details
+               </button>
+               <button 
+                  onClick={() => onDelete(order.id)}
+                  className="px-6 py-4 bg-red-50 text-red-600 border border-red-100 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-red-100 transition-colors"
+               >
+                  Delete
+               </button>
+            </div>
          </div>
       </div>
     </div>,
@@ -230,6 +239,17 @@ export const AdminOrders = () => {
       toast.success(`Order #${id.slice(-4)} ${status}`);
     } catch (err) {
       toast.error('Update failed');
+    }
+  };
+
+  const handleDeleteOrder = async (id: string) => {
+    if (!window.confirm("Are you sure you want to permanently delete this order?")) return;
+    try {
+      await deleteDocument('orders', id);
+      toast.success("Order deleted permanently");
+      setSelectedOrder(null);
+    } catch (err) {
+      toast.error('Failed to delete order');
     }
   };
 
@@ -476,6 +496,7 @@ export const AdminOrders = () => {
         order={selectedOrder} 
         onClose={() => setSelectedOrder(null)} 
         onUpdateStatus={handleUpdateStatus}
+        onDelete={handleDeleteOrder}
       />
     </div>
   );
