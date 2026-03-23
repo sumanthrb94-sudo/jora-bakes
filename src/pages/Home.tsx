@@ -22,8 +22,10 @@ export const Home = () => {
   };
 
   // Filter products for different sections
-  const bestSellers = products.slice(0, 4); 
-  const trending = products.slice(2, 6);
+  // Filter available products
+  const availableProducts = products.filter(p => (p.stockQuantity ?? 0) > 0 && p.isAvailable);
+  const bestSellers = availableProducts.slice(0, 4); 
+  const trending = availableProducts.slice(2, 6);
 
   return (
     <div className="bg-[#f7f5f0] min-h-screen pb-24">
@@ -73,33 +75,35 @@ export const Home = () => {
       </div>
 
       {/* Promotional Offers Banner */}
-      <div className="px-4 mb-6">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-gradient-to-br from-[var(--color-terracotta)] to-orange-500 rounded-[24px] p-5 text-white relative overflow-hidden shadow-lg shadow-orange-500/20"
-        >
-          <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
-          <div className="absolute right-0 bottom-0 w-24 h-24 bg-black/10 rounded-tl-full" />
-          
-          <div className="relative z-10 w-2/3">
-            <span className="text-[9px] font-black uppercase tracking-widest bg-white/20 px-2.5 py-1 rounded-full mb-2 inline-block backdrop-blur-sm shadow-sm border border-white/10">
-              Deal of the Day
-            </span>
-            <h2 className="text-xl font-black mb-1 leading-tight tracking-tight">Try our Signature Tiramisu</h2>
-            <p className="text-xs text-white/90 mb-4 font-medium">Espresso and velvety mascarpone.</p>
-            <button 
-              onClick={() => {
-                const p = products.find(p => p.id === 'p5');
-                if (p) handleQuickView(p);
-              }}
-              className="bg-white text-[var(--color-terracotta)] text-xs font-black px-5 py-2.5 rounded-full shadow-sm hover:scale-105 transition-transform active:scale-95"
-            >
-              Order Now
-            </button>
-          </div>
-        </motion.div>
-      </div>
+      {products.find(p => p.id === 'p5') && (products.find(p => p.id === 'p5')?.stockQuantity ?? 0) > 0 && products.find(p => p.id === 'p5')?.isAvailable && (
+        <div className="px-4 mb-6">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-gradient-to-br from-[var(--color-terracotta)] to-orange-500 rounded-[24px] p-5 text-white relative overflow-hidden shadow-lg shadow-orange-500/20"
+          >
+            <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+            <div className="absolute right-0 bottom-0 w-24 h-24 bg-black/10 rounded-tl-full" />
+            
+            <div className="relative z-10 w-2/3">
+              <span className="text-[9px] font-black uppercase tracking-widest bg-white/20 px-2.5 py-1 rounded-full mb-2 inline-block backdrop-blur-sm shadow-sm border border-white/10">
+                Deal of the Day
+              </span>
+              <h2 className="text-xl font-black mb-1 leading-tight tracking-tight">Try our Signature Tiramisu</h2>
+              <p className="text-xs text-white/90 mb-4 font-medium">Espresso and velvety mascarpone.</p>
+              <button 
+                onClick={() => {
+                  const p = products.find(p => p.id === 'p5');
+                  if (p) handleQuickView(p);
+                }}
+                className="bg-white text-[var(--color-terracotta)] text-xs font-black px-5 py-2.5 rounded-full shadow-sm hover:scale-105 transition-transform active:scale-95"
+              >
+                Order Now
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
 
       {/* Trending / Recommended (Horizontal Scroll) */}
@@ -125,7 +129,7 @@ export const Home = () => {
           <h2 className="text-lg font-black text-[var(--color-chocolate)] tracking-tight">Top Picks from Menu</h2>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          {products.map((product) => (
+          {availableProducts.map((product) => (
             <ProductCard key={product.id} product={product} onQuickView={handleQuickView} />
           ))}
         </div>

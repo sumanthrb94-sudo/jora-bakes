@@ -123,7 +123,11 @@ export const Shop = () => {
       {/* Swiggy Style Menu List */}
       <div className="pb-10">
         {categoriesToRender.map(category => {
-          const categoryProducts = products.filter(p => (p?.category || '') === category.toLowerCase().replace(' ', '_'));
+          const categoryProducts = products.filter(p => 
+            (p?.category || '') === category.toLowerCase().replace(' ', '_') &&
+            (p.stockQuantity ?? 0) > 0 &&
+            p.isAvailable
+          );
           if (categoryProducts.length === 0) return null;
 
           return (
