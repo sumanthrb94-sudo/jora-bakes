@@ -135,41 +135,45 @@ export const AdminOrders = () => {
       {/* --- Page Header --- */}
       <div className="flex items-end justify-between">
         <div>
-          <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] leading-none mb-1.5">Order Management</p>
-          <h1 className="text-3xl font-black text-[#1D1D1F] tracking-tighter leading-none italic">Orders.</h1>
+          <p className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.3em] leading-none mb-2 italic">Official Logs</p>
+          <h1 className="text-4xl font-black text-[#1C1412] tracking-tighter leading-none italic uppercase">Orders.</h1>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-black text-[#1D1D1F] tracking-tighter">{orders.length}</p>
-          <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest">Total All Time</p>
+          <p className="text-3xl font-black text-[#D26E4B] tracking-tighter italic leading-none">{orders.length}</p>
+          <p className="text-[9px] font-black text-[#8B8680] uppercase tracking-[0.2em] mt-1">Total Lifecycle</p>
         </div>
       </div>
 
       {/* --- Search Bar --- */}
-      <div className="relative">
+      <div className="relative group">
         <input
           type="text"
           placeholder="Search name, phone, or order ID..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-white border border-gray-100 rounded-2xl px-12 py-4 text-sm font-medium shadow-sm focus:ring-0 outline-none focus:border-gray-200 transition-colors"
+          className="w-full bg-white border border-[#E8E2D9] rounded-[2rem] px-14 py-5 text-sm font-bold shadow-sm focus:ring-2 focus:ring-[#D26E4B]/10 outline-none focus:border-[#D26E4B] transition-all placeholder:text-[#8B8680]/50 text-[#1C1412]"
         />
-        <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
+        <Search size={22} className="absolute left-5 top-1/2 -translate-y-1/2 text-[#D26E4B] group-focus-within:scale-110 transition-transform" />
       </div>
 
       {/* Filter Pills */}
       {/* Filter Pills */}
-      <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-2">
+      <div className="flex items-center gap-3 overflow-x-auto hide-scrollbar pb-4 -mx-1 px-1">
          {Object.entries(counts).map(([key, count]) => {
-           const labels: Record<string, string> = { ALL: 'All', PENDING: 'Pending', PREPARING: 'Order Confirmed', DELIVERY: 'Out for Delivery', DELIVERED: 'Delivered' };
+           const labels: Record<string, string> = { ALL: 'All', PENDING: 'Pending', PREPARING: 'Preparing', DELIVERY: 'In Transit', DELIVERED: 'Completed' };
+           const isActive = filter === key;
            return (
              <button
                key={key}
                onClick={() => setFilter(key)}
-               className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap text-[10px] font-black tracking-widest transition-all ${
-                 filter === key ? 'bg-[#1D1D1F] text-white shadow-xl shadow-black/10' : 'bg-white border border-black/5 text-gray-400'
+               className={`flex items-center gap-2.5 px-6 py-3 rounded-full whitespace-nowrap text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 border ${
+                 isActive 
+                   ? 'bg-[#1C1412] text-white border-[#1C1412] shadow-xl shadow-black/20' 
+                   : 'bg-white border-[#E8E2D9] text-[#8B8680] hover:border-[#D26E4B] hover:text-[#D26E4B]'
                }`}
              >
-               {labels[key] || key} <span className="opacity-60">{count}</span>
+               {labels[key] || key} 
+               <span className={`text-[9px] px-1.5 py-0.5 rounded-md ${isActive ? 'bg-[#D26E4B] text-white' : 'bg-[#F5F0E8] text-[#D26E4B]'}`}>{count}</span>
              </button>
            );
          })}
@@ -232,55 +236,55 @@ export const AdminOrders = () => {
             {filteredOrders.map((order) => (
               <motion.div
                 layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
                 key={order.id}
                 onClick={() => setSelectedOrder(order)}
-                className={`bg-white rounded-2xl border transition-all flex overflow-hidden cursor-pointer group ${
-                  selectedIds.includes(order.id) ? 'border-[var(--color-admin-dark)] ring-1 ring-[var(--color-admin-dark)]' : 'border-gray-100 hover:border-gray-200 shadow-sm'
+                className={`bg-white rounded-[2rem] border transition-all duration-500 flex overflow-hidden cursor-pointer group hover:shadow-xl ${
+                  selectedIds.includes(order.id) ? 'border-[#D26E4B] ring-2 ring-[#D26E4B]/10 shadow-[#D26E4B]/5' : 'border-[#E8E2D9] hover:border-[#D26E4B]/30 shadow-sm'
                 }`}
               >
                 {/* Multi-Select Toggle */}
                 <div
                   onClick={(e) => toggleSelect(order.id, e)}
-                  className={`w-12 border-r flex items-center justify-center transition-colors ${
-                    selectedIds.includes(order.id) ? 'bg-[var(--color-admin-dark)] border-[var(--color-admin-dark)]' : 'border-gray-50 bg-gray-50/10'
+                  className={`w-14 border-r flex items-center justify-center transition-all duration-500 ${
+                    selectedIds.includes(order.id) ? 'bg-[#D26E4B] border-[#D26E4B]' : 'border-[#F5F0E8] bg-[#FAF7F2]'
                   }`}
                 >
-                  <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
-                    selectedIds.includes(order.id) ? 'bg-white border-white' : 'bg-white border-gray-200'
+                  <div className={`w-6 h-6 rounded-xl border-2 flex items-center justify-center transition-all duration-300 ${
+                    selectedIds.includes(order.id) ? 'bg-white border-white scale-110 shadow-lg' : 'bg-white border-[#E8E2D9]'
                   }`}>
-                    {selectedIds.includes(order.id) && <Check size={14} className="text-[#1D1D1F]" />}
+                    {selectedIds.includes(order.id) && <Check size={14} className="text-[#D26E4B] stroke-[3]" />}
                   </div>
                 </div>
 
-                <div className="p-4 flex-1 flex flex-col gap-2.5">
+                <div className="p-6 flex-1 flex flex-col gap-4">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[9px] font-black text-gray-300 tracking-widest">#{ order.id.slice(-6).toUpperCase()}</span>
+                    <span className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.2em] italic">#{ order.id.slice(-6).toUpperCase()}</span>
                     <StatusBadge status={order.status} />
                   </div>
 
                   <div className="flex justify-between items-center">
                     <div className="min-w-0">
-                      <h3 className="text-sm font-black text-[#1D1D1F] leading-none truncate">
+                      <h3 className="text-[15px] font-black text-[#1C1412] leading-none uppercase italic tracking-tight group-hover:text-[#D26E4B] transition-colors">
                         {order.customer?.name || `Guest #${order.userId.slice(-6)}`}
                       </h3>
                       {order.address?.street && (
-                        <div className="flex items-center gap-1 mt-1">
-                          <MapPin size={9} className="text-gray-300 shrink-0" />
-                          <p className="text-[10px] font-bold text-gray-400 line-clamp-1">{order.address.street}</p>
+                        <div className="flex items-center gap-1.5 mt-2.5">
+                          <MapPin size={10} className="text-[#D26E4B] shrink-0" />
+                          <p className="text-[11px] font-bold text-[#8B8680] italic line-clamp-1">{order.address.street}</p>
                         </div>
                       )}
                     </div>
                     <div className="text-right shrink-0 ml-3">
-                    <p className="text-sm font-black text-[#1D1D1F]">Rs. {order.total}</p>
-                    <p className="text-[9px] font-bold text-gray-300">{order.items.length} item{order.items.length > 1 ? 's' : ''}</p>
-                  </div>
+                      <p className="text-lg font-black text-[#1C1412] italic">Rs. {order.total}</p>
+                      <p className="text-[9px] font-black text-[#8B8680] uppercase tracking-[0.1em] mt-1">{order.items.length} item{order.items.length > 1 ? 's' : ''}</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="w-12 border-l border-gray-50 flex items-center justify-center group-hover:bg-gray-50/50 transition-colors">
-                    <ChevronRight size={16} className="text-gray-200" />
+                <div className="w-14 border-l border-[#F5F0E8] flex items-center justify-center group-hover:bg-[#FAF7F2] transition-colors">
+                    <ChevronRight size={20} className="text-[#D26E4B] opacity-20 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                 </div>
               </motion.div>
             ))}
@@ -295,27 +299,30 @@ export const AdminOrders = () => {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] z-[100]"
+            className="fixed bottom-10 left-1/2 -translate-x-1/2 w-[94%] max-w-[500px] z-[100]"
           >
-             <div className="bg-[#1D1D1F] rounded-[2.5rem] shadow-2xl p-4 border border-white/10 backdrop-blur-xl">
-                <div className="flex items-center justify-between mb-4 px-4">
-                   <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-white/10 rounded-2xl flex items-center justify-center text-white font-black">{selectedIds.length}</div>
-                      <span className="text-[10px] font-black text-white uppercase tracking-widest">Active Selections</span>
+             <div className="bg-[#1C1412] rounded-[3rem] shadow-2xl p-6 border border-white/10 backdrop-blur-2xl">
+                <div className="flex items-center justify-between mb-6 px-4">
+                   <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-[#D4AF37] font-black text-lg italic shadow-inner">
+                         {selectedIds.length}
+                      </div>
+                      <div className="flex flex-col">
+                         <span className="text-[10px] font-black text-white uppercase tracking-[0.3em] italic leading-none mb-1">Fleet Actions</span>
+                         <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Active Selections</span>
+                      </div>
                    </div>
-                   <button onClick={() => setSelectedIds([])} className="text-[10px] font-black text-white/40 uppercase hover:text-white transition-colors">Deselect All</button>
+                   <button onClick={() => setSelectedIds([])} className="text-[10px] font-black text-[#D26E4B] uppercase tracking-[0.2em] hover:text-white transition-colors p-2 underline decoration-dashed">Dismiss All</button>
                 </div>
 
-                 <div className="grid grid-cols-2 gap-2">
+                 <div className="grid grid-cols-2 gap-3">
                     {STATUS_STEPS.map((status) => {
                       const meta = STATUS_META[status];
                       return (
                         <button
                           key={status}
                           onClick={() => handleBulkStatusChange(status)}
-                          className={`py-3 text-[9px] font-black uppercase tracking-widest rounded-2xl border border-white/5 transition-all text-center ${
-                            status === 'delivered' ? 'bg-black/20 text-white/70' : 'bg-white/10 text-white'
-                          }`}
+                          className="py-4 text-[9px] font-black uppercase tracking-[0.3em] rounded-2xl border border-white/5 bg-white/10 text-white hover:bg-white/20 hover:border-[#D26E4B]/30 transition-all duration-300 text-center italic shadow-sm"
                         >
                           {meta?.label || status}
                         </button>
@@ -324,9 +331,9 @@ export const AdminOrders = () => {
                  </div>
                  <button
                     onClick={handleBulkDeleteOrders}
-                    className="w-full mt-2 py-3 text-[9px] font-black uppercase tracking-widest rounded-2xl border border-red-500/20 bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-all text-center flex items-center justify-center gap-2"
+                    className="w-full mt-4 py-4 text-[10px] font-black uppercase tracking-[0.4em] rounded-[2rem] border border-[#C17A6B]/30 bg-[#C17A6B]/10 text-[#C17A6B] hover:bg-[#C17A6B]/20 transition-all text-center flex items-center justify-center gap-3 italic"
                  >
-                    <AlertCircle size={14} /> Delete Selected
+                    <AlertCircle size={16} /> Purge Records
                  </button>
               </div>
            </motion.div>

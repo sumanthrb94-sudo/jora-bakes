@@ -6,18 +6,18 @@ import { X, Phone, MapPin, AlertCircle, Flame } from 'lucide-react';
 export const STATUS_STEPS = ['pending', 'preparing', 'out_for_delivery', 'delivered', 'cancelled', 'cancelled_and_refunded'];
 
 export const STATUS_META: Record<string, { label: string; color: string }> = {
-  pending:          { label: 'Pending',          color: 'bg-amber-50 text-amber-600 border-amber-100' },
-  preparing:        { label: 'Order Confirmed',  color: 'bg-blue-50 text-blue-600 border-blue-100' },
-  out_for_delivery: { label: 'Out for Delivery', color: 'bg-violet-50 text-violet-600 border-violet-100' },
-  delivered:        { label: 'Delivered',        color: 'bg-green-50 text-green-700 border-green-100' },
-  cancelled:        { label: 'Cancelled',        color: 'bg-red-50 text-red-600 border-red-100' },
+  pending:          { label: 'Pending',          color: 'bg-amber-50/50 text-amber-700 border-amber-100' },
+  preparing:        { label: 'Order Confirmed',  color: 'bg-[#F2E8E4] text-[#D26E4B] border-[#E8E2D9]' },
+  out_for_delivery: { label: 'Out for Delivery', color: 'bg-[#EAE2F3] text-[#8E44AD] border-[#E8E2D9]' },
+  delivered:        { label: 'Delivered',        color: 'bg-[#F0F2EF] text-[#7A8B6E] border-[#E8E2D9]' },
+  cancelled:        { label: 'Cancelled',        color: 'bg-[#F9F1F0] text-[#C17A6B] border-[#E8E2D9]' },
   cancelled_and_refunded: { label: 'Refunded',   color: 'bg-gray-100 text-gray-500 border-gray-200 line-through' },
 };
 
 export const StatusBadge = ({ status }: { status: string }) => {
   const meta = STATUS_META[status] || { label: status, color: 'bg-gray-50 text-gray-400 border-gray-100' };
   return (
-    <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${meta.color}`}>
+    <span className={`px-3 py-1.5 rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] border shadow-sm ${meta.color}`}>
       {meta.label}
     </span>
   );
@@ -42,54 +42,63 @@ export const OrderDetailsModal = ({
     <div className="absolute inset-0 w-full h-full flex items-center justify-center p-4 pointer-events-auto">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-[#1C1412]/60 backdrop-blur-sm" 
+        className="absolute inset-0 bg-[#1C1412]/80 backdrop-blur-md" 
         onClick={onClose} 
       />
       
       {/* Modal Container */}
       <div 
-        className="w-[90%] sm:w-full min-w-[320px] max-w-lg bg-white rounded-3xl shadow-2xl relative z-[10000] overflow-y-auto shrink-0 flex flex-col"
+        className="w-[90%] sm:w-full min-w-[320px] max-w-lg bg-[#FAF7F2] rounded-[3rem] shadow-2xl relative z-[10000] overflow-y-auto shrink-0 flex flex-col border border-white/20"
         style={{ maxHeight: '85vh' }}
         onClick={e => e.stopPropagation()}
       >
          {/* Header */}
-         <div className="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-md z-10 w-full">
+         <div className="p-8 border-b border-[#E8E2D9] flex items-center justify-between sticky top-0 bg-[#FAF7F2]/95 backdrop-blur-md z-10 w-full">
             <div>
-               <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Order Details</p>
-               <h2 className="text-2xl font-black text-[#1D1D1F] uppercase tracking-tight italic">#{order.id?.slice(-6).toUpperCase() || 'SYS'}</h2>
+               <p className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.3em] mb-2 italic">Official Record</p>
+               <h2 className="text-3xl font-black text-[#1C1412] uppercase tracking-tighter italic">#{order.id?.slice(-6).toUpperCase() || 'SYS'}</h2>
             </div>
-            <button onClick={onClose} className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors">
+            <button onClick={onClose} className="w-12 h-12 bg-white border border-[#E8E2D9] rounded-2xl flex items-center justify-center text-[#1C1412] hover:bg-[#F2E8E4] transition-all shadow-sm">
                <X size={20} />
             </button>
          </div>
 
          {/* Content Body */}
-         <div className="p-6 space-y-8 w-full block">
+         <div className="p-8 space-y-10 w-full block">
             {/* Customer Info */}
-            <div className="space-y-4">
-               <h3 className="text-base font-black text-[#1D1D1F] leading-none">Customer Info</h3>
-               <p className="text-xs font-bold text-gray-400 mb-3">ID: {order.userId?.slice(-8) || 'GUEST'}</p>
+            <div className="space-y-6">
+               <h3 className="text-[11px] font-black text-[#8B8680] uppercase tracking-[0.3em] italic leading-none">Customer Profile</h3>
                
-               <div className="grid grid-cols-1 gap-3">
-                  <div className="bg-gray-50 p-4 rounded-2xl flex items-center gap-3">
-                     <Phone size={16} className="text-gray-400 shrink-0" />
-                     <span className="text-sm font-bold text-gray-800 break-words">{order.customer?.phone || 'No phone provided'}</span>
+               <div className="grid grid-cols-1 gap-4">
+                  <div className="bg-white border border-[#E8E2D9] p-5 rounded-[2rem] flex items-center gap-4 shadow-sm group">
+                     <div className="w-10 h-10 bg-[#FAF7F2] rounded-2xl flex items-center justify-center text-[#D26E4B] group-hover:bg-[#F2E8E4] transition-colors">
+                        <Phone size={18} />
+                     </div>
+                     <div className="flex flex-col">
+                        <span className="text-[10px] font-black text-[#8B8680] uppercase tracking-widest mb-1">Contact</span>
+                        <span className="text-[15px] font-black text-[#1C1412] tracking-tight">{order.customer?.phone || 'No phone provided'}</span>
+                     </div>
                   </div>
                   
-                  <div className="bg-gray-50 p-4 rounded-2xl flex items-start gap-3">
-                     <MapPin size={16} className="text-gray-400 shrink-0 mt-0.5" />
+                  <div className="bg-white border border-[#E8E2D9] p-5 rounded-[2rem] flex items-start gap-4 shadow-sm group">
+                     <div className="w-10 h-10 bg-[#FAF7F2] rounded-2xl flex items-center justify-center text-[#D26E4B] group-hover:bg-[#F2E8E4] transition-colors shrink-0">
+                        <MapPin size={18} />
+                     </div>
                      <div className="flex flex-col min-w-0">
-                        <span className="text-sm font-bold text-gray-800 break-words">{order.address?.street || 'No Address'}</span>
-                        {order.address?.label && <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Label: {order.address.label}</span>}
+                        <span className="text-[10px] font-black text-[#8B8680] uppercase tracking-widest mb-1">Destination</span>
+                        <span className="text-[15px] font-black text-[#1C1412] tracking-tight leading-snug">{order.address?.street || 'No Address'}</span>
+                        {order.address?.label && <span className="text-[9px] font-black text-[#D4AF37] uppercase tracking-[0.2em] mt-2 block">Tag: {order.address.label}</span>}
                      </div>
                   </div>
                   
                   {order.address?.instructions && (
-                    <div className="bg-amber-50 border border-amber-100 p-4 rounded-2xl flex items-start gap-3">
-                       <AlertCircle size={16} className="text-amber-500 shrink-0 mt-0.5" />
+                    <div className="bg-[#FFF9F5] border border-[#D26E4B]/20 p-6 rounded-[2rem] flex items-start gap-4 shadow-sm shadow-[#D26E4B]/5 group">
+                       <div className="w-10 h-10 bg-white border border-[#D26E4B]/10 rounded-2xl flex items-center justify-center text-[#D26E4B] group-hover:scale-110 transition-transform shrink-0">
+                          <AlertCircle size={20} />
+                       </div>
                        <div className="flex flex-col min-w-0">
-                          <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest block mb-1">Delivery / Cook Notes</span>
-                          <span className="text-sm font-bold text-amber-900 break-words whitespace-pre-wrap">{order.address.instructions}</span>
+                          <span className="text-[10px] font-black text-[#D26E4B] uppercase tracking-[0.3em] block mb-2 italic">Chef / Delivery Directives</span>
+                          <span className="text-sm font-bold text-[#1C1412] leading-relaxed italic">{order.address.instructions}</span>
                        </div>
                     </div>
                   )}
@@ -97,28 +106,28 @@ export const OrderDetailsModal = ({
             </div>
 
             {/* Items Summary */}
-            <div className="space-y-4">
-               <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Itemization ({order.items?.length || 0})</h3>
-               <div className="space-y-3">
+            <div className="space-y-6">
+               <h3 className="text-[11px] font-black text-[#8B8680] uppercase tracking-[0.3em] italic">Itemization</h3>
+               <div className="space-y-4">
                   {order.items?.map((item, idx) => (
-                    <div key={idx} className="p-4 bg-gray-50 rounded-2xl border border-gray-100/50 block">
+                    <div key={idx} className="p-6 bg-white rounded-[2rem] border border-[#E8E2D9] shadow-sm hover:border-[#D26E4B]/30 transition-all group block">
                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex items-start gap-3 min-w-0">
-                             <div className="w-8 h-8 shrink-0 bg-white rounded-lg border border-gray-100 flex items-center justify-center font-black text-xs text-gray-800">{item.quantity || 1}x</div>
-                             <div className="flex flex-col min-w-0">
-                                <span className="text-sm font-black text-gray-800 tracking-tight break-words">{item.product?.name || 'Unknown Item'}</span>
-                                {item.variant && <span className="text-[10px] font-bold text-gray-500 capitalize break-words">{item.variant.flavor} ({item.variant.weight})</span>}
+                          <div className="flex items-start gap-4 min-w-0">
+                             <div className="w-10 h-10 shrink-0 bg-[#FAF7F2] rounded-2xl border border-[#E8E2D9] flex items-center justify-center font-black text-xs text-[#1C1412] group-hover:bg-[#D26E4B] group-hover:text-white transition-all">{item.quantity || 1}x</div>
+                             <div className="flex flex-col min-w-0 pt-0.5">
+                                <span className="text-[15px] font-black text-[#1C1412] tracking-tight break-words uppercase italic">{item.product?.name || 'Unknown Item'}</span>
+                                {item.variant && <span className="text-[10px] font-bold text-[#D26E4B] capitalize tracking-wider mt-1">{item.variant.flavor} • {item.variant.weight}</span>}
                              </div>
                           </div>
-                          <span className="font-black text-sm text-gray-800 shrink-0">Rs. {Number(item.product?.price || 0) * (item.quantity || 1)}</span>
+                          <span className="font-black text-sm text-[#1C1412] shrink-0 pt-1.5 italic">Rs. {Number(item.product?.price || 0) * (item.quantity || 1)}</span>
                        </div>
                        
                        {item.specialRequest && (
-                         <div className="mt-3 bg-amber-100/50 border border-amber-100 rounded-xl p-3 flex gap-2">
-                           <Flame size={14} className="text-amber-500 shrink-0" />
+                         <div className="mt-4 bg-[#F2E8E4]/50 border border-[#D26E4B]/10 rounded-2xl p-4 flex gap-3">
+                           <Flame size={16} className="text-[#D26E4B] shrink-0 mt-0.5" />
                            <div className="min-w-0">
-                             <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest block mb-0.5">Special Request</span>
-                             <span className="text-xs font-bold text-amber-900 break-words whitespace-pre-wrap">{item.specialRequest}</span>
+                             <span className="text-[9px] font-black text-[#D26E4B] uppercase tracking-[0.2em] block mb-1 italic">Special Request</span>
+                             <span className="text-xs font-bold text-[#1C1412] italic">{item.specialRequest}</span>
                            </div>
                          </div>
                        )}
@@ -128,48 +137,48 @@ export const OrderDetailsModal = ({
             </div>
 
             {/* Status Management */}
-            <div className="space-y-4">
-               <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Update Status</h3>
-               <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-6">
+               <h3 className="text-[11px] font-black text-[#8B8680] uppercase tracking-[0.3em] italic">Logistics Control</h3>
+               <div className="grid grid-cols-2 gap-3">
                   {STATUS_STEPS.map((step) => (
                     <button
                       key={step}
                       onClick={() => onUpdateStatus(order.id, step)}
-                      className={`p-3 rounded-xl border text-center transition-all flex flex-col items-center justify-center gap-1 ${
+                      className={`p-4 rounded-2xl border text-center transition-all duration-300 flex flex-col items-center justify-center gap-2 group ${
                         order.status === step 
-                          ? 'bg-[#1D1D1F] border-[#1D1D1F] text-white shadow-md ring-1 ring-offset-1 ring-[#1D1D1F]' 
-                          : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300'
+                          ? 'bg-[#1C1412] border-[#1C1412] text-white shadow-xl shadow-black/20 ring-2 ring-offset-2 ring-[#1C1412]' 
+                          : 'bg-white border-[#E8E2D9] text-[#8B8680] hover:border-[#D26E4B] hover:text-[#D26E4B] shadow-sm'
                       }`}
                     >
-                       <span className="text-[9px] font-black uppercase tracking-widest block">{STATUS_META[step]?.label || step.replace('_', ' ')}</span>
-                       {order.status === step && <div className="w-1 h-1 bg-white rounded-full mt-0.5" />}
+                       <span className="text-[10px] font-black uppercase tracking-[0.2em] block">{STATUS_META[step]?.label || step.replace('_', ' ')}</span>
+                       {order.status === step && <div className="w-1.5 h-1.5 bg-[#D26E4B] rounded-full group-hover:scale-150 transition-transform" />}
                     </button>
                   ))}
                </div>
             </div>
 
             {/* Payment Summary */}
-            <div className="bg-gray-50 p-6 rounded-2xl space-y-4 w-full">
-               <div className="flex justify-between items-center bg-white p-3 rounded-lg border border-gray-100">
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Payment Mode</span>
-                  <span className="px-2 py-1 bg-[#1D1D1F] rounded text-[9px] font-black text-white uppercase tracking-widest">
+            <div className="bg-[#FAF7F2] p-8 rounded-[3rem] border border-[#E8E2D9] space-y-6 w-full shadow-inner">
+               <div className="flex justify-between items-center bg-white p-4 rounded-2xl border border-[#E8E2D9] shadow-sm">
+                  <span className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.2em]">Settlement Method</span>
+                  <span className="px-3 py-1.5 bg-[#1C1412] rounded-xl text-[9px] font-black text-[#D4AF37] uppercase tracking-[0.2em] shadow-lg">
                     {order.paymentMethod || 'CASH'}
                   </span>
                </div>
 
-                <div className="space-y-2">
-                   <p className="text-[9px] font-black text-gray-300 uppercase tracking-[0.2em] ml-1">Update Payment Status</p>
+                <div className="space-y-3">
+                   <p className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.3em] ml-2 italic">Payment Audit</p>
                    <div className="grid grid-cols-3 gap-2">
                       {(['pending', 'paid', 'failed'] as const).map(pstatus => (
                          <button
                             key={pstatus}
                             onClick={() => onUpdatePaymentStatus(order.id, pstatus)}
-                            className={`py-2 rounded-xl border text-[9px] font-black uppercase tracking-widest transition-all ${
+                            className={`py-3 rounded-2xl border text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${
                                order.paymentStatus === pstatus
-                                  ? pstatus === 'paid' ? 'bg-green-600 border-green-600 text-white' :
-                                    pstatus === 'failed' ? 'bg-red-600 border-red-600 text-white' :
-                                    'bg-amber-500 border-amber-500 text-white'
-                                  : 'bg-white border-gray-100 text-gray-400'
+                                  ? pstatus === 'paid' ? 'bg-[#7A8B6E] border-[#7A8B6E] text-white shadow-[#7A8B6E]/20 shadow-lg' :
+                                    pstatus === 'failed' ? 'bg-[#C17A6B] border-[#C17A6B] text-white shadow-[#C17A6B]/20 shadow-lg' :
+                                    'bg-[#D4AF37] border-[#D4AF37] text-white shadow-[#D4AF37]/20 shadow-lg'
+                                  : 'bg-white border-[#E8E2D9] text-[#8B8680] hover:border-[#D26E4B]/30'
                             }`}
                          >
                             {pstatus}
@@ -178,28 +187,29 @@ export const OrderDetailsModal = ({
                    </div>
                 </div>
 
-               <div className="flex justify-between text-xs font-bold text-gray-500">
-                  <span>Subtotal</span>
-                  <span>Rs. {order.total}</span>
-               </div>
-               <div className="flex justify-between text-xs font-bold text-gray-500">
-                  <span>Delivery</span>
-                  <span className="text-green-600 font-black tracking-wide uppercase text-[10px]">Free</span>
-               </div>
+               <div className="space-y-4 pt-2">
+                  <div className="flex justify-between text-[11px] font-black text-[#8B8680] uppercase tracking-widest">
+                     <span>Base Subtotal</span>
+                     <span className="text-[#1C1412]">Rs. {order.total}</span>
+                  </div>
+                  <div className="flex justify-between text-[11px] font-black text-[#8B8680] uppercase tracking-widest">
+                     <span>Logistics Fee</span>
+                     <span className="text-[#7A8B6E]">Complimentary</span>
+                  </div>
 
-               <div className="border-t border-dashed border-gray-300 my-2 pt-3 flex justify-between items-center">
-                  <span className="text-xs font-black text-[#1D1D1F] uppercase tracking-widest">Grand Total</span>
-                  <span className="text-lg font-black text-[#1D1D1F] tracking-tighter">Rs. {order.total}</span>
+                  <div className="border-t border-[#E8E2D9] mt-6 pt-6 flex justify-between items-center">
+                     <span className="text-[11px] font-black text-[#1C1412] uppercase tracking-[0.4em] italic">Gross Settlement</span>
+                     <span className="text-3xl font-black text-[#1C1412] tracking-tighter italic">Rs. {order.total}</span>
+                  </div>
                </div>
             </div>
-            <div className="flex gap-3 w-full">
-               <button
-                  onClick={onClose}
-                  className="flex-1 w-full py-4 bg-[#1D1D1F] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:opacity-90 transition-opacity"
-               >
-                  Dismiss Details
-               </button>
-            </div>
+
+            <button
+               onClick={onClose}
+               className="w-full py-6 bg-[#1C1412] text-white text-[11px] font-black uppercase tracking-[0.4em] rounded-[2.5rem] shadow-2xl shadow-black/30 active:scale-95 transition-all hover:bg-[#2D2422]"
+            >
+               Authorize & Close
+            </button>
          </div>
       </div>
     </div>,

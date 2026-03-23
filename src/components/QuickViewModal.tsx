@@ -56,7 +56,7 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
   );
   const quantityInCart = cartItem?.quantity || 0;
 
-  const outOfStock = product.stockQuantity !== undefined ? product.stockQuantity <= 0 : !product.isAvailable;
+  const outOfStock = !product.isAvailable || (product.stockQuantity !== undefined && product.stockQuantity <= 0);
   const maxQuantity = product.stockQuantity !== undefined ? product.stockQuantity : 99;
   const totalQuantityInCart = cart.filter(item => item.product.id === product.id).reduce((sum, item) => sum + item.quantity, 0);
 
@@ -83,6 +83,7 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
   };
 
   const handleIncrement = () => {
+    if (outOfStock) return;
     if (totalQuantityInCart >= maxQuantity) {
       toast.error(`Only ${maxQuantity} available in stock.`);
       return;
@@ -263,8 +264,12 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
               </div>
 
               {outOfStock ? (
-                <div className="mt-4 py-4 bg-gray-100 text-gray-500 rounded-2xl font-bold text-lg flex items-center justify-center border border-gray-200">
-                  Currently Out of Stock
+                <div className="mt-4 px-6 py-8 bg-[#fdf2f2] text-[#FF4B4B] rounded-3xl font-black text-sm flex flex-col items-center justify-center border border-red-100 shadow-sm text-center gap-3 italic">
+                  <div className="w-3 h-3 bg-[#FF4B4B] rounded-full animate-ping" />
+                  <p className="uppercase tracking-[0.2em] leading-relaxed">
+                    Multiple orders received!<br/>
+                    Preparing next batch soon.
+                  </p>
                 </div>
               ) : quantityInCart === 0 ? (
                 // State 1: Item not in cart
@@ -286,11 +291,17 @@ export const QuickViewModal = ({ product, isOpen, onClose }: QuickViewModalProps
                 // State 2: Item is in cart
                 <div className="flex items-center justify-between gap-4 pt-2">
                   <div className="flex items-center bg-gray-100 rounded-2xl px-2 py-2">
-                    <button onClick={handleDecrement} className="w-10 h-10 flex items-center justify-center text-[var(--color-chocolate)] bg-white rounded-xl shadow-sm">
+                    <button 
+                      onClick={!outOfStock ? handleDecrement : undefined} 
+                      className={`w-10 h-10 flex items-center justify-center rounded-xl shadow-sm ${outOfStock ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'text-[var(--color-chocolate)] bg-white'}`}
+                    >
                       <Minus size={18} />
                     </button>
                     <span className="w-12 text-center text-lg font-semibold">{quantityInCart}</span>
-                    <button onClick={handleIncrement} className="w-10 h-10 flex items-center justify-center text-[var(--color-chocolate)] bg-white rounded-xl shadow-sm">
+                    <button 
+                      onClick={!outOfStock ? handleIncrement : undefined} 
+                      className={`w-10 h-10 flex items-center justify-center rounded-xl shadow-sm ${outOfStock ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'text-[var(--color-chocolate)] bg-white'}`}
+                    >
                       <Plus size={18} />
                     </button>
                   </div>

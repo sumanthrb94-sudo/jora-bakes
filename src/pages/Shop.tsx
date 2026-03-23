@@ -124,9 +124,7 @@ export const Shop = () => {
       <div className="pb-10">
         {categoriesToRender.map(category => {
           const categoryProducts = products.filter(p => 
-            (p?.category || '') === category.toLowerCase().replace(' ', '_') &&
-            (p.stockQuantity ?? 0) > 0 &&
-            p.isAvailable
+            (p?.category || '') === category.toLowerCase().replace(' ', '_')
           );
           if (categoryProducts.length === 0) return null;
 
@@ -144,7 +142,7 @@ export const Shop = () => {
                 {categoryProducts.map((product, index) => {
                   const itemsInCart = cart.filter(item => item.product.id === product.id);
                   const totalQuantityInCart = itemsInCart.reduce((sum, item) => sum + item.quantity, 0);
-                  const outOfStock = product.stockQuantity !== undefined ? product.stockQuantity <= 0 : !product.isAvailable;
+                  const outOfStock = !product.isAvailable || (product.stockQuantity !== undefined && product.stockQuantity <= 0);
                   const isLast = index === categoryProducts.length - 1;
 
                   return (
@@ -184,8 +182,10 @@ export const Shop = () => {
                         <div className={`w-[130px] h-[130px] rounded-2xl overflow-hidden shadow-sm bg-gray-50 border border-gray-100 relative ${outOfStock ? 'grayscale-[0.8]' : ''}`}>
                           <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
                           {outOfStock && (
-                            <div className="absolute inset-0 bg-black/5 flex items-center justify-center">
-                               <span className="bg-white/90 backdrop-blur-sm text-[#1C1C1C] px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border border-gray-100">Sold Out</span>
+                            <div className="absolute inset-0 bg-black/5 flex items-center justify-center p-2">
+                               <span className="bg-white/95 backdrop-blur-sm text-[#FF4B4B] px-3 py-1.5 rounded-xl text-[7px] font-black uppercase tracking-widest border border-red-100 shadow-xl text-center leading-tight">
+                                 Preparing<br/>next batch
+                               </span>
                             </div>
                           )}
                         </div>
@@ -193,9 +193,9 @@ export const Shop = () => {
                         {/* Floating Action Button */}
                         <div className="absolute -bottom-3 w-[100px] z-10" onClick={e => e.stopPropagation()}>
                           {outOfStock ? (
-                            <button disabled className="w-full bg-white text-gray-400 border border-gray-200 py-2 rounded-xl font-black text-[10px] shadow-sm cursor-not-allowed uppercase tracking-wider">
-                              Sold Out
-                            </button>
+                            <div className="w-full bg-[#fdf2f2] text-[#FF4B4B] border border-red-100 py-2 rounded-xl font-black text-[7px] shadow-sm flex items-center justify-center text-center uppercase tracking-wider px-2 leading-none">
+                              Multiple orders received! Preparing next batch soon
+                            </div>
                           ) : totalQuantityInCart === 0 ? (
                             <button
                               onClick={() => handleAdd(product)}

@@ -84,9 +84,9 @@ export const AdminLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7] flex flex-col font-sans relative overflow-x-hidden selection:bg-[#1D1D1F] selection:text-white">
+    <div className="min-h-screen bg-[#FAF7F2] flex flex-col font-sans relative overflow-x-hidden selection:bg-[#D26E4B] selection:text-white">
       {/* Top Header */}
-      <header className="bg-white/80 backdrop-blur-xl border-b border-black/5 sticky top-0 z-50 shrink-0">
+      <header className="bg-[#FAF7F2]/80 backdrop-blur-xl border-b border-[#E8E2D9] sticky top-0 z-50 shrink-0">
         <div className="h-14 flex items-center justify-between px-4 gap-3">
           {/* Left: Back + Brand */}
           <motion.div
@@ -94,27 +94,27 @@ export const AdminLayout: React.FC = () => {
             className="flex items-center gap-2.5 cursor-pointer shrink-0"
             onClick={() => navigate('/')}
           >
-            <div className="w-8 h-8 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 border border-gray-100 hover:bg-gray-100 transition-colors">
-              <ArrowLeft size={16} />
+            <div className="w-9 h-9 bg-white border border-[#E8E2D9] rounded-xl flex items-center justify-center text-[#D26E4B] hover:bg-[#F2E8E4] transition-all shadow-sm">
+              <ArrowLeft size={18} />
             </div>
             <div>
-              <span className="text-[11px] font-black text-[#1D1D1F] uppercase tracking-[0.1em] leading-none block">Jora Admin</span>
-              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">Command Center</span>
+               <span className="text-[11px] font-black text-[#1C1412] uppercase tracking-[0.2em] leading-none block italic">Jora Admin</span>
+               <span className="text-[9px] font-bold text-[#8B8680] uppercase tracking-widest leading-none">Operational Hub</span>
             </div>
           </motion.div>
 
           {/* Center: Nav Pills */}
-          <div className="flex bg-gray-100/80 p-1 rounded-2xl gap-0.5 overflow-x-auto hide-scrollbar">
+          <div className="flex bg-[#F5F0E8] p-1.5 rounded-2xl gap-1 overflow-x-auto hide-scrollbar border border-[#E8E2D9]/50 shadow-inner">
             {navItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
                 end={item.end}
                 className={({ isActive }) =>
-                  `flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap relative ${
+                  `flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap relative ${
                     isActive
-                      ? 'bg-[#1D1D1F] text-white shadow-lg shadow-black/15'
-                      : 'text-gray-400 hover:text-[#1D1D1F]'
+                      ? 'bg-[#1C1412] text-white shadow-xl shadow-black/20 italic'
+                      : 'text-[#8B8680] hover:text-[#D26E4B] hover:bg-white/50'
                   }`
                 }
               >
@@ -127,7 +127,7 @@ export const AdminLayout: React.FC = () => {
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         className={`w-4 h-4 rounded-full text-[8px] font-black flex items-center justify-center ${
-                          isActive ? 'bg-white text-[#1D1D1F]' : 'bg-red-500 text-white animate-pulse'
+                          isActive ? 'bg-[#D26E4B] text-white' : 'bg-[#D26E4B] text-white animate-pulse'
                         }`}
                       >
                         {pendingCount}

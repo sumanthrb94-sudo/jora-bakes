@@ -20,7 +20,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
   // Get a reference to the specific cart item to handle exact increment/decrement natively
   const cartItem = itemsInCart.length === 1 ? itemsInCart[0] : null;
 
-  const outOfStock = product.stockQuantity !== undefined ? product.stockQuantity <= 0 : !product.isAvailable;
+  const outOfStock = !product.isAvailable || (product.stockQuantity !== undefined && product.stockQuantity <= 0);
   const hasCustomizations = product.customizationGroups && product.customizationGroups.length > 0;
 
   const handleAdd = (e: React.MouseEvent) => {
@@ -37,6 +37,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
   const handleIncrement = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (outOfStock) return;
     if (product.stockQuantity !== undefined && totalQuantityInCart >= product.stockQuantity) {
       toast.error(`Only ${product.stockQuantity} available in stock.`);
       return;
@@ -85,8 +86,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
         </div>
 
         {outOfStock && (
-          <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
-             <span className="bg-[#FF4B4B] text-white text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded shadow-lg">SOLD OUT</span>
+          <div className="absolute inset-0 bg-black/10 flex items-center justify-center p-4">
+             <span className="bg-white/95 backdrop-blur-sm text-[#FF4B4B] text-[8px] font-black uppercase tracking-[0.2em] px-3 py-2 rounded-xl shadow-xl border border-red-100 text-center leading-tight">
+               Preparing<br/>next batch
+             </span>
           </div>
         )}
       </div>
@@ -110,9 +113,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
           >
             {outOfStock ? (
-              <div className="bg-[#FFEAEA] text-[#FF4B4B] px-3 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5 border border-[#FFD6D6]">
-                 <div className="w-1.5 h-1.5 bg-[#FF4B4B] rounded-full" />
-                 OUT
+              <div className="bg-[#fdf2f2] text-[#FF4B4B] px-3 py-2 rounded-xl text-[7px] font-black uppercase tracking-wider flex items-center gap-1.5 border border-red-100 shadow-sm text-center leading-none max-w-[120px]">
+                 <div className="w-1.5 h-1.5 bg-[#FF4B4B] rounded-full shrink-0 animate-pulse" />
+                 preparing next batch soon
               </div>
             ) : totalQuantityInCart === 0 ? (
               <button
@@ -122,10 +125,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
                 ADD
               </button>
             ) : (
-              <div className="bg-[#1C1C1C] text-white flex items-center justify-between min-w-[80px] h-[32px] rounded-xl shadow-lg border border-white/10">
-                <button onClick={handleDecrement} className="w-7 h-full flex items-center justify-center hover:bg-white/10"><Minus size={14} strokeWidth={3} /></button>
+              <div className={`flex items-center justify-between min-w-[80px] h-[32px] rounded-xl shadow-lg border border-white/10 ${outOfStock ? 'bg-gray-400 opacity-50 cursor-not-allowed' : 'bg-[#1C1C1C] text-white'}`}>
+                <button onClick={!outOfStock ? handleDecrement : undefined} className={`w-7 h-full flex items-center justify-center ${!outOfStock ? 'hover:bg-white/10' : ''}`}><Minus size={14} strokeWidth={3} /></button>
                 <span className="font-black text-xs">{totalQuantityInCart}</span>
-                <button onClick={handleIncrement} className="w-7 h-full flex items-center justify-center hover:bg-white/10"><Plus size={14} strokeWidth={3} /></button>
+                <button onClick={!outOfStock ? handleIncrement : undefined} className={`w-7 h-full flex items-center justify-center ${!outOfStock ? 'hover:bg-white/10' : ''}`}><Plus size={14} strokeWidth={3} /></button>
               </div>
             )}
           </div>

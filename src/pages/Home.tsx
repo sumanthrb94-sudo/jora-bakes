@@ -22,10 +22,10 @@ export const Home = () => {
   };
 
   // Filter products for different sections
-  // Filter available products
-  const availableProducts = products.filter(p => (p.stockQuantity ?? 0) > 0 && p.isAvailable);
-  const bestSellers = availableProducts.slice(0, 4); 
-  const trending = availableProducts.slice(2, 6);
+  // Include all products regardless of stock (ProductCard handles the UI)
+  const availableProducts = products;
+  const bestSellers = products.slice(0, 4); 
+  const trending = products.slice(2, 6);
 
   return (
     <div className="bg-[#f7f5f0] min-h-screen pb-24">
@@ -75,7 +75,7 @@ export const Home = () => {
       </div>
 
       {/* Promotional Offers Banner */}
-      {products.find(p => p.id === 'p5') && (products.find(p => p.id === 'p5')?.stockQuantity ?? 0) > 0 && products.find(p => p.id === 'p5')?.isAvailable && (
+      {products.find(p => p.id === 'p5') && (
         <div className="px-4 mb-6">
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
@@ -96,9 +96,15 @@ export const Home = () => {
                   const p = products.find(p => p.id === 'p5');
                   if (p) handleQuickView(p);
                 }}
-                className="bg-white text-[var(--color-terracotta)] text-xs font-black px-5 py-2.5 rounded-full shadow-sm hover:scale-105 transition-transform active:scale-95"
+                className={`text-xs font-black px-5 py-2.5 rounded-full shadow-sm transition-all active:scale-95 ${
+                  !products.find(p => p.id === 'p5')?.isAvailable || (products.find(p => p.id === 'p5')?.stockQuantity ?? 0) <= 0
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white text-[var(--color-terracotta)] hover:scale-105'
+                }`}
               >
-                Order Now
+                {!products.find(p => p.id === 'p5')?.isAvailable || (products.find(p => p.id === 'p5')?.stockQuantity ?? 0) <= 0 
+                  ? 'Preparing Next Batch' 
+                  : 'Order Now'}
               </button>
             </div>
           </motion.div>

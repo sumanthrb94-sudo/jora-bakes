@@ -40,9 +40,9 @@ const GridCard: React.FC<GridCardProps> = ({ product, onEdit, onDelete }) => {
   return (
     <motion.div 
       layout
-      whileHover={{ y: -8, boxShadow: '0 30px 40px -15px rgba(0, 0, 0, 0.12)' }}
+      whileHover={{ y: -8, boxShadow: '0 40px 80px -20px rgba(210, 110, 75, 0.12)' }}
       whileTap={{ scale: 0.98 }}
-      className={`bg-white rounded-[2.5rem] border border-gray-100 hover:border-gray-200 overflow-hidden shadow-sm flex flex-col relative group cursor-pointer transition-all duration-500`}
+      className="bg-white rounded-[2.5rem] border border-[#E8E2D9] hover:border-[#D26E4B]/40 overflow-hidden shadow-sm flex flex-col relative group cursor-pointer transition-all duration-700"
       onClick={(e) => {
         if ((e.target as HTMLElement).closest('.action-zone')) return;
         onEdit(product);
@@ -50,46 +50,46 @@ const GridCard: React.FC<GridCardProps> = ({ product, onEdit, onDelete }) => {
     >
       {/* Delete Action */}
       <div 
-        className="action-zone absolute top-4 right-4 z-20 w-8 h-8 rounded-xl flex items-center justify-center transition-all"
+        className="action-zone absolute top-4 right-4 z-20 w-10 h-10 rounded-2xl flex items-center justify-center transition-all"
         onClick={(e) => {
            e.stopPropagation();
            onDelete(product.id);
         }}
       >
-         <div className="w-6 h-6 rounded-lg flex items-center justify-center border-2 border-white/40 bg-white/60 backdrop-blur-md text-red-500 opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:border-red-200 transition-all duration-300 shadow-sm">
-            <Trash2 size={14} />
+         <div className="w-8 h-8 rounded-xl flex items-center justify-center border border-[#E8E2D9] bg-white text-[#C17A6B] opacity-0 group-hover:opacity-100 hover:bg-[#F9F1F0] transition-all duration-300 shadow-xl">
+            <Trash2 size={16} />
          </div>
       </div>
 
       {/* Hero Asset */}
-      <div className="aspect-[4/5] relative overflow-hidden bg-gray-50">
+      <div className="aspect-[4/5] relative overflow-hidden bg-[#FAF7F2]">
         <img 
           src={product.images?.[0] || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=500&auto=format&fit=crop'} 
           alt={product.name} 
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2000ms] ease-out" 
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1C1412]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
         
         {isSoldOut && (
           <div className="absolute inset-0 bg-[#1C1412]/40 backdrop-blur-[6px] flex items-center justify-center p-6 text-center">
             <motion.span 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="text-[10px] font-black text-[#1D1D1F] uppercase tracking-[0.25em] bg-white/90 px-5 py-3 rounded-full shadow-2xl border border-white/20"
+              className="text-[10px] font-black text-[#1C1412] uppercase tracking-[0.3em] bg-white/90 px-6 py-4 rounded-full shadow-2xl border border-white/20 italic"
             >
-              Inactive Product
+              Archived Item
             </motion.span>
           </div>
         )}
 
         {/* Dynamic Badges */}
         <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-           <div className="bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/40 shadow-sm flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#00B189] border-2 border-white shadow-sm" />
-              <span className="text-[9px] font-black text-gray-800 uppercase tracking-widest leading-none pt-0.5">Premium</span>
+           <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/40 shadow-sm flex items-center gap-2">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#D4AF37] border-2 border-white shadow-sm" />
+              <span className="text-[9px] font-black text-[#1C1412] uppercase tracking-[0.2em] leading-none pt-0.5">Signature</span>
            </div>
            {(product.discountPercentage || 0) > 0 && (
-             <div className="bg-[#FF4B4B] text-white px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20 w-fit">
+             <div className="bg-[#D26E4B] text-white px-3 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-[0.2em] shadow-lg shadow-[#D26E4B]/30 w-fit italic">
                -{product.discountPercentage}% OFF
              </div>
            )}
@@ -97,30 +97,30 @@ const GridCard: React.FC<GridCardProps> = ({ product, onEdit, onDelete }) => {
       </div>
 
       {/* Card Detail */}
-      <div className="p-5 flex-1 flex flex-col">
-         <div className="flex justify-between items-start gap-4 mb-2">
-            <h3 className="text-[13px] font-black text-[#1D1D1F] tracking-tight leading-snug line-clamp-2 uppercase italic">{product.name}</h3>
-            <span className="shrink-0 text-[10px] font-black text-gray-200 italic tracking-tighter">#0{product.id.slice(-3)}</span>
+      <div className="p-6 flex-1 flex flex-col bg-white">
+         <div className="flex justify-between items-start gap-4 mb-3">
+            <h3 className="text-[14px] font-black text-[#1C1412] tracking-tighter leading-snug line-clamp-2 uppercase italic group-hover:text-[#D26E4B] transition-colors">{product.name}</h3>
+            <span className="shrink-0 text-[10px] font-black text-[#8B8680] italic tracking-widest opacity-40">#0{product.id.slice(-3)}</span>
          </div>
          
-         <div className="mt-auto pt-5 flex items-end justify-between border-t border-gray-50/50">
+         <div className="mt-auto pt-6 flex items-end justify-between border-t border-[#F5F0E8]">
             <div className="flex flex-col">
                {product.mrp && product.mrp > product.price && (
-                 <span className="text-[11px] text-gray-300 font-bold line-through leading-none mb-1.5 opacity-50">Rs. {product.mrp}</span>
+                 <span className="text-[12px] text-[#8B8680]/50 font-black italic line-through leading-none mb-2">Rs. {product.mrp}</span>
                )}
-               <div className="flex items-baseline gap-1">
-                 <span className="text-[10px] font-black text-gray-400">Rs.</span>
-                 <span className="text-xl font-black text-[#1D1D1F] tracking-tighter leading-none">{product.price}</span>
+               <div className="flex items-baseline gap-1.5">
+                 <span className="text-[10px] font-black text-[#8B8680] italic">Rs.</span>
+                 <span className="text-2xl font-black text-[#1C1412] tracking-tighter leading-none italic">{product.price}</span>
                </div>
             </div>
             
-            <div className={`px-3 py-1.5 rounded-2xl text-[8px] font-black uppercase tracking-[0.1em] flex items-center gap-2 border transition-all ${
+            <div className={`px-4 py-2 rounded-2xl text-[9px] font-black uppercase tracking-[0.15em] flex items-center gap-2 border transition-all shadow-sm ${
               isOutOfStock 
-                ? 'bg-red-50/50 text-red-500 border-red-100/50' 
-                : 'bg-emerald-50/50 text-emerald-600 border-emerald-100/50'
+                ? 'bg-[#F9F1F0] text-[#C17A6B] border-[#C17A6B]/20' 
+                : 'bg-[#F0F2EF] text-[#7A8B6E] border-[#7A8B6E]/20'
             }`}>
-               <div className={`w-1.5 h-1.5 rounded-full ${isOutOfStock ? 'bg-red-500 animate-pulse' : 'bg-emerald-500'}`} />
-               {isOutOfStock ? 'Stock Out' : 'Active'}
+               <div className={`w-2 h-2 rounded-full ${isOutOfStock ? 'bg-[#C17A6B] animate-pulse' : 'bg-[#7A8B6E]'}`} />
+               {isOutOfStock ? 'Depleted' : 'In Shop'}
             </div>
          </div>
       </div>
@@ -224,9 +224,13 @@ export const AdminProducts = () => {
   };
 
   if (loading) return (
-     <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <div className="w-10 h-10 border-4 border-[var(--color-admin-dark)] border-t-transparent rounded-full animate-spin" />
-        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Indexing Assets</span>
+     <div className="flex flex-col items-center justify-center min-h-[400px] gap-6">
+        <motion.div
+           animate={{ rotate: 360, scale: [1, 1.1, 1] }}
+           transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
+           className="w-12 h-12 border-4 border-[#E8E2D9] border-t-[#D26E4B] rounded-full shadow-lg"
+        />
+        <span className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.3em] italic">Auditing Catalog Assets</span>
      </div>
   );
 
@@ -238,42 +242,44 @@ export const AdminProducts = () => {
             key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="space-y-6"
           >
-              <div className="flex items-end justify-between sticky top-0 z-20 bg-[#F5F5F7] pb-3 pt-1">
+              <div className="flex items-end justify-between sticky top-0 z-20 bg-[#FAF7F2] pb-6 pt-2">
                 <div className="flex items-center gap-4">
                    <div className="flex flex-col">
-                     <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] leading-none mb-1.5 flex items-center gap-2">
-                        Product Management
+                     <p className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.3em] leading-none mb-2 italic">
+                        In-Shop Ledger
                      </p>
-                     <h1 className="text-3xl font-black text-[#1D1D1F] tracking-tighter leading-none italic">Products.</h1>
+                     <h1 className="text-4xl font-black text-[#1C1412] tracking-tighter leading-none italic uppercase">Inventory.</h1>
                    </div>
                 </div>
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleOpenForm()}
-                  className="bg-[#1D1D1F] text-white px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-black/10 flex items-center justify-center"
+                  className="bg-[#1C1412] text-white px-8 py-4 rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-black/20 flex items-center justify-center italic hover:bg-[#2D2422] transition-all"
                 >
-                  New Product
+                  Create Item
                 </motion.button>
              </div>
 
-             <div className="space-y-4">
+             <div className="space-y-6">
                 <div className="relative group px-1">
                   <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search catalog..." 
-                    className="w-full bg-white border border-gray-100 rounded-2xl px-12 py-4 text-xs font-bold focus:ring-0 outline-none shadow-sm transition-all" />
-                  <Search size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300" />
+                    className="w-full bg-white border border-[#E8E2D9] rounded-[2rem] px-14 py-5 text-sm font-bold focus:ring-2 focus:ring-[#D26E4B]/10 outline-none shadow-sm focus:border-[#D26E4B] transition-all text-[#1C1412] placeholder:text-[#8B8680]/50" />
+                  <Search size={22} className="absolute left-6 top-1/2 -translate-y-1/2 text-[#D26E4B] group-focus-within:scale-110 transition-transform" />
                 </div>
 
-                <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar px-1">
+                <div className="flex items-center gap-3 overflow-x-auto hide-scrollbar px-1 pb-2">
                    {CATEGORIES.map(cat => (
                      <motion.button
                        key={cat}
                        whileTap={{ scale: 0.95 }}
                        onClick={() => setSelectedCategory(cat)}
-                       className={`px-4 py-2 rounded-full whitespace-nowrap text-[10px] font-black uppercase tracking-widest transition-all ${
-                         selectedCategory === cat ? 'bg-[var(--color-admin-dark)] text-white' : 'bg-white border border-gray-100 text-gray-300'
+                       className={`px-6 py-3 rounded-full whitespace-nowrap text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 border ${
+                         selectedCategory === cat 
+                           ? 'bg-[#1C1412] text-white border-[#1C1412] shadow-xl shadow-black/20 italic' 
+                           : 'bg-white border-[#E8E2D9] text-[#8B8680] hover:border-[#D26E4B] hover:text-[#D26E4B]'
                        }`}
                      >
-                       {cat}
+                        {cat}
                      </motion.button>
                    ))}
                 </div>
@@ -294,110 +300,124 @@ export const AdminProducts = () => {
         ) : (
           <motion.div 
             key="form" initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} 
-            className="space-y-8 bg-white fixed inset-0 z-[100] min-h-screen overflow-y-auto p-6 md:p-12"
+            className="space-y-8 bg-[#FAF7F2] fixed inset-0 z-[100] min-h-screen overflow-y-auto p-6 md:p-12 selection:bg-[#D26E4B] selection:text-white"
           >
              <div className="flex items-center justify-between mb-8 max-w-2xl mx-auto w-full">
-                <button onClick={() => setShowForm(false)} className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full text-gray-400">
+                <button onClick={() => setShowForm(false)} className="w-12 h-12 flex items-center justify-center bg-white border border-[#E8E2D9] rounded-2xl text-[#1C1412] hover:bg-[#F2E8E4] transition-all shadow-sm">
                    <ArrowRight className="rotate-180" size={20} />
                 </button>
-                <h2 className="text-xl font-black text-[var(--color-admin-dark)] uppercase tracking-tight">Sync Product: {formData.name || 'New Item'}</h2>
-                <div className="w-10" />
+                <div className="text-center">
+                   <p className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.3em] mb-1 italic">Synchronization Mode</p>
+                   <h2 className="text-xl font-black text-[#1C1412] uppercase tracking-tighter italic">{formData.name || 'Undefined Item'}</h2>
+                </div>
+                <div className="w-12" />
              </div>
 
-             <form onSubmit={handleSave} className="space-y-8 max-w-2xl mx-auto w-full pb-20">
+             <form onSubmit={handleSave} className="space-y-10 max-w-2xl mx-auto w-full pb-32">
                 {/* Asset Upload */}
-                <div className="relative aspect-video rounded-[2.5rem] bg-gray-50 border-2 border-dashed border-gray-100 flex flex-col items-center justify-center overflow-hidden group">
+                <div className="relative aspect-video rounded-[3rem] bg-white border border-[#E8E2D9] flex flex-col items-center justify-center overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-700">
                     {imageFile || formData.images?.[0] ? (
-                        <img src={imageFile ? URL.createObjectURL(imageFile) : formData.images?.[0]} className="w-full h-full object-cover" alt="" />
+                        <div className="w-full h-full relative">
+                          <img src={imageFile ? URL.createObjectURL(imageFile) : formData.images?.[0]} className="w-full h-full object-cover" alt="" />
+                          <div className="absolute inset-0 bg-[#1C1412]/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
                     ) : (
                         <div className="text-center">
-                           <ImageIcon size={32} className="mx-auto text-gray-200 mb-3" />
-                           <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Select Product Asset</p>
+                           <div className="w-16 h-16 bg-[#FAF7F2] rounded-3xl flex items-center justify-center text-[#D26E4B] mx-auto mb-4 border border-[#E8E2D9]">
+                              <ImageIcon size={28} />
+                           </div>
+                           <p className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.3em] italic">Commit Primary Asset</p>
                         </div>
                     )}
                     <input type="file" accept="image/*" onChange={e => e.target.files?.[0] && setImageFile(e.target.files[0])} className="absolute inset-0 opacity-0 cursor-pointer" />
-                    <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-xl text-[8px] font-black uppercase tracking-widest text-gray-500 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">Change Media</div>
+                    <div className="absolute bottom-6 bg-[#1C1412] text-[9px] font-black text-white uppercase tracking-[0.3em] px-6 py-3 rounded-full shadow-2xl opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0 italic">Update Ledger Asset</div>
                 </div>
 
                 {/* Product Identity Section */}
-                <div className="space-y-4">
-                   <h3 className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] ml-1">Product Identity</h3>
+                <div className="space-y-6">
+                   <h3 className="text-[11px] font-black text-[#8B8680] uppercase tracking-[0.4em] italic leading-none ml-2">General Specification</h3>
                    <div className="space-y-4">
-                      <input type="text" required placeholder="Name (e.g. Millet Brownie)" value={formData.name || ''} 
-                        onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 text-sm font-bold" />
+                      <div className="relative group">
+                        <input type="text" required placeholder="Nomenclature (e.g. Millet Brownie)" value={formData.name || ''} 
+                          onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-white border border-[#E8E2D9] rounded-[2rem] px-8 py-5 text-sm font-bold text-[#1C1412] focus:border-[#D26E4B] outline-none shadow-sm transition-all" />
+                      </div>
                       
                       <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}
-                        className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 text-sm font-bold appearance-none">
+                        className="w-full bg-white border border-[#E8E2D9] rounded-[2rem] px-8 py-5 text-sm font-black text-[#1C1412] appearance-none outline-none shadow-sm focus:border-[#D26E4B] transition-all uppercase italic tracking-[0.1em]">
                         {CATEGORIES.filter(c => c !== 'All').map(c => (
                           <option key={c} value={c.toLowerCase().replace(' ', '_')}>{c}</option>
                         ))}
                       </select>
 
                       <div className="grid grid-cols-2 gap-4">
-                         <div className="bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100/50 space-y-3">
-                            <label className="text-[9px] font-black text-gray-300 uppercase tracking-widest">Pricing (Rs. )</label>
+                         <div className="bg-white p-8 rounded-[2.5rem] border border-[#E8E2D9] space-y-4 shadow-sm hover:border-[#D26E4B]/30 transition-all">
+                            <label className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.2em] italic">Market Quote (Rs.)</label>
                             <input type="number" value={formData.mrp} onChange={e => updatePricing('mrp', Number(e.target.value))} 
-                              className="w-full bg-transparent border-none p-0 text-xl font-black text-[#1D1D1F] focus:ring-0" />
+                              className="w-full bg-transparent border-none p-0 text-3xl font-black text-[#1C1412] tracking-tighter focus:ring-0 italic" />
                          </div>
-                         <div className="bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100/50 space-y-3">
-                            <label className="text-[9px] font-black text-gray-300 uppercase tracking-widest">Offer (%)</label>
+                         <div className="bg-white p-8 rounded-[2.5rem] border border-[#E8E2D9] space-y-4 shadow-sm hover:border-[#D26E4B]/30 transition-all">
+                            <label className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.2em] italic">Campaign Offer (%)</label>
                             <div className="flex items-center gap-2">
                                <input type="number" value={formData.discountPercentage || ''} onChange={e => updatePricing('discount', Number(e.target.value))} 
-                                 className="w-full bg-transparent border-none p-0 text-xl font-black text-[#1D1D1F] focus:ring-0" />
-                               <span className="text-gray-300 font-black text-lg">%</span>
+                                 className="w-full bg-transparent border-none p-0 text-3xl font-black text-[#D26E4B] tracking-tighter focus:ring-0 italic" />
+                               <span className="text-[#D26E4B] font-black text-2xl italic">%</span>
                             </div>
                          </div>
                       </div>
 
-                      <div className="bg-gray-50 p-6 rounded-3xl flex items-center justify-between">
-                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest tracking-[0.2em]">Final Price</label>
-                         <span className="text-2xl font-black text-[#00B189]">Rs. {formData.price}</span>
+                      <div className="bg-[#1C1412] p-8 rounded-[3rem] flex items-center justify-between shadow-2xl">
+                         <div className="flex flex-col">
+                            <label className="text-[11px] font-black text-[#D4AF37] uppercase tracking-[0.4em] italic mb-1">Settlement Price</label>
+                            <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">Calculated post-discount</p>
+                         </div>
+                         <span className="text-4xl font-black text-white italic tracking-tighter">Rs. {formData.price}</span>
                       </div>
                    </div>
                 </div>
 
                 {/* Inventory Status */}
-                <div className="space-y-4">
-                   <div className="bg-gray-50 p-6 rounded-3xl flex items-center justify-between">
+                <div className="space-y-6">
+                   <h3 className="text-[11px] font-black text-[#8B8680] uppercase tracking-[0.4em] italic leading-none ml-2">Stock Manifest</h3>
+                   <div className="bg-white border border-[#E8E2D9] p-8 rounded-[2.5rem] flex items-center justify-between shadow-sm">
                       <div>
-                         <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">In Stock Status</h3>
-                         <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Available for purchase</p>
+                         <h3 className="text-[10px] font-black text-[#1C1412] uppercase tracking-[0.2em] leading-none mb-2">Visibility Protocol</h3>
+                         <p className="text-[9px] text-[#8B8680] font-bold uppercase tracking-widest">Public Catalog Presence</p>
                       </div>
                       <motion.button 
                         type="button"
                         whileTap={{ scale: 0.9 }}
                         onClick={() => setFormData({...formData, isAvailable: !formData.isAvailable})}
-                        className={`w-12 h-6 rounded-full relative transition-colors duration-300 ${formData.isAvailable ? 'bg-[#00B189]' : 'bg-gray-200'}`}
+                        className={`w-14 h-7 rounded-full relative transition-all duration-500 shadow-inner ${formData.isAvailable ? 'bg-[#7A8B6E]' : 'bg-[#E8E2D9]'}`}
                       >
                          <motion.div 
                            layout
                            transition={{ type: 'spring', stiffness: 700, damping: 30 }}
-                           className={`absolute top-1 w-4 h-4 bg-white rounded-full ${formData.isAvailable ? 'right-1' : 'left-1'}`} 
+                           className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-lg ${formData.isAvailable ? 'right-1' : 'left-1'}`} 
                          />
                       </motion.button>
                    </div>
 
-                   <div className="bg-gray-50 p-6 rounded-3xl space-y-4">
-                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Inventory Quantity</label>
-                      <div className="flex items-center gap-4">
+                   <div className="bg-white border border-[#E8E2D9] p-8 rounded-[2.5rem] space-y-4 shadow-sm">
+                      <label className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.2em] italic">Available Units</label>
+                      <div className="flex items-center gap-6">
                          <input type="number" required value={formData.stockQuantity !== undefined ? formData.stockQuantity : ''} 
                            onChange={e => setFormData({...formData, stockQuantity: Number(e.target.value)})} 
-                           className="flex-1 bg-white border border-gray-100 rounded-xl px-4 py-3 text-sm font-black text-[var(--color-admin-dark)]" />
-                         <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Units</span>
+                           className="flex-1 bg-[#FAF7F2] border border-[#E8E2D9] rounded-2xl px-6 py-4 text-xl font-black text-[#1C1412] italic shadow-inner outline-none focus:border-[#D26E4B]" />
+                         <span className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.3em] italic shrink-0">Quantum</span>
                       </div>
                    </div>
                 </div>
 
                 {/* Metadata */}
-                <div className="space-y-4 text-center">
-                   <h3 className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">Description & Ingredients</h3>
-                   <textarea rows={4} placeholder="Enter operational highlights..." value={formData.description || ''} 
+                <div className="space-y-6 text-center">
+                   <h3 className="text-[11px] font-black text-[#8B8680] uppercase tracking-[0.4em] italic leading-none ml-2">Chef's Description</h3>
+                   <textarea rows={6} placeholder="Describe the flavor profile, ingredients, and operational highlights..." value={formData.description || ''} 
                      onChange={e => setFormData({...formData, description: e.target.value})} 
-                     className="w-full border-2 border-gray-50 rounded-[2rem] px-6 py-5 text-sm font-bold text-gray-500 placeholder:text-gray-200 focus:border-[var(--color-admin-dark)] transition-colors resize-none" />
+                     className="w-full bg-white border border-[#E8E2D9] rounded-[3rem] px-10 py-8 text-sm font-bold text-[#1C1412] placeholder:text-[#8B8680]/30 focus:border-[#D26E4B] transition-all resize-none shadow-sm italic leading-relaxed" />
                 </div>
 
-                <button type="submit" disabled={isSaving} className="w-full py-6 bg-[var(--color-admin-dark)] text-white text-xs font-black uppercase tracking-widest rounded-[2rem] shadow-2xl shadow-black/20 active:scale-95 transition-all flex items-center justify-center gap-3">
-                   {isSaving ? <RefreshCw className="animate-spin" size={20} /> : <><Package size={20} /> Deploy to Catalog</>}
+                <button type="submit" disabled={isSaving} className="w-full py-8 bg-[#1C1412] text-white text-[11px] font-black uppercase tracking-[0.4em] rounded-[3rem] shadow-2xl shadow-black/30 active:scale-95 transition-all flex items-center justify-center gap-4 italic">
+                   {isSaving ? <RefreshCw className="animate-spin" size={24} /> : <><Database size={24} className="text-[#D4AF37]" /> Commit to Ledger</>}
                 </button>
              </form>
           </motion.div>
