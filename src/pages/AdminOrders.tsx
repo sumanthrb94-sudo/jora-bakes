@@ -52,7 +52,7 @@ const OrderDetailsModal = ({ order, onClose, onUpdateStatus }: { order: Order | 
       
       {/* Modal Container */}
       <div 
-        className="w-full max-w-lg bg-white rounded-3xl shadow-2xl relative z-[10000] overflow-y-auto"
+        className="w-[90%] sm:w-full min-w-[320px] max-w-lg bg-white rounded-3xl shadow-2xl relative z-[10000] overflow-y-auto shrink-0 flex flex-col"
         style={{ maxHeight: '85vh' }}
         onClick={e => e.stopPropagation()}
       >

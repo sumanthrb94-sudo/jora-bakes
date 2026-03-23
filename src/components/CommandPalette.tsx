@@ -71,7 +71,7 @@ export const CommandPalette = ({ isOpen, onClose }: { isOpen: boolean, onClose: 
 
            <div className="p-3">
               <div className="px-3 py-2">
-                 <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest px-1">Navigation Quick-Sync</p>
+                 <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest px-1">Menu</p>
               </div>
               <div className="space-y-1">
                  {filteredCommands.length > 0 ? (
