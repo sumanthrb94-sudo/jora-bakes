@@ -103,20 +103,22 @@ export const Shop = () => {
         </div>
         
         {/* Sticky Tab Filters */}
-        <div className="flex overflow-x-auto hide-scrollbar px-4 pb-3 pt-1 gap-2.5">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => handleCategoryChange(cat)}
-              className={`whitespace-nowrap px-4 py-1.5 rounded-xl text-xs font-bold transition-all border ${
-                selectedCategory === cat
-                  ? 'bg-white text-[var(--color-chocolate)] border-[var(--color-chocolate)] shadow-sm'
-                  : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        <div className="relative overflow-hidden before:absolute before:right-0 before:top-0 before:bottom-0 before:w-8 before:bg-gradient-to-l before:from-white before:to-transparent before:z-10 before:pointer-events-none">
+          <div className="flex overflow-x-auto hide-scrollbar px-4 pb-3 pt-1 gap-2.5">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => handleCategoryChange(cat)}
+                className={`whitespace-nowrap px-4 py-1.5 rounded-xl text-xs font-bold transition-all border shrink-0 ${
+                  selectedCategory === cat
+                    ? 'bg-white text-[var(--color-chocolate)] border-[var(--color-chocolate)] shadow-sm'
+                    : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -193,7 +195,7 @@ export const Shop = () => {
                         {/* Floating Action Button */}
                         <div className="absolute -bottom-3 w-[100px] z-10" onClick={e => e.stopPropagation()}>
                           {outOfStock ? (
-                            <div className="w-full bg-[#fdf2f2] text-[#FF4B4B] border border-red-100 py-2 rounded-xl font-black text-[7px] shadow-sm flex items-center justify-center text-center uppercase tracking-wider px-2 leading-none">
+                            <div className="w-full bg-[#fdf2f2] text-[#FF4B4B] border border-red-100 py-2 rounded-xl font-black text-[9px] shadow-sm flex items-center justify-center text-center uppercase tracking-wider px-2 leading-none">
                               Multiple orders received! Preparing next batch soon
                             </div>
                           ) : totalQuantityInCart === 0 ? (
@@ -218,7 +220,7 @@ export const Shop = () => {
                             </div>
                           )}
                           {product.variants && product.variants.length > 1 && totalQuantityInCart === 0 && (
-                            <p className="text-[9px] text-gray-400 font-bold text-center mt-1 w-full absolute -bottom-4 tracking-wider">Customizable</p>
+                            <p className="text-[9px] text-[var(--color-terracotta)] font-bold text-center mt-1.5 w-full tracking-wider">Customizable</p>
                           )}
                         </div>
                       </div>

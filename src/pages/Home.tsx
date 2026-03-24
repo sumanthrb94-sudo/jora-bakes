@@ -44,17 +44,23 @@ export const Home = () => {
                 <div className="flex items-center gap-1 font-black text-[var(--color-chocolate)] text-sm">
                   {profile?.addresses?.[0]?.label || 'Delivering to'} <ChevronDown size={14} className="text-[var(--color-terracotta)]" />
                 </div>
-                <p className="text-[11px] text-gray-500 truncate font-medium mt-0.5">
+                <p className="text-[11px] text-gray-500 line-clamp-2 font-medium mt-0.5 leading-tight pr-4">
                   {profile?.addresses?.[0]?.street || 'Tap to add delivery address'}
                 </p>
               </div>
             </button>
             <Link to="/profile" className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-sm shrink-0">
-              <img 
-                src={profile?.photoURL || user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || user?.displayName || 'Guest')}&background=ea580c&color=fff`} 
-                alt="Profile" 
-                className="w-full h-full object-cover" 
-              />
+              {profile?.photoURL || user?.photoURL ? (
+                <img 
+                  src={profile.photoURL || user.photoURL} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover" 
+                />
+              ) : (
+                <div className="w-full h-full bg-[var(--color-terracotta)] flex items-center justify-center text-white font-black text-lg pb-0.5">
+                  {(profile?.name || user?.displayName || 'G')[0].toUpperCase()}
+                </div>
+              )}
             </Link>
           </div>
           
@@ -142,7 +148,7 @@ export const Home = () => {
       </section>
 
       {/* Minimal Footer */}
-      <footer className="mt-12 mb-8 text-center px-4 flex flex-col items-center">
+      <footer className="mt-12 mb-28 text-center px-4 flex flex-col items-center">
         <div className="w-16 h-1 bg-gray-200 rounded-full mb-6"></div>
         <div className="flex items-center justify-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-widest mb-1">
           <Sparkles size={12} /> Live • Love • Bake <Sparkles size={12} />

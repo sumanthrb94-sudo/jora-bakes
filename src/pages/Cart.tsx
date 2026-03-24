@@ -54,7 +54,7 @@ export const Cart = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-beige)] pb-48">
+    <div className="min-h-screen bg-[var(--color-beige)] pb-72">
       {/* Header */}
       <div className="bg-white sticky top-0 z-30 shadow-sm px-4 py-4 flex items-center gap-4">
         <button onClick={() => navigate(-1)} className="p-2 bg-gray-50 rounded-full text-[var(--color-chocolate)]">

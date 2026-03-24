@@ -87,7 +87,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
 
         {outOfStock && (
           <div className="absolute inset-0 bg-black/10 flex items-center justify-center p-4">
-             <span className="bg-white/95 backdrop-blur-sm text-[#FF4B4B] text-[8px] font-black uppercase tracking-[0.2em] px-3 py-2 rounded-xl shadow-xl border border-red-100 text-center leading-tight">
+             <span className="bg-white/95 backdrop-blur-sm text-[#FF4B4B] text-[10px] font-black uppercase tracking-[0.2em] px-3 py-2 rounded-xl shadow-xl border border-red-100 text-center leading-tight">
                Preparing<br/>next batch
              </span>
           </div>
@@ -95,7 +95,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
       </div>
 
       <div className="px-2 pb-3 flex flex-col flex-grow">
-        <h3 className="font-black text-[#1C1C1C] text-sm line-clamp-1 mb-0.5 uppercase tracking-tight">{product.name}</h3>
+        <h3 className="font-black text-[#1C1C1C] text-sm line-clamp-2 mb-0.5 uppercase tracking-tight">{product.name}</h3>
         <p className="text-[10px] text-gray-400 font-bold mb-2 uppercase tracking-wider">{product.category.replace('_', ' ')}</p>
         
         <p className="text-[11px] text-gray-500 line-clamp-2 leading-relaxed flex-grow font-medium">{product.description}</p>
@@ -113,9 +113,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView }
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
           >
             {outOfStock ? (
-              <div className="bg-[#fdf2f2] text-[#FF4B4B] px-3 py-2 rounded-xl text-[7px] font-black uppercase tracking-wider flex items-center gap-1.5 border border-red-100 shadow-sm text-center leading-none max-w-[120px]">
+              <div className="bg-[#fdf2f2] text-[#FF4B4B] px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 border border-red-100 shadow-sm text-center leading-none max-w-[120px]">
                  <div className="w-1.5 h-1.5 bg-[#FF4B4B] rounded-full shrink-0 animate-pulse" />
-                 preparing next batch soon
+                 preparing next batch
               </div>
             ) : totalQuantityInCart === 0 ? (
               <button

@@ -44,11 +44,17 @@ export const Profile = () => {
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-gray-100 rounded-full border-2 border-white shadow-sm overflow-hidden shrink-0">
-              <img 
-                src={profile?.photoURL || user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || user?.displayName || 'Guest')}&background=ea580c&color=fff`} 
-                alt={user?.displayName || 'Profile'} 
-                className="w-full h-full object-cover" 
-              />
+              {profile?.photoURL || user?.photoURL ? (
+                <img 
+                  src={profile.photoURL || user.photoURL} 
+                  alt={user?.displayName || 'Profile'} 
+                  className="w-full h-full object-cover" 
+                />
+              ) : (
+                <div className="w-full h-full bg-[var(--color-terracotta)] flex items-center justify-center text-white font-black text-3xl pb-1">
+                  {(profile?.name || user?.displayName || 'G')[0].toUpperCase()}
+                </div>
+              )}
             </div>
             <div>
               <h2 className="text-xl font-black text-[var(--color-chocolate)] tracking-tight mb-0.5">
@@ -132,6 +138,24 @@ export const Profile = () => {
             <LogOut size={16} />
           </div>
         </motion.button>
+
+        {/* App Info Footer to fill empty space */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="mt-12 mb-6 text-center flex flex-col items-center"
+        >
+          <div className="w-12 h-1 bg-gray-200 rounded-full mb-6"></div>
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 flex items-center gap-1.5 justify-center">
+            <ShieldCheck size={12} /> Jora Bakes App v1.0.0
+          </p>
+          {user && user.metadata?.creationTime && (
+            <p className="text-[11px] font-medium text-gray-400">
+              Member since {new Date(user.metadata.creationTime).getFullYear()}
+            </p>
+          )}
+        </motion.div>
       </div>
     </div>
   );
