@@ -24,6 +24,7 @@ import { AdminOrders } from './pages/AdminOrders';
 import { SavedAddresses } from './pages/SavedAddresses';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { AdminRoute } from './components/AdminRoute';
 import { AdminLayout } from './components/AdminLayout';
 import { ScrollToTop } from './components/ScrollToTop';
 import { KitchenMode } from './pages/KitchenMode';
@@ -54,16 +55,17 @@ export default function App() {
             <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="addresses" element={<ProtectedRoute><SavedAddresses /></ProtectedRoute>} />
             
-            {/* Admin Routes with Sidebar Layout */}
-            <Route path="admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+            {/* Admin Routes with Sidebar Layout — requires admin role */}
+            <Route path="admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
               <Route index element={<AdminDashboard />} />
               <Route path="orders" element={<AdminOrders />} />
               <Route path="products" element={<AdminProducts />} />
             </Route>
           </Route>
           
-          <Route path="/kitchen" element={<ProtectedRoute><KitchenMode /></ProtectedRoute>} />
-          <Route path="/master-baker" element={<ProtectedRoute><MasterBakersDashboard /></ProtectedRoute>} />
+          {/* Kitchen & Baker routes — admin only */}
+          <Route path="/kitchen" element={<AdminRoute><KitchenMode /></AdminRoute>} />
+          <Route path="/master-baker" element={<AdminRoute><MasterBakersDashboard /></AdminRoute>} />
         </Routes>
             </Router>
           </CartProvider>
