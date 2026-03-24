@@ -46,7 +46,7 @@ export const Profile = () => {
             <div className="w-16 h-16 bg-gray-100 rounded-full border-2 border-white shadow-sm overflow-hidden shrink-0">
               {profile?.photoURL || user?.photoURL ? (
                 <img 
-                  src={profile.photoURL || user.photoURL} 
+                  src={profile?.photoURL || user?.photoURL} 
                   alt={user?.displayName || 'Profile'} 
                   className="w-full h-full object-cover" 
                 />
