@@ -8,6 +8,7 @@ import { increment } from 'firebase/firestore';
 
 import { useAuth } from '../context/AuthContext';
 import { createDocument, updateDocument } from '../services/firestore';
+import { createCashfreeOrder, openCashfreeCheckout } from '../services/cashfree';
 import { Order } from '../types';
 
 export const Checkout = () => {
@@ -21,7 +22,7 @@ export const Checkout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderId, setOrderId] = useState('');
   
-  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'whatsapp' | 'cod'>('razorpay');
+  const [paymentMethod, setPaymentMethod] = useState<'cashfree' | 'whatsapp' | 'cod'>('cashfree');
 
   // Redirect to cart if they bypassed it
   useEffect(() => {
@@ -34,17 +35,34 @@ export const Checkout = () => {
       setIsProcessing(true);
       
       try {
-        // 1. Mock Razorpay Flow
-        if (paymentMethod === 'razorpay') {
-          toast.loading('Opening secure payment gateway...', { duration: 1500 });
-          // Simulate Razorpay SDK popup delay
-          await new Promise(resolve => setTimeout(resolve, 2500));
-          toast.success('Payment verified successfully!');
-        }
-
         const timestamp = Date.now().toString().slice(-6);
         const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
         const newOrderId = `JB${timestamp}${random}`;
+
+        // 1. Cashfree Payment Flow
+        if (paymentMethod === 'cashfree') {
+          toast.loading('Connecting to payment gateway...', { id: 'cf-init' });
+
+          const cfOrder = await createCashfreeOrder({
+            orderId: newOrderId,
+            amount: Number(checkoutState.grandTotal || (cartTotal + 50)),
+            customerName: profile?.name || 'Customer',
+            customerPhone: profile?.phone || '9999999999',
+            customerEmail: profile?.email || 'orders@jorabakes.com',
+          });
+
+          toast.dismiss('cf-init');
+
+          const result = await openCashfreeCheckout(cfOrder.paymentSessionId);
+
+          if (result.status === 'CANCELLED') {
+            toast.error('Payment was cancelled.');
+            setIsProcessing(false);
+            return;
+          }
+
+          toast.success('Payment verified successfully!');
+        }
         
         console.log('Creating order:', newOrderId);
 
@@ -76,7 +94,7 @@ export const Checkout = () => {
           total: Number(checkoutState.grandTotal || (cartTotal + 50)),
           status: 'pending',
           paymentMethod: paymentMethod,
-          paymentStatus: paymentMethod === 'razorpay' ? 'paid' : 'pending',
+          paymentStatus: paymentMethod === 'cashfree' ? 'paid' : 'pending',
           createdAt: new Date().toISOString(),
           deliveryDate: checkoutState.deliveryDate instanceof Date 
             ? checkoutState.deliveryDate.toISOString() 
@@ -157,7 +175,7 @@ export const Checkout = () => {
           className="w-full space-y-4 mb-10"
         >
           <div className="inline-block border border-[var(--color-accent)] text-[var(--color-accent)] px-5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest mb-1">
-            {paymentMethod === 'cod' ? 'Order Received' : 'Payment Successful'}
+            {paymentMethod === 'cashfree' ? 'Payment Successful' : 'Order Received'}
           </div>
           <h2 className="font-script text-5xl text-[var(--color-shadow)] leading-tight">Order Confirmed</h2>
           <p className="text-[var(--color-tertiary)] text-sm px-4 leading-relaxed font-medium">
@@ -191,7 +209,7 @@ export const Checkout = () => {
                 <span className="text-xs text-[var(--color-tertiary)] font-bold uppercase tracking-wider">Status</span>
                 <span className="bg-[var(--color-primary)] text-[var(--color-accent)] px-4 py-1.5 rounded-full text-[10px] font-bold flex items-center gap-2 border border-[var(--color-secondary)]/20">
                   <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] animate-pulse" />
-                  {paymentMethod === 'razorpay' ? 'Confirmed' : 'Received'}
+                  {paymentMethod === 'cashfree' ? 'Confirmed' : 'Received'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -256,21 +274,21 @@ export const Checkout = () => {
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Select Payment Method</p>
               
               <div className="space-y-3">
-                {/* Razorpay Mock */}
-                <label 
-                  onClick={() => setPaymentMethod('razorpay')}
-                  className={`flex items-center justify-between p-4 rounded-2xl border-2 cursor-pointer transition-all relative overflow-hidden ${paymentMethod === 'razorpay' ? 'border-[var(--color-terracotta)] bg-orange-50/50' : 'border-gray-100 hover:border-gray-200 bg-white'}`}
+                {/* Cashfree */}
+                <label
+                  onClick={() => setPaymentMethod('cashfree')}
+                  className={`flex items-center justify-between p-4 rounded-2xl border-2 cursor-pointer transition-all relative overflow-hidden ${paymentMethod === 'cashfree' ? 'border-[var(--color-terracotta)] bg-orange-50/50' : 'border-gray-100 hover:border-gray-200 bg-white'}`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${paymentMethod === 'razorpay' ? 'bg-[var(--color-terracotta)] text-white' : 'bg-gray-50 text-gray-500'}`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${paymentMethod === 'cashfree' ? 'bg-[var(--color-terracotta)] text-white' : 'bg-gray-50 text-gray-500'}`}>
                       <Wallet size={20} />
                     </div>
                     <div>
                       <span className="font-bold text-sm text-[var(--color-chocolate)] block">UPI, Cards & NetBanking</span>
-                      <span className="text-[10px] font-medium text-gray-500">Powered by Razorpay</span>
+                      <span className="text-[10px] font-medium text-gray-500">Powered by Cashfree</span>
                     </div>
                   </div>
-                  {paymentMethod === 'razorpay' && <CheckCircle2 size={20} className="text-[var(--color-terracotta)] absolute right-4" />}
+                  {paymentMethod === 'cashfree' && <CheckCircle2 size={20} className="text-[var(--color-terracotta)] absolute right-4" />}
                 </label>
                 
                 {/* WhatsApp Mock */}
@@ -321,7 +339,11 @@ export const Checkout = () => {
           {isProcessing ? (
             <div className="w-6 h-6 border-2 border-[var(--color-cream)] border-t-transparent rounded-full animate-spin" />
           ) : (
-            paymentMethod === 'whatsapp' ? `Send Order to WhatsApp • Rs. ${checkoutState.grandTotal}` : `Pay Rs. ${checkoutState.grandTotal}`
+            paymentMethod === 'whatsapp'
+            ? `Send Order to WhatsApp • Rs. ${checkoutState.grandTotal}`
+            : paymentMethod === 'cod'
+            ? `Place Order • Rs. ${checkoutState.grandTotal}`
+            : `Pay Securely • Rs. ${checkoutState.grandTotal}`
           )}
         </button>
       </div>
