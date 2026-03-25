@@ -467,21 +467,33 @@ export const AdminProducts = () => {
       {/* Delete Confirmation Modal */}
       <AnimatePresence>
         {showDeleteModal && productToDelete && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-[#1C1412]/60 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center p-6"
+          >
+            {/* Backdrop */}
+            <div 
+              className="absolute inset-0 bg-[#1C1412]/80 backdrop-blur-md" 
+              onClick={() => setShowDeleteModal(false)}
+            />
+            
+            {/* Modal Content */}
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-[3rem] w-full max-w-sm overflow-hidden shadow-2xl border border-[#E8E2D9]"
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white rounded-[2.5rem] w-full max-w-[340px] relative z-20 overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] border border-[#E8E2D9]"
             >
-              <div className="p-10 space-y-8 text-center">
-                <div className="w-20 h-20 bg-[#FAF7F2] rounded-full flex items-center justify-center text-[#C17A6B] mx-auto border-4 border-[#F9F1F0] shadow-inner mb-2">
-                  <AlertCircle size={36} />
+              <div className="p-8 space-y-8 text-center">
+                <div className="w-16 h-16 bg-[#FAF7F2] rounded-full flex items-center justify-center text-[#C17A6B] mx-auto border-4 border-[#F9F1F0] shadow-inner">
+                  <AlertCircle size={32} />
                 </div>
                 
                 <div className="space-y-2">
-                  <p className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.4em] italic">Operational Choice</p>
-                  <h3 className="text-xl font-black text-[#1C1412] italic tracking-tighter leading-tight uppercase">
+                  <p className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.3em] italic">Operation Protocol</p>
+                  <h3 className="text-lg font-black text-[#1C1412] italic tracking-tight leading-tight uppercase">
                     Remove {productToDelete.name}?
                   </h3>
                 </div>
@@ -490,30 +502,30 @@ export const AdminProducts = () => {
                   <button
                     onClick={handleArchive}
                     disabled={isSaving}
-                    className="w-full py-5 bg-[#FAF7F2] border border-[#E8E2D9] text-[#1C1412] rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-[#F2E8E4] transition-all italic"
+                    className="w-full py-4 bg-[#FAF7F2] border border-[#E8E2D9] text-[#1C1412] rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-[#F2E8E4] transition-all italic active:scale-95"
                   >
-                    <Package size={18} className="text-[#D26E4B]" /> {isSaving ? 'Processing...' : 'Archive (Out of Stock)'}
+                    <Package size={16} className="text-[#D26E4B]" /> {isSaving ? 'Processing...' : 'Archive (Out of Stock)'}
                   </button>
                   
                   <button
                     onClick={handlePermanentDelete}
                     disabled={isSaving}
-                    className="w-full py-5 bg-[#1C1412] text-white rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-black transition-all italic shadow-xl shadow-black/20"
+                    className="w-full py-4 bg-[#1C1412] text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-black transition-all italic shadow-lg shadow-black/10 active:scale-95"
                   >
-                    <Trash2 size={18} className="text-[#C17A6B]" /> {isSaving ? 'Deleting...' : 'Delete Permanently'}
+                    <Trash2 size={16} className="text-[#C17A6B]" /> {isSaving ? 'Deleting...' : 'Delete Permanently'}
                   </button>
 
                   <button
                     onClick={() => setShowDeleteModal(false)}
                     disabled={isSaving}
-                    className="w-full py-4 text-[9px] font-black text-[#8B8680] uppercase tracking-[0.3em] hover:text-[#1C1412] transition-colors mt-2 italic"
+                    className="w-full py-2 text-[9px] font-black text-[#8B8680] uppercase tracking-[0.2em] hover:text-[#1C1412] transition-colors mt-2 italic"
                   >
-                    Abort Action
+                    Cancel Action
                   </button>
                 </div>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
