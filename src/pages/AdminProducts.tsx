@@ -48,15 +48,27 @@ const GridCard: React.FC<GridCardProps> = ({ product, onEdit, onDelete }) => {
         onEdit(product);
       }}
     >
-      {/* Delete Action */}
-      <div 
-        className="action-zone absolute top-4 right-4 z-20 w-10 h-10 rounded-2xl flex items-center justify-center transition-all"
-        onClick={(e) => {
-           e.stopPropagation();
-           onDelete(product.id);
-        }}
-      >
-         <div className="w-8 h-8 rounded-xl flex items-center justify-center border border-[#E8E2D9] bg-white text-[#C17A6B] opacity-0 group-hover:opacity-100 hover:bg-[#F9F1F0] transition-all duration-300 shadow-xl">
+      {/* Action Zone - Always visible on mobile, group-hover on desktop */}
+      <div className="action-zone absolute top-4 right-4 z-20 flex flex-col gap-2">
+         {/* Edit Action */}
+         <div 
+           className="w-10 h-10 rounded-2xl flex items-center justify-center border border-[#E8E2D9] bg-white text-[#D26E4B] shadow-xl hover:bg-[#FDF2F0] transition-all duration-300 md:opacity-0 md:group-hover:opacity-100"
+           onClick={(e) => {
+              e.stopPropagation();
+              onEdit(product);
+           }}
+         >
+            <Edit2 size={16} />
+         </div>
+
+         {/* Delete Action */}
+         <div 
+           className="w-10 h-10 rounded-2xl flex items-center justify-center border border-[#E8E2D9] bg-white text-[#C17A6B] shadow-xl hover:bg-[#F9F1F0] transition-all duration-300 md:opacity-0 md:group-hover:opacity-100"
+           onClick={(e) => {
+              e.stopPropagation();
+              onDelete(product.id);
+           }}
+         >
             <Trash2 size={16} />
          </div>
       </div>
@@ -84,10 +96,6 @@ const GridCard: React.FC<GridCardProps> = ({ product, onEdit, onDelete }) => {
 
         {/* Dynamic Badges */}
         <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-           <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/40 shadow-sm flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#D4AF37] border-2 border-white shadow-sm" />
-              <span className="text-[9px] font-black text-[#1C1412] uppercase tracking-[0.2em] leading-none pt-0.5">Signature</span>
-           </div>
            {(product.discountPercentage || 0) > 0 && (
              <div className="bg-[#D26E4B] text-white px-3 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-[0.2em] shadow-lg shadow-[#D26E4B]/30 w-fit italic">
                -{product.discountPercentage}% OFF
@@ -151,6 +159,10 @@ export const AdminProducts = () => {
     images: [''],
   });
 
+  // Delete Modal State
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+
   useEffect(() => {
     const unsub = subscribeToCollection<Product>('products', (data) => {
       setProducts(data);
@@ -165,14 +177,42 @@ export const AdminProducts = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to permanently delete this product?')) return;
-    
+  const handleDelete = (id: string) => {
+    const product = products.find(p => p.id === id);
+    if (product) {
+      setProductToDelete(product);
+      setShowDeleteModal(true);
+    }
+  };
+
+  const handleArchive = async () => {
+    if (!productToDelete) return;
+    setIsSaving(true);
     try {
-      await deleteDocument('products', id);
-      toast.success('Product deleted successfully');
+      await updateDocument('products', productToDelete.id, { 
+        isAvailable: false, 
+        stockQuantity: 0 
+      });
+      toast.success('Product archived (Out of Stock)');
+      setShowDeleteModal(false);
+    } catch (err) {
+      toast.error('Failed to archive product');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handlePermanentDelete = async () => {
+    if (!productToDelete) return;
+    setIsSaving(true);
+    try {
+      await deleteDocument('products', productToDelete.id);
+      toast.success('Product removed permanently');
+      setShowDeleteModal(false);
     } catch (err) {
       toast.error('Failed to delete product');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -258,9 +298,9 @@ export const AdminProducts = () => {
                 >
                   Create Item
                 </motion.button>
-             </div>
+              </div>
 
-             <div className="space-y-6">
+              <div className="space-y-6">
                 <div className="relative group px-1">
                   <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search catalog..." 
                     className="w-full bg-white border border-[#E8E2D9] rounded-[2rem] px-14 py-5 text-sm font-bold focus:ring-2 focus:ring-[#D26E4B]/10 outline-none shadow-sm focus:border-[#D26E4B] transition-all text-[#1C1412] placeholder:text-[#8B8680]/50" />
@@ -283,9 +323,9 @@ export const AdminProducts = () => {
                      </motion.button>
                    ))}
                 </div>
-             </div>
+              </div>
 
-             <div className="grid grid-cols-2 gap-4 px-1">
+              <div className="grid grid-cols-2 gap-4 px-1">
                 {filteredProducts.map(p => (
                   <GridCard 
                     key={p.id} 
@@ -294,7 +334,7 @@ export const AdminProducts = () => {
                     onDelete={handleDelete}
                   />
                 ))}
-             </div>
+              </div>
 
           </motion.div>
         ) : (
@@ -421,6 +461,59 @@ export const AdminProducts = () => {
                 </button>
              </form>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteModal && productToDelete && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-[#1C1412]/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-[3rem] w-full max-w-sm overflow-hidden shadow-2xl border border-[#E8E2D9]"
+            >
+              <div className="p-10 space-y-8 text-center">
+                <div className="w-20 h-20 bg-[#FAF7F2] rounded-full flex items-center justify-center text-[#C17A6B] mx-auto border-4 border-[#F9F1F0] shadow-inner mb-2">
+                  <AlertCircle size={36} />
+                </div>
+                
+                <div className="space-y-2">
+                  <p className="text-[10px] font-black text-[#8B8680] uppercase tracking-[0.4em] italic">Operational Choice</p>
+                  <h3 className="text-xl font-black text-[#1C1412] italic tracking-tighter leading-tight uppercase">
+                    Remove {productToDelete.name}?
+                  </h3>
+                </div>
+
+                <div className="space-y-3">
+                  <button
+                    onClick={handleArchive}
+                    disabled={isSaving}
+                    className="w-full py-5 bg-[#FAF7F2] border border-[#E8E2D9] text-[#1C1412] rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-[#F2E8E4] transition-all italic"
+                  >
+                    <Package size={18} className="text-[#D26E4B]" /> {isSaving ? 'Processing...' : 'Archive (Out of Stock)'}
+                  </button>
+                  
+                  <button
+                    onClick={handlePermanentDelete}
+                    disabled={isSaving}
+                    className="w-full py-5 bg-[#1C1412] text-white rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-black transition-all italic shadow-xl shadow-black/20"
+                  >
+                    <Trash2 size={18} className="text-[#C17A6B]" /> {isSaving ? 'Deleting...' : 'Delete Permanently'}
+                  </button>
+
+                  <button
+                    onClick={() => setShowDeleteModal(false)}
+                    disabled={isSaving}
+                    className="w-full py-4 text-[9px] font-black text-[#8B8680] uppercase tracking-[0.3em] hover:text-[#1C1412] transition-colors mt-2 italic"
+                  >
+                    Abort Action
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
