@@ -8,7 +8,7 @@ import { increment } from 'firebase/firestore';
 
 import { useAuth } from '../context/AuthContext';
 import { createDocument, updateDocument } from '../services/firestore';
-import { createCashfreeOrder, openCashfreeCheckout } from '../services/cashfree';
+import { createCashfreeOrder, openCashfreeCheckout, verifyCashfreePayment } from '../services/cashfree';
 import { Order } from '../types';
 
 export const Checkout = () => {
@@ -57,6 +57,17 @@ export const Checkout = () => {
 
           if (result.status === 'CANCELLED') {
             toast.error('Payment was cancelled.');
+            setIsProcessing(false);
+            return;
+          }
+
+          // Always verify payment server-side — never trust SDK result alone
+          toast.loading('Verifying payment...', { id: 'cf-verify' });
+          const isPaid = await verifyCashfreePayment(newOrderId);
+          toast.dismiss('cf-verify');
+
+          if (!isPaid) {
+            toast.error('Payment could not be verified. Please try again.');
             setIsProcessing(false);
             return;
           }

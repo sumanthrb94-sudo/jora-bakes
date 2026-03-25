@@ -81,6 +81,23 @@ export const createCashfreeOrder = async (
   return response.json();
 };
 
+// ── Server-side Payment Verification ─────────────────────────────────────────
+
+export const verifyCashfreePayment = async (orderId: string): Promise<boolean> => {
+  const response = await fetch('/api/cashfree-verify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ orderId }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Payment verification request failed');
+  }
+
+  const data = await response.json();
+  return data.isPaid === true;
+};
+
 // ── Checkout ─────────────────────────────────────────────────────────────────
 
 export const openCashfreeCheckout = async (
@@ -96,6 +113,8 @@ export const openCashfreeCheckout = async (
         redirectTarget: '_modal',
       })
       .then((result: any) => {
+        console.log('[Cashfree] checkout result:', JSON.stringify(result));
+
         if (result.error) {
           const msg: string = (result.error.message || '').toLowerCase();
           if (msg.includes('cancel') || msg.includes('close')) {
@@ -103,10 +122,12 @@ export const openCashfreeCheckout = async (
           } else {
             reject(new Error(result.error.message || 'Payment failed'));
           }
-        } else if (result.paymentDetails || result.redirect) {
+        } else if (result.paymentDetails) {
+          // Only trust paymentDetails — not result.redirect
           resolve({ status: 'SUCCESS' });
         } else {
-          reject(new Error('Unexpected response from payment gateway'));
+          // result.redirect or unknown — must verify server-side
+          resolve({ status: 'FAILED' });
         }
       })
       .catch((err: any) => reject(err));
