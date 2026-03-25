@@ -19,13 +19,13 @@ export const LoadingScreen: React.FC = () => {
             className="w-16 h-16 pointer-events-none"
           >
             <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-xl">
-              <rect x="20" y="20" width="60" height="60" rx="4" fill="#3D2B1F" />
-              <rect x="25" y="25" width="50" height="50" rx="2" fill="#4A3426" />
-              <circle cx="35" cy="35" r="3" fill="#2D1F16" />
-              <circle cx="65" cy="45" r="3" fill="#2D1F16" />
-              <circle cx="45" cy="65" r="3" fill="#2D1F16" />
+              <rect x="20" y="20" width="60" height="60" rx="4" fill="#D26E4B" />
+              <rect x="25" y="25" width="50" height="50" rx="2" fill="#B85A3A" />
+              <circle cx="35" cy="35" r="3" fill="#FFF7ED" opacity="0.4" />
+              <circle cx="65" cy="45" r="3" fill="#FFF7ED" opacity="0.4" />
+              <circle cx="45" cy="65" r="3" fill="#FFF7ED" opacity="0.4" />
             </svg>
-            <p className="text-[7px] font-black uppercase text-[#3D2B1F]/40 tracking-widest mt-2 leading-tight">Brownie</p>
+            <p className="text-[7px] font-black uppercase text-[#D26E4B] tracking-widest mt-2 leading-tight">Brownie</p>
           </motion.div>
 
           {/* Logo 2: Cake */}
@@ -45,7 +45,7 @@ export const LoadingScreen: React.FC = () => {
               <rect x="47.5" y="20" width="5" height="15" fill="#D4AF37" />
               <path d="M50,12 Q53,16 50,20 Q47,16 50,12" fill="#EF4444" />
             </svg>
-            <p className="text-[7px] font-black uppercase text-[#D26E4B]/60 tracking-widest mt-1 leading-tight">Cakes</p>
+            <p className="text-[7px] font-black uppercase text-[#D26E4B] tracking-widest mt-1 leading-tight">Cakes</p>
           </motion.div>
 
           {/* Logo 3: Cookie */}
@@ -55,13 +55,13 @@ export const LoadingScreen: React.FC = () => {
             className="w-16 h-16 pointer-events-none"
           >
             <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-xl">
-              <circle cx="50" cy="50" r="40" fill="#E8B07E" />
-              <circle cx="35" cy="35" r="6" fill="#4A3426" />
-              <circle cx="65" cy="40" r="5" fill="#4A3426" />
-              <circle cx="45" cy="65" r="7" fill="#4A3426" />
-              <circle cx="60" cy="70" r="4" fill="#4A3426" />
+              <circle cx="50" cy="50" r="40" fill="#FFF7ED" />
+              <circle cx="35" cy="35" r="6" fill="#D26E4B" />
+              <circle cx="65" cy="40" r="5" fill="#D26E4B" />
+              <circle cx="45" cy="65" r="7" fill="#D26E4B" />
+              <circle cx="60" cy="70" r="4" fill="#D26E4B" />
             </svg>
-            <p className="text-[7px] font-black uppercase text-[#E8B07E] tracking-widest mt-2 leading-tight">Cookies</p>
+            <p className="text-[7px] font-black uppercase text-[#D26E4B] tracking-widest mt-2 leading-tight">Cookies</p>
           </motion.div>
         </div>
 
