@@ -10,48 +10,59 @@ export const LoadingScreen: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="relative mb-8"
       >
-        {/* Animated Cupcakes */}
-        <div className="flex gap-4 mb-8">
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              animate={{
-                y: [0, -20, 0],
-                rotate: [0, 5, -5, 0],
-                scale: [1, 1.1, 1],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                delay: i * 0.2,
-                ease: "easeInOut"
-              }}
-              className="relative w-16 h-16"
-            >
-              {/* Cupcake SVG */}
-              <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
-                {/* Wrapper/Cup */}
-                <path 
-                  d="M20,60 L80,60 L70,90 L30,90 Z" 
-                  fill="#D26E4B" 
-                  className="drop-shadow-sm"
-                />
-                <path 
-                  d="M20,60 L80,60 L78,65 L22,65 Z" 
-                  fill="#B85A3A" 
-                />
-                {/* Cake/Frosting */}
-                <path 
-                  d="M15,60 C15,30 35,20 50,20 C65,20 85,30 85,60" 
-                  fill="#FFF7ED" 
-                />
-                <circle cx="50" cy="20" r="5" fill="#EF4444" /> {/* Cherry */}
-                {/* Details */}
-                <rect x="35" y="40" width="30" height="4" rx="2" fill="#FED7AA" opacity="0.5" />
-                <rect x="40" y="50" width="20" height="3" rx="1.5" fill="#FED7AA" opacity="0.5" />
-              </svg>
-            </motion.div>
-          ))}
+        {/* Animated Premium Icons */}
+        <div className="flex gap-8 mb-8 items-center justify-center">
+          {/* Logo 1: Brownie */}
+          <motion.div
+            animate={{ y: [0, -15, 0], scale: [1, 1.05, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="w-16 h-16 pointer-events-none"
+          >
+            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-xl">
+              <rect x="20" y="20" width="60" height="60" rx="4" fill="#3D2B1F" />
+              <rect x="25" y="25" width="50" height="50" rx="2" fill="#4A3426" />
+              <circle cx="35" cy="35" r="3" fill="#2D1F16" />
+              <circle cx="65" cy="45" r="3" fill="#2D1F16" />
+              <circle cx="45" cy="65" r="3" fill="#2D1F16" />
+            </svg>
+            <p className="text-[7px] font-black uppercase text-[#3D2B1F]/40 tracking-widest mt-2 leading-tight">Brownie</p>
+          </motion.div>
+
+          {/* Logo 2: Cake */}
+          <motion.div
+            animate={{ y: [0, -25, 0], rotate: [0, 5, -5, 0] }}
+            transition={{ duration: 2, repeat: Infinity, delay: 0.3, ease: "easeInOut" }}
+            className="w-20 h-20 pointer-events-none"
+          >
+            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-2xl">
+              {/* Bottom Layer */}
+              <path d="M20,70 L80,70 L75,90 L25,90 Z" fill="#D26E4B" />
+              {/* Top Layer */}
+              <path d="M25,45 L75,45 L72,70 L28,70 Z" fill="#B85A3A" />
+              {/* Frosting */}
+              <path d="M25,45 Q50,35 75,45 L75,55 Q50,65 25,55 Z" fill="#FFF7ED" />
+              {/* Candle */}
+              <rect x="47.5" y="20" width="5" height="15" fill="#D4AF37" />
+              <path d="M50,12 Q53,16 50,20 Q47,16 50,12" fill="#EF4444" />
+            </svg>
+            <p className="text-[7px] font-black uppercase text-[#D26E4B]/60 tracking-widest mt-1 leading-tight">Cakes</p>
+          </motion.div>
+
+          {/* Logo 3: Cookie */}
+          <motion.div
+            animate={{ y: [0, -15, 0], scale: [1, 1.05, 1] }}
+            transition={{ duration: 2, repeat: Infinity, delay: 0.6, ease: "easeInOut" }}
+            className="w-16 h-16 pointer-events-none"
+          >
+            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-xl">
+              <circle cx="50" cy="50" r="40" fill="#E8B07E" />
+              <circle cx="35" cy="35" r="6" fill="#4A3426" />
+              <circle cx="65" cy="40" r="5" fill="#4A3426" />
+              <circle cx="45" cy="65" r="7" fill="#4A3426" />
+              <circle cx="60" cy="70" r="4" fill="#4A3426" />
+            </svg>
+            <p className="text-[7px] font-black uppercase text-[#E8B07E] tracking-widest mt-2 leading-tight">Cookies</p>
+          </motion.div>
         </div>
 
         {/* Brand Text */}
