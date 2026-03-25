@@ -2,18 +2,15 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Check if the user is the admin by email
+    // Check if the user is an admin via the Firestore 'admins' collection
     function isAdmin() {
-      return request.auth != null && (
-        request.auth.token.email == 'sumanthbolla97@gmail.com' ||
-        request.auth.token.email == 'alekhya.cla@gmail.com' ||
-        request.auth.token.email == 'newadmin@gmail.com'
-      );
+      return request.auth != null && 
+        firestore.exists(/databases/(default)/documents/admins/$(request.auth.token.email));
     }
 
-    // Profile pictures — only authenticated users can view, owner or admin can upload
+    // Profile pictures — only owner or admin can view and upload
     match /users/{userId}/{allPaths=**} {
-      allow read: if request.auth != null;
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
       allow write: if request.auth != null && (request.auth.uid == userId || isAdmin())
                    && request.resource.size < 5 * 1024 * 1024
                    && request.resource.contentType.matches('image/.*');

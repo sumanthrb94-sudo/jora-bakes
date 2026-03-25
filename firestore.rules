@@ -2,13 +2,9 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Helper function to check if the user is the admin by email
+    // Helper function to check if the user is an admin via the 'admins' collection
     function isAdmin() {
-      return request.auth != null && (
-        request.auth.token.email == 'sumanthbolla97@gmail.com' ||
-        request.auth.token.email == 'alekhya.cla@gmail.com' ||
-        request.auth.token.email == 'newadmin@gmail.com'
-      );
+      return request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.token.email));
     }
 
     // Users Collection
