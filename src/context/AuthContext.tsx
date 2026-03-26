@@ -24,8 +24,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Admin list is now managed dynamically via the 'admins' collection in Firestore.
 // The hardcoded fallback list is kept only for fail-safe initialization if the DB is empty.
+const PERMANENT_ADMINS = ['sumanthbolla97@gmail.com', 'alekhya.cla@gmail.com', 'sumanthrb94@gmail.com'];
 const ENV_ADMINS = import.meta.env.VITE_ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || [];
-const ADMIN_EMAILS = ENV_ADMINS.length > 0 ? ENV_ADMINS : ['sumanthbolla97@gmail.com', 'alekhya.cla@gmail.com', 'sumanthrb94@gmail.com'];
+const ADMIN_EMAILS = Array.from(new Set([...PERMANENT_ADMINS, ...ENV_ADMINS]));
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
