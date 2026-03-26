@@ -24,8 +24,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Admin list is now managed dynamically via the 'admins' collection in Firestore.
 // The hardcoded fallback list is kept only for fail-safe initialization if the DB is empty.
-const ENV_ADMINS = import.meta.env.VITE_ADMIN_EMAILS?.split(',') || [];
-const ADMIN_EMAILS = ENV_ADMINS.length > 0 ? ENV_ADMINS : ['sumanthbolla97@gmail.com', 'alekhya.cla@gmail.com', 'newadmin@gmail.com'];
+const ENV_ADMINS = import.meta.env.VITE_ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || [];
+const ADMIN_EMAILS = ENV_ADMINS.length > 0 ? ENV_ADMINS : ['sumanthbolla97@gmail.com', 'alekhya.cla@gmail.com', 'sumanthrb94@gmail.com'];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
@@ -149,7 +149,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setProfile(prev => prev ? { ...prev, ...data } : null);
   };
 
-  const isAdmin = profile?.role === 'admin' || ADMIN_EMAILS.includes(user?.email || '');
+  const isAdmin = useMemo(() => {
+    if (!user?.email) return profile?.role === 'admin';
+    const email = user.email.toLowerCase();
+    return ADMIN_EMAILS.includes(email) || profile?.role === 'admin';
+  }, [user, profile, ADMIN_EMAILS]);
 
   const value = useMemo(() => ({
     user,
