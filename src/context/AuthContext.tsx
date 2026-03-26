@@ -151,9 +151,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const isAdmin = useMemo(() => {
-    if (!user?.email) return profile?.role === 'admin';
-    const email = user.email.toLowerCase();
-    return ADMIN_EMAILS.includes(email) || profile?.role === 'admin';
+    const userEmail = (user?.email || profile?.email || '').toLowerCase().trim();
+    const isExplicitAdmin = ADMIN_EMAILS.includes(userEmail);
+    const hasAdminRole = profile?.role === 'admin';
+    
+    // Log for debugging (visible to dev in console)
+    if (userEmail) {
+      console.log(`[Auth] User: ${userEmail}, isExplicitAdmin: ${isExplicitAdmin}, hasAdminRole: ${hasAdminRole}`);
+    }
+    
+    return isExplicitAdmin || hasAdminRole;
   }, [user, profile, ADMIN_EMAILS]);
 
   const value = useMemo(() => ({
